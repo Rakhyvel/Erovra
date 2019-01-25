@@ -288,7 +288,8 @@ public abstract class Unit {
 		boolean shoot = false;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Vector toEnemyUnit = position.getTargetVector(tempUnit.position);
+			Vector toEnemyUnit = position.getTargetVector(tempUnit.position).normalize();
+			//Find the dot product, if its greater than 0.85, fire
 		}
 	}
 
