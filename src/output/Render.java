@@ -69,9 +69,9 @@ public class Render extends Canvas {
 		g.drawImage(img, 0, 0, null);
 		world.drawCoins(g);
 		g.setColor(new Color(0, 0, 0));
-		g.drawString(String.valueOf("Erovra v"+Main.version), 5, 17);
+		g.drawString(String.valueOf("Erovra "+Main.stage+Main.version), 5, 17);
 		g.setColor(new Color(255, 255, 255));
-		g.drawString(String.valueOf("Erovra v"+Main.version), 4, 16);
+		g.drawString(String.valueOf("Erovra "+Main.stage+Main.version), 4, 16);
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf("FPS: " + Main.fps), 5, 33);
 		g.setColor(new Color(255, 255, 255));

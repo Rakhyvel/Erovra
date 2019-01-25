@@ -28,7 +28,8 @@ public class Main {
 	Render render = new Render(1024, 512, world);
 	public static short fps;
 	public static int ticks = 0;
-	public static float version = 0.2f;
+	public static String stage = "pre";
+	public static float version = 0.3f;
 
 	// Main: contains the game loop for the game. Calls Render class
 	public static void main(String arg[]) {
@@ -114,7 +115,7 @@ public class Main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
-		frame.setTitle("Erovra v" + Main.version);
+		frame.setTitle("Erovra " + stage + Main.version);
 		frame.setLocationRelativeTo(null);
 		frame.add(render);
 	}

@@ -2,7 +2,6 @@ package objects;
 
 import java.util.Random;
 
-import main.AI;
 import main.Image;
 import main.Main;
 import main.UnitID;
@@ -24,7 +23,6 @@ public abstract class Unit {
 	static Image image = new Image();
 	UnitID id;
 	UnitID weight;
-	AI ai = new AI();
 	Random rand = new Random();
 	float a = rand.nextFloat() * (float) Math.PI * 2;
 	boolean engaged = false;
