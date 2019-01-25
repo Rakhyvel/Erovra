@@ -6,6 +6,7 @@ import utility.Point;
 import utility.Vector;
 
 public abstract class Projectile extends Unit {
+
 	float attack = 0;
 
 	public Projectile(Point position, Nation nation) {
@@ -18,13 +19,14 @@ public abstract class Projectile extends Unit {
 
 	public void hit() {
 		nation.projectileArray.remove(this);
-		position = new Point(0,0);
+		position = new Point(0, 0);
 	}
 
 	public void bulletMove() {
 		position = position.addVector(velocity);
 	}
 
+	// shellMove(): moves the shell, when its reached its destination, it detonates.
 	public void shellMove() {
 		velocity = new Vector(0, 0);
 		if (position.getDist(target) > 1) {

@@ -11,6 +11,7 @@ import utility.Point;
 import utility.Vector;
 
 public abstract class Unit {
+
 	Point position;
 	Point target;
 	Point facing;
@@ -71,6 +72,8 @@ public abstract class Unit {
 		return id;
 	}
 
+	// wander(): Finds the closest spotted enemy, if there are any, moves the
+	// unit to engage. If there are no spotted enemy, moves around randomly
 	public void wander() {
 		int smallestDistance = 131072;
 		Point smallestPoint = new Point(-1, -1);
@@ -102,13 +105,13 @@ public abstract class Unit {
 				}
 			}
 		} else {
-			if (position.getDist(target) < 1)
-				retarget();
-			if (id == UnitID.INFANTRY && !engaged)
-				settle();
+			if (position.getDist(target) < 1) retarget();
+			if (id == UnitID.INFANTRY && !engaged) settle();
 		}
 	}
 
+	// settle(): if the unit is far enough away other ports and cities, it
+	// builds either a city, port, or factory
 	public void settle() {
 		int smallestDistance = 64;
 		for (int i = 0; i < nation.unitSize(); i++) {
@@ -122,12 +125,12 @@ public abstract class Unit {
 			}
 		}
 		if (smallestDistance >= 64) {
-			if (!nation.buyCity(position))
-				nation.buyFactory(position);
+			if (!nation.buyCity(position)) nation.buyFactory(position);
 			nation.buyPort(position);
 		}
 	}
 
+	// targetMove(): Moves the unit to its target
 	public void targetMove() {
 		velocity = new Vector(0, 0);
 		if (position.getDist(target) > 0.9) {
@@ -139,7 +142,7 @@ public abstract class Unit {
 				position = position.addVector(velocity);
 			} else {
 				retarget();
-				a-=Math.PI/2;
+				a -= Math.PI / 2;
 			}
 		} else {
 			if (weight != UnitID.LIGHT) {
@@ -147,7 +150,7 @@ public abstract class Unit {
 					position = position.addVector(velocity);
 				} else {
 					retarget();
-					a-=Math.PI/2;
+					a -= Math.PI / 2;
 				}
 			} else {
 				position = position.addVector(velocity);
@@ -155,9 +158,11 @@ public abstract class Unit {
 		}
 	}
 
+	// detectHit(): checks enemy projectile array. If there are any close enough
+	// to the unit, it subtracts the unit's health by (projectile's
+	// attack)/(unit's defense)
 	public void detectHit() {
-		if (hit > 0)
-			hit--;
+		if (hit > 0) hit--;
 		for (int i = 0; i < nation.enemyNation.projectileSize(); i++) {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
@@ -169,16 +174,13 @@ public abstract class Unit {
 					nation.unitArray.remove(this);
 					if (id == UnitID.CITY) {
 						nation.enemyNation.coins += 9;
-						if (nation.cityCost > 10)
-							nation.cityCost -= 10;
+						if (nation.cityCost > 10) nation.cityCost -= 10;
 					} else if (id == UnitID.PORT) {
 						nation.enemyNation.coins += 14;
-						if (nation.portCost > 15)
-							nation.portCost -= 15;
+						if (nation.portCost > 15) nation.portCost -= 15;
 					} else if (id == UnitID.FACTORY) {
 						nation.enemyNation.coins += 7;
-						if (nation.factoryCost > 8)
-							nation.factoryCost -= 8;
+						if (nation.factoryCost > 8) nation.factoryCost -= 8;
 					} else if (id == UnitID.ARTILLERY) {
 						nation.enemyNation.coins += 49;
 					} else if (id == UnitID.CAVALRY) {
@@ -189,8 +191,9 @@ public abstract class Unit {
 		}
 	}
 
+	// autoAim(float cal): Checks for the closest enemy, if there are any close
+	// by, it stops and shoots them using the caliber of bullet specified
 	public void autoAim(float cal) {
-		// COULD BE OPTIMIZED!
 		int smallestDistance = 2048;
 		Point smallestPoint = new Point(-1, -1);
 		Unit tempUnit = null;
@@ -199,8 +202,7 @@ public abstract class Unit {
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
 			if (tempDist < smallestDistance) {
-				if (tempUnit.id == UnitID.SHIP && id == UnitID.SHIP)
-					tempDist /= 32;
+				if (tempUnit.id == UnitID.SHIP && id == UnitID.SHIP) tempDist /= 32;
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
 			}
@@ -218,8 +220,9 @@ public abstract class Unit {
 			engaged = false;
 		}
 	}
+
+	// torpedoAim(): checks for enemy boats nearby, if there are any, shoots a torpedo at the closest one
 	public void torpedoAim() {
-		// COULD BE OPTIMIZED!
 		int smallestDistance = 131072;
 		Point smallestPoint = new Point(-1, -1);
 		Unit tempUnit = null;
@@ -242,8 +245,8 @@ public abstract class Unit {
 		}
 	}
 
+	// autoArtilleryAim(): Checks for enemies nearby, if there are any, shoots an artillery shell at them
 	public void autoArtilleryAim() {
-		// COULD BE OPTIMIZED!
 		int smallestDistance = 73728;
 		Point smallestPoint = new Point(-1, -1);
 		for (int i = 0; i < nation.unitSize(); i++) {
@@ -269,9 +272,10 @@ public abstract class Unit {
 		}
 	}
 
+	// retarget(): changes the target of the unit to one on a circle at radius r away
 	void retarget() {
 		int r = (int) (speed * 75.0f);
-		a+= rand.nextFloat() * speed - speed/2;
+		a += rand.nextFloat() * speed - speed / 2;
 		target = position.addPoint(new Point(r * Math.sin(a), r * Math.cos(a)));
 
 		if (target.getX() < 0) {

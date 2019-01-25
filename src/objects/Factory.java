@@ -5,6 +5,7 @@ import output.Render;
 import utility.Point;
 
 public class Factory extends Unit {
+
 	int start = 300;
 	UnitID product = UnitID.CAVALRY;
 	UnitID productWeight = UnitID.MEDIUM;
@@ -20,47 +21,54 @@ public class Factory extends Unit {
 	public void tick(double t) {
 		detectHit();
 		start--;
-		
+
 		if (start < 0) {
-			if(product == UnitID.CAVALRY) {
-				nation.addUnit(new Cavalry(position,nation, productWeight));
-			} else if(product == UnitID.ARTILLERY) {
-				nation.addUnit(new Artillery(position,nation, productWeight));
-			}
-			
-			if (nation.coins >= nation.artilleryCost*2) {
-				nation.coins -= nation.artilleryCost*2;
-				product = UnitID.ARTILLERY;
-				productWeight = UnitID.HEAVY;
-				start = 72000;
-			} else if (nation.coins >= nation.artilleryCost) {
-				nation.coins -= nation.artilleryCost;
-				product = UnitID.ARTILLERY;
-				productWeight = UnitID.MEDIUM;
-				start = 36000;
-			} else if (nation.coins >= nation.artilleryCost/2) {
-				nation.coins -= nation.artilleryCost/2;
-				product = UnitID.ARTILLERY;
-				productWeight = UnitID.LIGHT;
-				start = 18000;
-			} else if (nation.coins >= nation.cavalryCost*2) {
-				nation.coins -= nation.cavalryCost*2;
-				product = UnitID.CAVALRY;
-				productWeight = UnitID.HEAVY;
-				start = 72000;
-			} else if (nation.coins >= nation.cavalryCost) {
-				nation.coins -= nation.cavalryCost;
-				product = UnitID.CAVALRY;
-				productWeight = UnitID.MEDIUM;
-				start = 36000;
-			} else if (nation.coins >= nation.cavalryCost/2) {
-				nation.coins -= nation.cavalryCost/2;
-				product = UnitID.CAVALRY;
-				productWeight = UnitID.LIGHT;
-				start = 18000;
-			} else {
-				product = UnitID.NONE;
-			}
+			addProduct();
+			decideNewProduct();
+		}
+	}
+
+	public void addProduct() {
+		if (product == UnitID.CAVALRY) {
+			nation.addUnit(new Cavalry(position, nation, productWeight));
+		} else if (product == UnitID.ARTILLERY) {
+			nation.addUnit(new Artillery(position, nation, productWeight));
+		}
+	}
+
+	public void decideNewProduct() {
+		if (nation.coins >= nation.artilleryCost * 2) {
+			nation.coins -= nation.artilleryCost * 2;
+			product = UnitID.ARTILLERY;
+			productWeight = UnitID.HEAVY;
+			start = 72000;
+		} else if (nation.coins >= nation.artilleryCost) {
+			nation.coins -= nation.artilleryCost;
+			product = UnitID.ARTILLERY;
+			productWeight = UnitID.MEDIUM;
+			start = 36000;
+		} else if (nation.coins >= nation.artilleryCost / 2) {
+			nation.coins -= nation.artilleryCost / 2;
+			product = UnitID.ARTILLERY;
+			productWeight = UnitID.LIGHT;
+			start = 18000;
+		} else if (nation.coins >= nation.cavalryCost * 2) {
+			nation.coins -= nation.cavalryCost * 2;
+			product = UnitID.CAVALRY;
+			productWeight = UnitID.HEAVY;
+			start = 72000;
+		} else if (nation.coins >= nation.cavalryCost) {
+			nation.coins -= nation.cavalryCost;
+			product = UnitID.CAVALRY;
+			productWeight = UnitID.MEDIUM;
+			start = 36000;
+		} else if (nation.coins >= nation.cavalryCost / 2) {
+			nation.coins -= nation.cavalryCost / 2;
+			product = UnitID.CAVALRY;
+			productWeight = UnitID.LIGHT;
+			start = 18000;
+		} else {
+			product = UnitID.NONE;
 		}
 	}
 

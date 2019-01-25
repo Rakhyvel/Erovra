@@ -24,6 +24,6 @@ public class Shell extends Projectile {
 	}
 
 	public void render(Render r) {
-		r.drawImageScreen((int) position.getX(), (int) position.getY(), 4, r.shell, nation.color, velocity.getRadian());
+		r.drawImageScreen((int) position.getX(), (int) position.getY(), 4, r.shell, nation.color, a);
 	}
 }

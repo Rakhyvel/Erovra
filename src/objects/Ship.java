@@ -6,6 +6,7 @@ import terrain.Map;
 import utility.Point;
 
 public class Ship extends Unit {
+
 	float cal;
 
 	public Ship(Point position, Nation nation, UnitID weight) {
@@ -14,8 +15,7 @@ public class Ship extends Unit {
 			speed = .3f;
 			defense = 1f;
 			cal = 0.5f;
-			target = nation.enemyNation.capital.getPosition()
-					.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
+			target = nation.enemyNation.capital.getPosition().addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
@@ -45,35 +45,16 @@ public class Ship extends Unit {
 
 	}
 
+	// isLander(): checks to see if the boat has reached land, used for landind craft
 	boolean isLanded() {
 		return Map.getArray(position) > 0.505f;
 	}
 
 	public void render(Render r) {
 		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-			if (velocity.getY() < 0) {
-				if (weight == UnitID.LIGHT) {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, nation.color,
-							facing.getTargetVector(position).normalize().getRadian());
-				} else if (weight == UnitID.MEDIUM) {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color,
-							facing.getTargetVector(position).normalize().getRadian());
-				} else {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, nation.color,
-							facing.getTargetVector(position).normalize().getRadian());
-				}
-			} else {
-				if (weight == UnitID.LIGHT) {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, nation.color,
-							(float)Math.PI+facing.getTargetVector(position).normalize().getRadian());
-				} else if (weight == UnitID.MEDIUM) {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color,
-							(float)Math.PI+facing.getTargetVector(position).normalize().getRadian());
-				} else {
-					r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, nation.color,
-							(float)Math.PI+facing.getTargetVector(position).normalize().getRadian());
-				}
-			}
+			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, nation.color, a);
+			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color, a);
+			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, nation.color, a);
 		}
 	}
 }

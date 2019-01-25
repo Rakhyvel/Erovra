@@ -13,6 +13,7 @@ import main.World;
 import terrain.Map;
 
 public class Render extends Canvas {
+
 	// tf does serialVersion even do lmao
 	private static final long serialVersionUID = 1L;
 	int width;
@@ -22,6 +23,7 @@ public class Render extends Canvas {
 	float zoom = 1f;
 	World world;
 
+	// Images used in the game
 	Image image = new Image();
 	public int[] artillery = image.loadImage("/res/artillery.png", 32, 16);
 	public int[] infantry = image.loadImage("/res/infantry.png", 32, 16);
@@ -37,8 +39,8 @@ public class Render extends Canvas {
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
 	public int[] capital = image.loadImage("/res/capital.png", 32, 32);
 	public int[] landing = image.loadImage("/res/landing.png", 13, 32);
-	public int[] destroyer= image.loadImage("/res/destroyer.png", 13, 45);
-	public int[] cruiser= image.loadImage("/res/cruiser.png", 16, 61);
+	public int[] destroyer = image.loadImage("/res/destroyer.png", 13, 45);
+	public int[] cruiser = image.loadImage("/res/cruiser.png", 16, 61);
 
 	public Render(int x, int y, World world) {
 		width = x;
@@ -57,7 +59,7 @@ public class Render extends Canvas {
 		}
 
 		Graphics g = bs.getDrawGraphics();
-		////////////////////////////////////////
+		// //////////////////////////////////////
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = (int) (i % 1025);
 			int y = (int) (i / 1025);
@@ -69,18 +71,19 @@ public class Render extends Canvas {
 		g.drawImage(img, 0, 0, null);
 		world.drawCoins(g);
 		g.setColor(new Color(0, 0, 0));
-		g.drawString(String.valueOf("Erovra "+Main.stage+Main.version), 5, 17);
+		g.drawString(String.valueOf("Erovra " + Main.stage + Main.version), 5, 17);
 		g.setColor(new Color(255, 255, 255));
-		g.drawString(String.valueOf("Erovra "+Main.stage+Main.version), 4, 16);
+		g.drawString(String.valueOf("Erovra " + Main.stage + Main.version), 4, 16);
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf("FPS: " + Main.fps), 5, 33);
 		g.setColor(new Color(255, 255, 255));
 		g.drawString(String.valueOf("FPS: " + Main.fps), 4, 32);
-		////////////////////////////////////////
+		// //////////////////////////////////////
 		g.dispose();
 		bs.show();
 	}
 
+	// drawLongLat(): Draws the longitude and latitude lines on the map
 	void drawLongLat() {
 		for (int i = 0; i < 512 * 17; i++) {
 			int x = (int) (i % 17) * 64;
@@ -102,6 +105,7 @@ public class Render extends Canvas {
 		}
 	}
 
+	// drawRect(...): draws a rectangle
 	public void drawRect(int x, int y, int w, int h, int color) {
 		for (int i = 0; i < w * h; i++) {
 			int x1 = (int) (i % w) + x;
@@ -109,7 +113,8 @@ public class Render extends Canvas {
 			pixels[(y1 + y) * (width + 1) + x1] = color;
 		}
 	}
-
+	
+	// drawImage(...): draws an image
 	public void drawImage(int x, int y, int w, int[] image) {
 		for (int i = 0; i < image.length; i++) {
 			int x1 = (int) (i % w) + x;
@@ -121,6 +126,7 @@ public class Render extends Canvas {
 		}
 	}
 
+	// drawImageScreen(...): draws an image, applies overlay blending
 	public void drawImageScreen(int x, int y, int w, int[] image, int color) {
 		int h = image.length / w;
 		for (int i = 0; i < image.length; i++) {
@@ -146,6 +152,7 @@ public class Render extends Canvas {
 		}
 	}
 
+	// drawImageScreen(...): draws an image, applies overlay blending and rotates image
 	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate) {
 		int h = image.length / w;
 		for (int i = 0; i < image.length; i++) {
@@ -168,30 +175,27 @@ public class Render extends Canvas {
 			int newColor = r << 16 | g << 8 | b;
 			float alpha = (image[i] >> 24 & 255) / 255.0f;
 			if (x2 + y2 > 0 && x2 + y2 < width * height) {
-				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-						+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				x2 += 0.5;
 				y2 += 0.5;
-				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-						+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 			}
 		}
 	}
 
+	// lighten(int color): returns a lighter color given a 24 bit int color
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		r *= 2;
 		g *= 2;
 		b *= 2;
-		if (r > 255)
-			r = 255;
-		if (g > 255)
-			g = 255;
-		if (b > 255)
-			b = 255;
+		if (r > 255) r = 255;
+		if (g > 255) g = 255;
+		if (b > 255) b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
+	// lighten(int color): returns a darker color given a 24 bit int color
 	public int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		if (r > b) {

@@ -3,11 +3,11 @@ package objects;
 import java.util.ArrayList;
 
 import main.Main;
-import main.UnitID;
 import terrain.Map;
 import utility.Point;
 
 public class Nation {
+
 	int color;
 	int coins = 9;
 	int cityCost = 10;
@@ -40,12 +40,15 @@ public class Nation {
 		coinArray.add(new Coin(position, this));
 	}
 
+	// purgeAll(): removes every object from unitArray
 	public void purgeAll() {
 		for (int i = 0; i < unitArray.size(); i++) {
 			unitArray.remove(0);
 		}
 	}
 
+	// setCapital(int id): sets the object at a given id to be the nation's
+	// capital
 	public void setCaptial(int id) {
 		getUnit(id).capital = true;
 		capital = getUnit(id);
@@ -91,10 +94,11 @@ public class Nation {
 		return coins;
 	}
 
+	// buyCity(Point position): First checks to see if there is enough coins,
+	// then checks to see if the land is able to have a city
 	public boolean buyCity(Point position) {
 		if (coins >= cityCost) {
-			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
-					((int) (position.getY() / 64)) * 64 + 32);
+			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(cityPoint) > 0.5f) {
 				coins -= cityCost;
 				cityCost += 10;
@@ -105,9 +109,10 @@ public class Nation {
 		return false;
 	}
 
+	// buyFactory(Point position): First checks to see if there is enough coins,
+	// then checks to see if the land is able to have a factory
 	public void buyFactory(Point position) {
-		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
-				((int) (position.getY() / 64)) * 64 + 32);
+		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost) {
 			coins -= factoryCost;
 			factoryCost += 25;
@@ -115,6 +120,8 @@ public class Nation {
 		}
 	}
 
+	// buyPort(Point position): First checks to see if there is enough coins,
+	// then checks to see if the land is able to have a port
 	public void buyPort(Point position) {
 		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(portPoint);

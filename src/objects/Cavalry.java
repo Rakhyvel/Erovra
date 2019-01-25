@@ -5,6 +5,7 @@ import output.Render;
 import utility.Point;
 
 public class Cavalry extends Unit {
+
 	float cal;
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
@@ -34,18 +35,11 @@ public class Cavalry extends Unit {
 
 	public void render(Render r) {
 		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-			if (weight == UnitID.LIGHT)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color),
-						position.getTargetVector(facing).normalize().getRadian());
-			if (weight == UnitID.MEDIUM)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color,
-						position.getTargetVector(facing).normalize().getRadian());
-			if (weight == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color),
-						position.getTargetVector(facing).normalize().getRadian());
+			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), a);
+			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, a);
+			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), a);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color,
-						position.getTargetVector(facing).normalize().getRadian());
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, a);
 			}
 		}
 	}

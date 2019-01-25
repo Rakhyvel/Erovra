@@ -5,34 +5,34 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import objects.City;
-import objects.Infantry;
 import objects.Nation;
-import objects.Port;
-import objects.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
 
 public class Main {
-	/*
-	 * ToDo: ATS class, AI class, nations, grayscale object (takes in image,
-	 * generates 8bit grayscale to be used)
-	 */
+	//Game Loop
 	public static boolean running = true;
+	public static short fps;
+	public static int ticks = 0;
+	
+	//Window
 	public static final int width = 1024;
 	public static final int height = 512;
 	JFrame frame = new JFrame();
+	
+	//Objects
 	Random rand = new Random();
 	Map map = new Map();
-	public static World world = new World();
+	World world = new World();
 	Render render = new Render(1024, 512, world);
-	public static short fps;
-	public static int ticks = 0;
+	
+	//GitHub
 	public static String stage = "pre";
 	public static float version = 0.3f;
 
-	// Main: contains the game loop for the game. Calls Render class
-	public static void main(String arg[]) {
+	// main(String args[]: Contains the game loop, is the first method called when running
+	public static void main(String args[]) {
 		Main m = new Main();
 		m.window();
 		m.init();
@@ -53,7 +53,7 @@ public class Main {
 			accumulator += frameTime;
 
 			while (accumulator >= dt) {
-				Main.world.tick(t);
+				m.world.tick(t);
 				accumulator -= dt;
 				t += dt;
 				ticks++;
@@ -68,6 +68,7 @@ public class Main {
 		}
 	}
 
+	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
 	void init() {
 		Nation sweden = new Nation(47 << 16 | 100 << 8 | 250, "Sweden");
 		Nation russia = new Nation(250 << 16 | 100 << 8 | 49, "Russia");
@@ -110,6 +111,7 @@ public class Main {
 		 */
 	}
 
+	// window(): Sets up the window for the game
 	void window() {
 		frame.setSize(width, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

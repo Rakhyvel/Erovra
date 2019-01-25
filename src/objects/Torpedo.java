@@ -18,8 +18,7 @@ public class Torpedo extends Projectile {
 
 	public void tick(double t) {
 		bulletMove();
-		if (Map.getArray(position) > 0.5f)
-			hit();
+		if (Map.getArray(position) > 0.5f) hit();
 
 	}
 

@@ -12,8 +12,8 @@ public class World {
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	Random rand = new Random();
 
+	//tick(double t): Calls the tick method for each object in the game, takes t as the time in millis since last tick
 	public void tick(double t) {
-		//RUN BACKWARDS!!!!!!!!!!!!
 		for (int i = 0; i < nationArray.size(); i++) {
 			for (int i2 = nationArray.get(i).unitSize()-1; i2 >= 0; i2--) {
 				nationArray.get(i).getUnit(i2).tick(t);
@@ -27,6 +27,7 @@ public class World {
 		}
 	}
 
+	//render(Render r): Calls for each object in the game to draw, takes in the custom Render object, r.
 	public void render(Render r) {
 		for (int i = 0; i < nationArray.size(); i++) {
 			for (int i2 = 0; i2 < nationArray.get(i).unitSize(); i2++) {
@@ -42,7 +43,8 @@ public class World {
 		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 
 	}
-
+	
+	//drawCoins(Graphics g): Draws the ammount of coins
 	public void drawCoins(Graphics g) {
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf(nationArray.get(1).getCoinAmount()), 973, 17);
