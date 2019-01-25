@@ -10,12 +10,14 @@ public class Nation {
 
 	int color;
 	int coins = 9;
-	int cityCost = 10;
-	int portCost = 15;
-	int factoryCost = 25;
+	
 	int cavalryCost = 20;
 	int artilleryCost = 100;
 	int shipCost = 20;
+	int cityCost = 10;
+	int portCost = 15;
+	int factoryCost = 25;
+	int airfieldCost = 50;
 	String name;
 	ArrayList<Unit> unitArray = new ArrayList<Unit>();
 	public ArrayList<Projectile> projectileArray = new ArrayList<Projectile>();
@@ -129,6 +131,15 @@ public class Nation {
 			coins -= portCost;
 			portCost += 15;
 			addUnit(new Port(portPoint, this));
+		}
+	}
+	public void buyAirfield(Point position) {
+		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		float land = Map.getArray(airfieldPoint);
+		if (land > 0.5f && coins >= airfieldCost) {
+			coins -= airfieldCost;
+			airfieldCost += 1;
+			addUnit(new Airfield(airfieldPoint, this));
 		}
 	}
 }

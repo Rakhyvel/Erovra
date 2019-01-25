@@ -30,7 +30,7 @@ public class World {
 	//render(Render r): Calls for each object in the game to draw, takes in the custom Render object, r.
 	public void render(Render r) {
 		for (int i = 0; i < nationArray.size(); i++) {
-			for (int i2 = 0; i2 < nationArray.get(i).unitSize(); i2++) {
+			for (int i2 = nationArray.get(i).unitSize()-1; i2 >= 0; i2--) {
 				nationArray.get(i).getUnit(i2).render(r);
 			}
 			for (int i2 = 0; i2 < nationArray.get(i).projectileSize(); i2++) {

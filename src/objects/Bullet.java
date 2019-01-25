@@ -23,6 +23,6 @@ public class Bullet extends Projectile {
 	}
 
 	public void render(Render r) {
-		r.drawImageScreen((int) position.getX(), (int) position.getY(), (int) (2 * attack), r.bullet, nation.color, 0);
+		r.drawImageScreen((int) position.getX(), (int) position.getY(), 2, r.bullet, nation.color, 0);
 	}
 }

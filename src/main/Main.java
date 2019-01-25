@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import objects.City;
 import objects.Nation;
+import objects.Plane;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -28,8 +29,7 @@ public class Main {
 	Render render = new Render(1024, 512, world);
 	
 	//GitHub
-	public static String stage = "pre";
-	public static float version = 0.3f;
+	public static String version = "Erovra 0.4.0";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -100,6 +100,7 @@ public class Main {
 				}
 			}
 		} while (world.nationArray.get(0).unitSize() + world.nationArray.get(1).unitSize() < 2);
+		sweden.addUnit(new Plane(new Point(512,256),sweden,UnitID.LIGHT));
 		/*
 		 * for (int i = 0; i < 84; i++) { int x = ((int) 6 - (i / 6)) * 64 + 544; int y
 		 * = (int) (6 - (i % 6)) * 64 + 32; if (Map.getArray(x, y) < 0.5f &&
@@ -113,11 +114,11 @@ public class Main {
 
 	// window(): Sets up the window for the game
 	void window() {
-		frame.setSize(width, height + 30);
+		frame.setSize(width+7, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
-		frame.setTitle("Erovra " + stage + Main.version);
+		frame.setTitle(Main.version);
 		frame.setLocationRelativeTo(null);
 		frame.add(render);
 	}

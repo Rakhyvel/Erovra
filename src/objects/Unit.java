@@ -105,8 +105,10 @@ public abstract class Unit {
 				}
 			}
 		} else {
-			if (position.getDist(target) < 1) retarget();
-			if (id == UnitID.INFANTRY && !engaged) settle();
+			if (position.getDist(target) < 1)
+				retarget();
+			if (id == UnitID.INFANTRY && !engaged)
+				settle();
 		}
 	}
 
@@ -125,8 +127,11 @@ public abstract class Unit {
 			}
 		}
 		if (smallestDistance >= 64) {
-			if (!nation.buyCity(position)) nation.buyFactory(position);
 			nation.buyPort(position);
+			if (!nation.buyCity(position)) {
+				nation.buyFactory(position);
+				nation.buyAirfield(position);
+			}
 		}
 	}
 
@@ -162,7 +167,8 @@ public abstract class Unit {
 	// to the unit, it subtracts the unit's health by (projectile's
 	// attack)/(unit's defense)
 	public void detectHit() {
-		if (hit > 0) hit--;
+		if (hit > 0)
+			hit--;
 		for (int i = 0; i < nation.enemyNation.projectileSize(); i++) {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
@@ -174,13 +180,16 @@ public abstract class Unit {
 					nation.unitArray.remove(this);
 					if (id == UnitID.CITY) {
 						nation.enemyNation.coins += 9;
-						if (nation.cityCost > 10) nation.cityCost -= 10;
+						if (nation.cityCost > 10)
+							nation.cityCost -= 10;
 					} else if (id == UnitID.PORT) {
 						nation.enemyNation.coins += 14;
-						if (nation.portCost > 15) nation.portCost -= 15;
+						if (nation.portCost > 15)
+							nation.portCost -= 15;
 					} else if (id == UnitID.FACTORY) {
 						nation.enemyNation.coins += 7;
-						if (nation.factoryCost > 8) nation.factoryCost -= 8;
+						if (nation.factoryCost > 8)
+							nation.factoryCost -= 8;
 					} else if (id == UnitID.ARTILLERY) {
 						nation.enemyNation.coins += 49;
 					} else if (id == UnitID.CAVALRY) {
@@ -202,14 +211,15 @@ public abstract class Unit {
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
 			if (tempDist < smallestDistance) {
-				if (tempUnit.id == UnitID.SHIP && id == UnitID.SHIP) tempDist /= 32;
+				if (tempUnit.id == UnitID.SHIP && id == UnitID.SHIP)
+					tempDist /= 32;
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
 			}
 		}
 		if (smallestPoint.getX() != -1 && (id == UnitID.SHIP ^ tempUnit.id != UnitID.SHIP)) {
 			engaged = true;
-			if (id != UnitID.SHIP) {
+			if (id != UnitID.SHIP && id != UnitID.PLANE) {
 				target = position;
 				facing = smallestPoint;
 			}
@@ -221,7 +231,8 @@ public abstract class Unit {
 		}
 	}
 
-	// torpedoAim(): checks for enemy boats nearby, if there are any, shoots a torpedo at the closest one
+	// torpedoAim(): checks for enemy boats nearby, if there are any, shoots a
+	// torpedo at the closest one
 	public void torpedoAim() {
 		int smallestDistance = 131072;
 		Point smallestPoint = new Point(-1, -1);
@@ -245,7 +256,8 @@ public abstract class Unit {
 		}
 	}
 
-	// autoArtilleryAim(): Checks for enemies nearby, if there are any, shoots an artillery shell at them
+	// autoArtilleryAim(): Checks for enemies nearby, if there are any, shoots an
+	// artillery shell at them
 	public void autoArtilleryAim() {
 		int smallestDistance = 73728;
 		Point smallestPoint = new Point(-1, -1);
@@ -272,7 +284,16 @@ public abstract class Unit {
 		}
 	}
 
-	// retarget(): changes the target of the unit to one on a circle at radius r away
+	void autoFighterAim() {
+		boolean shoot = false;
+		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = nation.enemyNation.getUnit(i);
+			Vector toEnemyUnit = position.getTargetVector(tempUnit.position);
+		}
+	}
+
+	// retarget(): changes the target of the unit to one on a circle at radius r
+	// away
 	void retarget() {
 		int r = (int) (speed * 75.0f);
 		a += rand.nextFloat() * speed - speed / 2;

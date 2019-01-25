@@ -3,7 +3,6 @@ package objects;
 import main.UnitID;
 import output.Render;
 import utility.Point;
-import utility.Vector;
 
 public class Shell extends Projectile {
 
