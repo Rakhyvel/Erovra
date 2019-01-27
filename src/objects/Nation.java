@@ -10,14 +10,14 @@ public class Nation {
 
 	int color;
 	int coins = 9;
-	
 	int cavalryCost = 20;
 	int artilleryCost = 100;
-	int shipCost = 20;
+	int shipCost = 40;
+	int planeCost = 20;
 	int cityCost = 10;
-	int portCost = 15;
-	int factoryCost = 25;
-	int airfieldCost = 50;
+	int portCost = 40;
+	int factoryCost = 1400;
+	int airfieldCost = 45;
 	String name;
 	ArrayList<Unit> unitArray = new ArrayList<Unit>();
 	public ArrayList<Projectile> projectileArray = new ArrayList<Projectile>();
@@ -117,7 +117,7 @@ public class Nation {
 		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost) {
 			coins -= factoryCost;
-			factoryCost += 25;
+			factoryCost *= 2;
 			addUnit(new Factory(factoryPoint, this));
 		}
 	}
@@ -127,9 +127,9 @@ public class Nation {
 	public void buyPort(Point position) {
 		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(portPoint);
-		if (land < 0.5f && coins >= portCost) {
+		if (land < 0.5f && land > 0 && coins >= portCost) {
 			coins -= portCost;
-			portCost += 15;
+			portCost *= 2;
 			addUnit(new Port(portPoint, this));
 		}
 	}
@@ -138,7 +138,7 @@ public class Nation {
 		float land = Map.getArray(airfieldPoint);
 		if (land > 0.5f && coins >= airfieldCost) {
 			coins -= airfieldCost;
-			airfieldCost += 1;
+			airfieldCost *= 2;
 			addUnit(new Airfield(airfieldPoint, this));
 		}
 	}

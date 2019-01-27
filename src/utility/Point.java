@@ -31,7 +31,7 @@ public class Point {
 		return new Vector(p.x-x,p.y-y);
 	}
 	public Vector subVec(Point p) {
-		return new Vector(p.x-x,p.y-x);
+		return new Vector(p.x-x,p.y-y);
 	}
 	public double getCabDist(Point p2) {
 		return Math.abs(x-p2.x)+Math.abs(y-p2.y);

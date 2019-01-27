@@ -35,7 +35,10 @@ public class Render extends Canvas {
 	public int[] cruiser = image.loadImage("/res/cruiser.png", 16, 61);
 	
 	//Air Units
-	public int[] fighter = image.loadImage("/res/fighter.png", 32, 32);
+	public int[] fighter1 = image.loadImage("/res/fighter.png", 32, 32);
+	public int[] fighter2 = image.loadImage("/res/fighter1.png", 32, 32);
+	public int[] attacker1 = image.loadImage("/res/attack.png", 44, 39);
+	public int[] attacker2 = image.loadImage("/res/attack1.png", 44, 39);
 
 	// Buildings
 	public int[] city = image.loadImage("/res/city.png", 32, 32);
@@ -169,31 +172,33 @@ public class Render extends Canvas {
 	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate) {
 		int h = image.length / w;
 		for (int i = 0; i < image.length; i++) {
-			double x1 = (i % w) - w / 2;
-			double y1 = (int) (i / w) - h / 2;
-			double x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
-			double y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
-			float screen = (image[i] & 255) / 255.0f;
-			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			if (screen <= 0.5f) {
-				screen *= 2;
-				r = (int) (r * screen);
-				g = (int) (g * screen);
-				b = (int) (b * screen);
-			} else {
-				r = (int) (255 - 2 * (255 - r) * (1 - screen));
-				g = (int) (255 - 2 * (255 - g) * (1 - screen));
-				b = (int) (255 - 2 * (255 - b) * (1 - screen));
-			}
-			int newColor = r << 16 | g << 8 | b;
-			float alpha = (image[i] >> 24 & 255) / 255.0f;
-			if (x2 + y2 > 0 && x2 + y2 < width * height) {
-				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-						+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
-				x2 += 0.5;
-				y2 += 0.5;
-				pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-						+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+			if((image[i] >> 24 & 255) > 0){
+				double x1 = (i % w) - w / 2;
+				double y1 = (int) (i / w) - h / 2;
+				double x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
+				double y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
+				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+				float screen = (image[i] & 255) / 255.0f;
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+				}
+				int newColor = r << 16 | g << 8 | b;
+				float alpha = (image[i] >> 24 & 255) / 255.0f;
+				if (x2 + y2 > 0 && x2 + y2 < width * height) {
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					x2 += 0.5;
+					y2 += 0.5;
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+				}
 			}
 		}
 	}

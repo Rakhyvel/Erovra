@@ -35,11 +35,14 @@ public class Cavalry extends Unit {
 
 	public void render(Render r) {
 		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), a);
-			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, a);
-			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), a);
+			float direction = position.subVec(facing).getRadian();
+			if (velocity.getY() > 0) direction += 3.14f;
+			
+			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), direction);
+			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, direction);
+			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), direction);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, a);
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}
 	}

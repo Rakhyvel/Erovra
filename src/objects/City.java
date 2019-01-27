@@ -6,6 +6,7 @@ import output.Render;
 import utility.Point;
 
 public class City extends Unit {
+
 	int founded = 1;
 
 	public City(Point position, Nation nation, int founded) {
@@ -18,6 +19,7 @@ public class City extends Unit {
 	}
 
 	public void tick(double t) {
+		engaged = false;
 		detectHit();
 		if ((Main.ticks - founded) % 600 == 0) {
 			nation.addCoin(position);
@@ -25,8 +27,7 @@ public class City extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-
+		if (engaged || nation.name.contains("Sweden")) {
 			if (capital) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.capital, nation.color);
 			} else {

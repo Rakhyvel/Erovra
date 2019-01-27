@@ -7,9 +7,11 @@ import javax.swing.JFrame;
 import objects.City;
 import objects.Nation;
 import objects.Plane;
+import objects.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
+import utility.Trig;
 
 public class Main {
 	//Game Loop
@@ -29,7 +31,7 @@ public class Main {
 	Render render = new Render(1024, 512, world);
 	
 	//GitHub
-	public static String version = "Erovra 0.4.0";
+	public static String version = "Erovra 0.4.1";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -70,6 +72,7 @@ public class Main {
 
 	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
 	void init() {
+		new Trig();
 		Nation sweden = new Nation(47 << 16 | 100 << 8 | 250, "Sweden");
 		Nation russia = new Nation(250 << 16 | 100 << 8 | 49, "Russia");
 		world.nationArray.add(russia);
@@ -81,7 +84,7 @@ public class Main {
 		do {
 			sweden.purgeAll();
 			russia.purgeAll();
-			for (int i = 0; i < 84; i++) {
+			for (int i = 0; i < 42; i++) {
 				int x = (int) (i / 6) * 64 + 96;
 				int y = (int) (i % 6) * 64 + 96;
 				if (Map.getArray(x, y) > 0.5f) {
@@ -90,7 +93,7 @@ public class Main {
 					break;
 				}
 			}
-			for (int i = 0; i < 84; i++) {
+			for (int i = 0; i < 42; i++) {
 				int x = ((int) 6 - (i / 6)) * 64 + 544;
 				int y = (int) (6 - (i % 6)) * 64 + 32;
 				if (Map.getArray(x, y) > 0.5f) {
@@ -100,7 +103,7 @@ public class Main {
 				}
 			}
 		} while (world.nationArray.get(0).unitSize() + world.nationArray.get(1).unitSize() < 2);
-		sweden.addUnit(new Plane(new Point(512,256),sweden,UnitID.LIGHT));
+		sweden.addUnit(new Ship(new Point(512,511),sweden, UnitID.MEDIUM));
 		/*
 		 * for (int i = 0; i < 84; i++) { int x = ((int) 6 - (i / 6)) * 64 + 544; int y
 		 * = (int) (6 - (i % 6)) * 64 + 32; if (Map.getArray(x, y) < 0.5f &&

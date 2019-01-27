@@ -32,9 +32,12 @@ public class Artillery extends Unit {
 
 	public void render(Render r) {
 		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color, a);
+			float direction = position.subVec(target).getRadian();
+			if (velocity.getY() > 0) direction += 3.14f;
+			
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color, direction);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, a);
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}
 	}

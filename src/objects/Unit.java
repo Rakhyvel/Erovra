@@ -8,6 +8,7 @@ import main.UnitID;
 import output.Render;
 import terrain.Map;
 import utility.Point;
+import utility.Trig;
 import utility.Vector;
 
 public abstract class Unit {
@@ -72,43 +73,41 @@ public abstract class Unit {
 		return id;
 	}
 
+	public void engage() {
+		engaged = true;
+	}
+
+	public void disengage() {
+		engaged = false;
+	}
+
 	// wander(): Finds the closest spotted enemy, if there are any, moves the
 	// unit to engage. If there are no spotted enemy, moves around randomly
 	public void wander() {
 		int smallestDistance = 131072;
 		Point smallestPoint = new Point(-1, -1);
-		for (int i = 0; i < nation.unitSize(); i++) {
-			Unit tempUnit = nation.getUnit(i);
+		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if (tempUnit.engaged) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
-				if (tempDist < smallestDistance && !tempUnit.equals(this)) {
+				if (tempDist < smallestDistance && !tempUnit.equals(this) && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))) {
 					smallestDistance = tempDist;
-					smallestPoint = tempUnit.facing;
+					smallestPoint = tempPoint;
 				}
 			}
 		}
 		if (smallestPoint.getX() != -1) {
 			if (id != UnitID.SHIP) {
-				if (Map.getArray(position) > 0.52f) {
-					target = smallestPoint;
-					facing = target;
-				} else {
-					retarget();
-				}
+				target = smallestPoint;
+				facing = target;
 			} else {
-				if (Map.getArray(position) < 0.48f) {
-					target = smallestPoint;
-					facing = target;
-				} else {
-					retarget();
-				}
+				target = smallestPoint;
+				facing = target;
 			}
 		} else {
-			if (position.getDist(target) < 1)
-				retarget();
-			if (id == UnitID.INFANTRY && !engaged)
-				settle();
+			if (position.getDist(target) < .75) retarget();
+			if (id == UnitID.INFANTRY && !engaged) settle();
 		}
 	}
 
@@ -137,64 +136,67 @@ public abstract class Unit {
 
 	// targetMove(): Moves the unit to its target
 	public void targetMove() {
-		velocity = new Vector(0, 0);
-		if (position.getDist(target) > 0.9) {
-			velocity = position.getTargetVector(target).normalize().scalar(speed);
-		}
 		Point newPoint = position.addVector(velocity);
 		if (id != UnitID.SHIP) {
 			if (Map.getArray(newPoint) > 0.5f) {
-				position = position.addVector(velocity);
+				velocityMove();
 			} else {
-				retarget();
-				a -= Math.PI / 2;
+				escapeEdge();
 			}
 		} else {
 			if (weight != UnitID.LIGHT) {
 				if (Map.getArray(newPoint) < 0.5f) {
-					position = position.addVector(velocity);
+					velocityMove();
 				} else {
-					retarget();
-					a -= Math.PI / 2;
+					escapeEdge();
 				}
 			} else {
-				position = position.addVector(velocity);
+				velocityMove();
 			}
 		}
+	}
+
+	void velocityMove() {
+		velocity = position.getTargetVector(target).normalize().scalar(speed);
+		position = position.addVector(velocity);
 	}
 
 	// detectHit(): checks enemy projectile array. If there are any close enough
 	// to the unit, it subtracts the unit's health by (projectile's
 	// attack)/(unit's defense)
 	public void detectHit() {
-		if (hit > 0)
-			hit--;
+		if (hit > 0) hit--;
 		for (int i = 0; i < nation.enemyNation.projectileSize(); i++) {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
-			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.attack > 0) {
+			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.attack > 0 && !(!(id == UnitID.PLANE) && (tempProjectile.attack < 0.4f))) {
 				tempProjectile.hit();
 				hit = 8;
 				health -= tempProjectile.attack / defense;
 				if (health <= 0) {
-					nation.unitArray.remove(this);
+					health = 100;
 					if (id == UnitID.CITY) {
 						nation.enemyNation.coins += 9;
-						if (nation.cityCost > 10)
-							nation.cityCost -= 10;
+						if (nation.cityCost > 10) nation.cityCost -= 10;
 					} else if (id == UnitID.PORT) {
 						nation.enemyNation.coins += 14;
-						if (nation.portCost > 15)
-							nation.portCost -= 15;
+						if (nation.portCost > 15) nation.portCost /= 2;
 					} else if (id == UnitID.FACTORY) {
 						nation.enemyNation.coins += 7;
-						if (nation.factoryCost > 8)
-							nation.factoryCost -= 8;
+						if (nation.factoryCost > 8) nation.factoryCost /= 2;
+					} else if (id == UnitID.AIRFIELD) {
+						nation.enemyNation.coins += 29;
+						if (nation.airfieldCost > 30) nation.airfieldCost /= 2;
 					} else if (id == UnitID.ARTILLERY) {
 						nation.enemyNation.coins += 49;
 					} else if (id == UnitID.CAVALRY) {
 						nation.enemyNation.coins += 4;
+					} else if (id == UnitID.SHIP) {
+						nation.enemyNation.coins += 9;
+					} else if (id == UnitID.PLANE) {
+						nation.enemyNation.coins += 9;
 					}
+					nation.unitArray.remove(this);
 				}
 			}
 		}
@@ -204,25 +206,25 @@ public abstract class Unit {
 	// by, it stops and shoots them using the caliber of bullet specified
 	public void autoAim(float cal) {
 		int smallestDistance = 2048;
+		if (id == UnitID.SHIP) smallestDistance = 35000;
 		Point smallestPoint = new Point(-1, -1);
-		Unit tempUnit = null;
+		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			tempUnit = nation.enemyNation.getUnit(i);
+			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance) {
-				if (tempUnit.id == UnitID.SHIP && id == UnitID.SHIP)
-					tempDist /= 32;
+			if (tempUnit.id == UnitID.PLANE) tempDist /= 36;
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && !(id != UnitID.INFANTRY && tempUnit.capital)) {
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
+				smallestUnit = tempUnit;
 			}
 		}
-		if (smallestPoint.getX() != -1 && (id == UnitID.SHIP ^ tempUnit.id != UnitID.SHIP)) {
+		if (smallestUnit != null) {
+			smallestUnit.engaged = true;
 			engaged = true;
-			if (id != UnitID.SHIP && id != UnitID.PLANE) {
-				target = position;
-				facing = smallestPoint;
-			}
+			if (id != UnitID.SHIP) target = position;
+			facing = smallestUnit.getPosition();
 			if (Main.ticks % 60 == 0) {
 				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), cal));
 			}
@@ -231,22 +233,52 @@ public abstract class Unit {
 		}
 	}
 
-	// torpedoAim(): checks for enemy boats nearby, if there are any, shoots a
-	// torpedo at the closest one
-	public void torpedoAim() {
-		int smallestDistance = 131072;
+	void aaAim() {
+		int smallestDistance = 35000;
 		Point smallestPoint = new Point(-1, -1);
-		Unit tempUnit = null;
+		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = nation.enemyNation.getUnit(i);
+			Point tempPoint = tempUnit.getPosition();
+			int tempDist = (int) position.getDist(tempPoint);
+			if (tempDist < smallestDistance && (tempUnit.id == UnitID.PLANE)) {
+				smallestDistance = tempDist;
+				smallestPoint = tempPoint;
+				smallestUnit = tempUnit;
+			}
+		}
+		if (smallestUnit != null) {
+			smallestUnit.engaged = true;
+			engaged = true;
+			if (Main.ticks % 30 == 0) {
+				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), .4f));
+			}
+		} else {
+			engaged = false;
+		}
+	}
+
+	// torpedoAim(): checks for enemy boats nearby, if there are any, shoots a
+	// torpedo at the closest one. For some reason, when tempUnit is set inside
+	// the for loop, it changes outside the for loop to another unit. This is
+	// why I used smallest Unit. I dont't know why that happened.
+	public void torpedoAim() {
+		int smallestDistance = 38000;
+		Point smallestPoint = new Point(-1, -1);
+		Unit smallestUnit = null;
+		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = null;
 			tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
 			if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP) {
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
+				smallestUnit = tempUnit;
 			}
 		}
-		if (smallestPoint.getX() != -1) {
+		if (smallestUnit != null) {
+			smallestUnit.engage();
 			engaged = true;
 			if (Main.ticks % 90 == 0) {
 				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(smallestPoint)));
@@ -256,7 +288,8 @@ public abstract class Unit {
 		}
 	}
 
-	// autoArtilleryAim(): Checks for enemies nearby, if there are any, shoots an
+	// autoArtilleryAim(): Checks for enemies nearby, if there are any, shoots
+	// an
 	// artillery shell at them
 	public void autoArtilleryAim() {
 		int smallestDistance = 73728;
@@ -284,38 +317,57 @@ public abstract class Unit {
 		}
 	}
 
-	void autoFighterAim() {
-		boolean shoot = false;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Vector toEnemyUnit = position.getTargetVector(tempUnit.position).normalize();
-			//Find the dot product, if its greater than 0.85, fire
-		}
-	}
-
 	// retarget(): changes the target of the unit to one on a circle at radius r
 	// away
 	void retarget() {
 		int r = (int) (speed * 75.0f);
-		a += rand.nextFloat() * speed - speed / 2;
-		target = position.addPoint(new Point(r * Math.sin(a), r * Math.cos(a)));
+		a += rand.nextFloat() * 0.3 - 0.15f;
+		target = position.addPoint(new Point(r * Trig.sin(a), r * Trig.cos(a)));
 
-		if (target.getX() < 0) {
-			a -= Math.PI;
-			target.setX(0);
+		if (position.getX() < 0) {
+			escapeEdge();
 		}
-		if (target.getY() < 0) {
-			a -= Math.PI;
-			target.setY(0);
+		if (position.getX() > 1024) {
+			escapeEdge();
 		}
-		if (target.getY() > 512) {
-			a -= Math.PI;
-			target.setY(512);
+		if (position.getY() < 0) {
+			escapeEdge();
 		}
-		if (target.getX() > 1024) {
-			a -= Math.PI;
-			target.setX(1024);
+		if (position.getY() > 512) {
+			escapeEdge();
 		}
 		facing = target;
+	}
+
+	void escapeEdge() {
+		target = position;
+		Point p1;
+		Point p2;
+		if (id != UnitID.SHIP) {
+			while (Map.getArray(target) < .51) {
+				a += 0.015f;
+				p1 = new Point(10 * Trig.sin(a), 10 * Trig.cos(a));
+				p2 = new Point(10 * Trig.sin(a + 3.14f), 10 * Trig.cos(a + 3.14f));
+				if (Map.getArray(p1) < Map.getArray(p2)) {
+					target = position.addPoint(p1);
+				} else {
+					target = position.addPoint(p2);
+					a += 3.14;
+				}
+			}
+		} else {
+			while (Map.getArray(target) > .49) {
+				a += 0.015f;
+				p1 = new Point(10 * Trig.sin(a), 10 * Trig.cos(a));
+				p2 = new Point(10 * Trig.sin(a + 3.14f), 10 * Trig.cos(a + 3.14f));
+				if (Map.getArray(p1) > Map.getArray(p2) && Map.getArray(p1)!= -1 && Map.getArray(p2)!= -1) {
+					target = position.addPoint(p1);
+				} else {
+					target = position.addPoint(p2);
+					a += 3.14;
+				}
+			}
+		}
+		velocityMove();
 	}
 }
