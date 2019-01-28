@@ -13,7 +13,7 @@ public class City extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.CITY;
-		defense = 4;
+		defense = 6;
 		this.founded = founded + 1;
 		nation.addUnit(new Infantry(position, nation));
 	}
@@ -23,6 +23,9 @@ public class City extends Unit {
 		detectHit();
 		if ((Main.ticks - founded) % 600 == 0) {
 			nation.addCoin(position);
+		}
+		if(capital && Main.ticks % 28800 == 28799){
+			nation.addUnit(new Infantry(position, nation));
 		}
 	}
 

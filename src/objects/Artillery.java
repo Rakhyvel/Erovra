@@ -31,7 +31,7 @@ public class Artillery extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden") && !boarded) {
 			float direction = position.subVec(target).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 			

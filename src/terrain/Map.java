@@ -4,6 +4,7 @@ import java.util.Random;
 
 import main.Image;
 import main.Main;
+import main.MapID;
 import utility.Point;
 
 public class Map {
@@ -15,38 +16,35 @@ public class Map {
 
 	// generateMap(int seed): Uses simplex noise and linear interpolation to
 	// render the terrain for the game.
-	public void generateMap(int seed) {
+	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
 		for (int i = 0; i < 45; i++) {
 			int x = (i % 9);
 			int y = (i / 9);
-			// River
-			// mountain[x * 128][y * 128] = Math.max(((1 - x) + (1 - y) + 10), x
-			// + y) * 0.07f;
-
-			// Plains
-			// mountain[x * 128][y * 128] = rand.nextFloat()/3 + 0.6f;
-
-			// Island
-
-			// Open sea
-			if(x == 0 || x ==8){
-				mountain[x * 128][y * 128] = .9f;
-			} else if (x == 1 || x == 7){
-				mountain[x * 128][y*128] = rand.nextFloat() * .5f + .25f;
-			} else {
-				if (x != 4) {
-					mountain[x * 128][y * 128] = (x - 4) * (x - 4) * 0.05f;
+			if (id == MapID.PLAINS) {
+				mountain[x * 128][y * 128] = rand.nextFloat() / 3 + 0.6f;
+			} else if (id == MapID.RIVER) {
+				mountain[x * 128][y * 128] = Math.max(((1 - x) + (1 - y) + 10), x + y) * 0.07f;
+			} else if (id == MapID.ISLANDS) {
+				mountain[x * 128][y * 128] = rand.nextFloat();
+			} else if (id == MapID.SEA) {
+				if (x == 0 || x == 8) {
+					mountain[x * 128][y * 128] = .9f;
+				} else if (x == 1 || x == 7) {
+					mountain[x * 128][y * 128] = rand.nextFloat() * .5f + .25f;
 				} else {
-					mountain[x * 128][y * 128] = 0;
+					if (x != 4) {
+						mountain[x * 128][y * 128] = (x - 4) * (x - 4) * 0.05f;
+					} else {
+						mountain[x * 128][y * 128] = 0;
+					}
 				}
+			} else if (id == MapID.MOUNTAIN) {
+				float r = rand.nextFloat();
+				mountain[x * 128][y * 128] = (r) - .2f;
+			} else {
+
 			}
-
-			// Mountain pass
-			// float r = rand.nextFloat();
-			// mountain[x * 128][y * 128] = (r);
-
-			// Upload
 		}
 
 		for (int i = 2; i <= 8; i++) {

@@ -6,8 +6,6 @@ import javax.swing.JFrame;
 
 import objects.City;
 import objects.Nation;
-import objects.Plane;
-import objects.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -16,7 +14,7 @@ import utility.Trig;
 public class Main {
 	//Game Loop
 	public static boolean running = true;
-	public static short fps;
+	public static int fps;
 	public static int ticks = 0;
 	
 	//Window
@@ -29,9 +27,10 @@ public class Main {
 	Map map = new Map();
 	World world = new World();
 	Render render = new Render(1024, 512, world);
+	public static MapID mapID = MapID.SEA;
 	
 	//GitHub
-	public static String version = "Erovra 0.4.1";
+	public static String version = "Erovra 0.4.2";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -43,7 +42,7 @@ public class Main {
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
-		short frames = 0;
+		int frames = 0;
 
 		double currentFrameTime = System.currentTimeMillis();
 
@@ -79,12 +78,12 @@ public class Main {
 		world.nationArray.add(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
-		map.generateMap((int) System.currentTimeMillis() & 255);
-
+		
 		do {
+			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
 			sweden.purgeAll();
 			russia.purgeAll();
-			for (int i = 0; i < 42; i++) {
+			for (int i = 0; i < 84; i++) {
 				int x = (int) (i / 6) * 64 + 96;
 				int y = (int) (i % 6) * 64 + 96;
 				if (Map.getArray(x, y) > 0.5f) {
@@ -93,7 +92,7 @@ public class Main {
 					break;
 				}
 			}
-			for (int i = 0; i < 42; i++) {
+			for (int i = 0; i < 84; i++) {
 				int x = ((int) 6 - (i / 6)) * 64 + 544;
 				int y = (int) (6 - (i % 6)) * 64 + 32;
 				if (Map.getArray(x, y) > 0.5f) {
@@ -103,7 +102,6 @@ public class Main {
 				}
 			}
 		} while (world.nationArray.get(0).unitSize() + world.nationArray.get(1).unitSize() < 2);
-		sweden.addUnit(new Ship(new Point(512,511),sweden, UnitID.MEDIUM));
 		/*
 		 * for (int i = 0; i < 84; i++) { int x = ((int) 6 - (i / 6)) * 64 + 544; int y
 		 * = (int) (6 - (i % 6)) * 64 + 32; if (Map.getArray(x, y) < 0.5f &&

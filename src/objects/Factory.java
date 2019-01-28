@@ -20,6 +20,7 @@ public class Factory extends Unit {
 	}
 
 	public void tick(double t) {
+		engaged = false;
 		detectHit();
 		start--;
 
@@ -30,10 +31,12 @@ public class Factory extends Unit {
 	}
 
 	public void addProduct() {
-		if (product == UnitID.CAVALRY) {
-			nation.addUnit(new Cavalry(position, nation, productWeight));
-		} else if (product == UnitID.ARTILLERY) {
-			nation.addUnit(new Artillery(position, nation, productWeight));
+		if(productWeight != null && productWeight != UnitID.NONE){
+			if (product == UnitID.CAVALRY) {
+				nation.addUnit(new Cavalry(position, nation, productWeight));
+			} else if (product == UnitID.ARTILLERY) {
+				nation.addUnit(new Artillery(position, nation, productWeight));
+			}
 		}
 	}
 
@@ -42,13 +45,13 @@ public class Factory extends Unit {
 			nation.coins -= nation.artilleryCost * 2;
 			product = UnitID.ARTILLERY;
 			productWeight = UnitID.HEAVY;
-			start = 72000;
+			start = 61200;
 			maxStart = start;
 		} else if (nation.coins >= nation.artilleryCost) {
 			nation.coins -= nation.artilleryCost;
 			product = UnitID.ARTILLERY;
 			productWeight = UnitID.MEDIUM;
-			start = 36000;
+			start = 32400;
 			maxStart = start;
 		} else if (nation.coins >= nation.artilleryCost / 2) {
 			nation.coins -= nation.artilleryCost / 2;
@@ -57,18 +60,21 @@ public class Factory extends Unit {
 			start = 18000;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost * 2) {
+			//17 mimnutes
 			nation.coins -= nation.cavalryCost * 2;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.HEAVY;
-			start = 72000;
+			start = 61200;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost) {
+			//9 minutes
 			nation.coins -= nation.cavalryCost;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.MEDIUM;
-			start = 36000;
+			start = 32400;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost / 2) {
+			//5 minutes
 			nation.coins -= nation.cavalryCost / 2;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.LIGHT;
@@ -82,8 +88,11 @@ public class Factory extends Unit {
 	}
 
 	public void render(Render r) {
-		r.drawRect((int)position.getX()-16, (int)position.getY()-21, (int)(32.0*((maxStart-start)/maxStart)), 4, nation.color);
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden")) {
+			if(product != UnitID.NONE){
+				r.drawRect((int)position.getX()-16, (int)position.getY()-20, 32, 6, 0);
+				r.drawRect((int)position.getX()-14, (int)position.getY()-18, (int)(28.0*((maxStart-start)/maxStart)), 2, nation.color);
+			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.factory, nation.color);
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);

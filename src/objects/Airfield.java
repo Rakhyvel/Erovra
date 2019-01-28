@@ -12,9 +12,11 @@ public class Airfield extends Unit {
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
+		defense = 2;
 	}
 
 	public void tick(double t) {
+		engaged = false;
 		detectHit();
 		start--;
 
@@ -25,24 +27,24 @@ public class Airfield extends Unit {
 	}
 
 	public void addProduct() {
-		if (productWeight != UnitID.NONE) nation.addUnit(new Plane(position, nation, productWeight));
+		if (productWeight != UnitID.NONE && productWeight != null) nation.addUnit(new Plane(position, nation, productWeight));
 	}
 
 	public void decideNewProduct() {
-		if (nation.coins >= nation.shipCost * 2) {
-			nation.coins -= nation.shipCost * 2;
-			productWeight = UnitID.MEDIUM;
-			start = 72000;
+		if (nation.coins >= nation.planeCost + 10) {
+			nation.coins -= nation.planeCost + 10;
+			productWeight = UnitID.HEAVY;
+			start = 14000;
 			maxStart = start;
-		} else if (nation.coins >= nation.shipCost) {
-			nation.coins -= nation.shipCost;
+		} else if (nation.coins >= nation.planeCost) {
+			nation.coins -= nation.planeCost;
 			productWeight = UnitID.MEDIUM;
-			start = 36000;
+			start = 10000;
 			maxStart = start;
-		} else if (nation.coins >= nation.shipCost / 2) {
-			nation.coins -= nation.shipCost / 2;
+		} else if (nation.coins >= nation.planeCost / 2) {
+			nation.coins -= nation.planeCost / 2;
 			productWeight = UnitID.LIGHT;
-			start = 18000;
+			start = 5000;
 			maxStart = start;
 		} else {
 			productWeight = UnitID.NONE;
@@ -52,9 +54,12 @@ public class Airfield extends Unit {
 	}
 
 	public void render(Render r) {
-		r.drawRect((int) position.getX() - 16, (int) position.getY() - 21, (int) (32.0 * ((maxStart - start) / maxStart)), 4, nation.color);
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.airfield, r.darken(nation.color));
+		if (engaged || nation.name.contains("Sweden")) {
+			if (productWeight != UnitID.NONE) {
+				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+			}
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.airfield, nation.color);
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}

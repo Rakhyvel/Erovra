@@ -14,11 +14,12 @@ public class Port extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 5;
+		defense = 9;
 		productWeight = UnitID.NONE;
 	}
 
 	public void tick(double t) {
+		engaged = false;
 		detectHit();
 		start--;
 
@@ -29,24 +30,24 @@ public class Port extends Unit {
 	}
 
 	public void addProduct() {
-		if (productWeight != UnitID.NONE) nation.addUnit(new Ship(position, nation, productWeight));
+		if (productWeight != UnitID.NONE && productWeight != null) nation.addUnit(new Ship(position, nation, productWeight));
 	}
 
 	public void decideNewProduct() {
 		if (nation.coins >= nation.shipCost * 2) {
 			nation.coins -= nation.shipCost * 2;
 			productWeight = UnitID.HEAVY;
-			start = 72000;
+			start = 6000;
 			maxStart = start;
 		} else if (nation.coins >= nation.shipCost) {
 			nation.coins -= nation.shipCost;
 			productWeight = UnitID.MEDIUM;
-			start = 36000;
+			start = 6000;
 			maxStart = start;
-		} else if (nation.coins >= nation.shipCost / 4) {
-			nation.coins -= nation.shipCost / 4;
+		} else if (nation.coins >= 5) {
+			nation.coins -= 5;
 			productWeight = UnitID.LIGHT;
-			start = 700;
+			start = 3000;
 			maxStart = start;
 		} else {
 			productWeight = UnitID.NONE;
@@ -56,10 +57,11 @@ public class Port extends Unit {
 	}
 
 	public void render(Render r) {
-		r.drawRect((int)position.getX()-16, (int)position.getY()-20, 32, 6, 0);
-		r.drawRect((int)position.getX()-14, (int)position.getY()-18, (int)(28.0*((maxStart-start)/maxStart)), 2, nation.color);
-		
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden")) {
+			if (productWeight != UnitID.NONE) {
+				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, r.darken(nation.color));
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);

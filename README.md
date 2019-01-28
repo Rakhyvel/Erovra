@@ -1,4 +1,11 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.4.2
+- Added strategic bomber
+- Added bombs
+- Sprites are now able to be resized
+- Balanced game as best as I could
+- Added AA guns
+
 ### Erovra 0.4.1
 - Updated plane AI
 - Added faster trig functions

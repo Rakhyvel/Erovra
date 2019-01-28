@@ -27,14 +27,16 @@ public class Cavalry extends Unit {
 	}
 
 	public void tick(double t) {
-		wander();
-		autoAim(cal);
-		detectHit();
-		targetMove();
+		if(!boarded){
+			wander();
+			engaged = autoAim(cal) || aaAim();
+			detectHit();
+			targetMove();
+		}
 	}
 
 	public void render(Render r) {
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden") && !boarded) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 			

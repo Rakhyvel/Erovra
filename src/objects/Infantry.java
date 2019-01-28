@@ -15,16 +15,16 @@ public class Infantry extends Unit {
 
 	public void tick(double t) {
 		wander();
-		autoAim(1);
+		engaged = autoAim(1) || aaAim();
 		detectHit();
 		targetMove();
 	}
 
 	public void render(Render r) {
-		if ((nation.name.contains("Russia") && engaged) || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden")) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
-			
+
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
