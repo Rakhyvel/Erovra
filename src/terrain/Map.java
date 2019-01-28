@@ -116,8 +116,8 @@ public class Map {
 
 		if (value < .5f) {
 			blue = (int) (400 * (value - .5f) + 250);
-			green = (int) (800 * (value - .5f) + 200);
-			red = (int) (1600 * (value - .5f) + 150);
+			green = (int) (500 * (value - .5f) + 200);
+			red = (int) (600 * (value - .5f) + 150);
 		} else if (value < 1) {
 			blue = (int) (-400 * (value - .5f) + 130);
 			green = (int) (-200 * (value - .5f) + 200);

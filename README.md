@@ -1,4 +1,11 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.4.3
+- Made shooting more random
+- Balanced game further
+- Added hitboxes for planes and boats
+- AA guns now lead targets
+- Spotted structures stay spotted (prep for singleplayer)
+
 ### Erovra 0.4.2
 - Added strategic bomber
 - Added bombs

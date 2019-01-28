@@ -10,6 +10,7 @@ public class Factory extends Unit {
 	float maxStart = 1;
 	UnitID product;
 	UnitID productWeight;
+	boolean spotted = false;
 
 	public Factory(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -20,6 +21,7 @@ public class Factory extends Unit {
 	}
 
 	public void tick(double t) {
+		if(engaged) spotted = true;
 		engaged = false;
 		detectHit();
 		start--;
@@ -88,7 +90,7 @@ public class Factory extends Unit {
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden")) {
+		if (spotted || nation.name.contains("Sweden")) {
 			if(product != UnitID.NONE){
 				r.drawRect((int)position.getX()-16, (int)position.getY()-20, 32, 6, 0);
 				r.drawRect((int)position.getX()-14, (int)position.getY()-18, (int)(28.0*((maxStart-start)/maxStart)), 2, nation.color);

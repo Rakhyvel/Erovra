@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import objects.City;
 import objects.Nation;
+import objects.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -30,7 +31,7 @@ public class Main {
 	public static MapID mapID = MapID.SEA;
 	
 	//GitHub
-	public static String version = "Erovra 0.4.2";
+	public static String version = "Erovra 0.4.3";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {

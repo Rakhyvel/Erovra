@@ -50,4 +50,12 @@ public class Vector {
 		// Projects one vector onto another, giving a scalar value
 		return x * v.x + y * v.y;
 	}
+
+	public Vector addVec(Vector v) {
+		return new Vector(x+v.x,y+v.y);
+	}
+	
+	public Vector subVec(Vector v) {
+		return new Vector(x-v.x, y-v.y);
+	}
 }

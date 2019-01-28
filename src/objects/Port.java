@@ -9,6 +9,7 @@ public class Port extends Unit {
 	int start = 0;
 	float maxStart = 1;
 	UnitID productWeight;
+	boolean spotted = false;
 
 	public Port(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -19,6 +20,7 @@ public class Port extends Unit {
 	}
 
 	public void tick(double t) {
+		if(engaged) spotted = true;
 		engaged = false;
 		detectHit();
 		start--;
@@ -42,7 +44,7 @@ public class Port extends Unit {
 		} else if (nation.coins >= nation.shipCost) {
 			nation.coins -= nation.shipCost;
 			productWeight = UnitID.MEDIUM;
-			start = 6000;
+			start = 5000;
 			maxStart = start;
 		} else if (nation.coins >= 5) {
 			nation.coins -= 5;
@@ -57,7 +59,7 @@ public class Port extends Unit {
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden")) {
+		if (spotted || nation.name.contains("Sweden")) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);

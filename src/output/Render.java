@@ -42,6 +42,9 @@ public class Render extends Canvas {
 	public int[] attacker2 = image.loadImage("/res/attack1.png", 44, 33);
 	public int[] bomber1 = image.loadImage("/res/bomber1.png", 67, 40);
 	public int[] bomber2 = image.loadImage("/res/bomber2.png", 67, 40);
+	public int[] fighterHit = image.loadImage("/res/fighterHit.png", 40, 39);
+	public int[] attackerHit = image.loadImage("/res/attackHit.png", 48, 37);
+	public int[] bomberHit = image.loadImage("/res/bomberHit.png", 71, 44);
 
 	// Buildings
 	public int[] city = image.loadImage("/res/city.png", 32, 32);
@@ -166,7 +169,6 @@ public class Render extends Canvas {
 
 		}
 	}
-
 	// drawImageScreen(...): draws an image, applies overlay blending and
 	// rotates
 	// image

@@ -17,7 +17,7 @@ public class World {
 	// t as the time in millis since last tick
 	public void tick(double t) {
 		for (int i = 0; i < nationArray.size(); i++) {
-			for (int i2 = nationArray.get(i).unitSize() - 1; i2 >= 0; i2--) {
+			for (int i2 = 0; i2 < nationArray.get(i).unitSize(); i2++) {
 				nationArray.get(i).getUnit(i2).tick(t);
 			}
 			for (int i2 = 0; i2 < nationArray.get(i).projectileSize(); i2++) {
@@ -34,7 +34,8 @@ public class World {
 	public void render(Render r) {
 		for (int i = 0; i < nationArray.size(); i++) {
 			for (int i2 = nationArray.get(i).unitSize() - 1; i2 >= 0; i2--) {
-				if (nationArray.get(i).getUnit(i2).getID() != UnitID.PLANE) nationArray.get(i).getUnit(i2).render(r);
+				if (nationArray.get(i).getUnit(i2).getID() != UnitID.PLANE)
+					nationArray.get(i).getUnit(i2).render(r);
 			}
 			for (int i2 = 0; i2 < nationArray.get(i).projectileSize(); i2++) {
 				nationArray.get(i).getProjectile(i2).render(r);
@@ -43,7 +44,8 @@ public class World {
 				nationArray.get(i).getCoin(i2).render(r);
 			}
 			for (int i2 = nationArray.get(i).unitSize() - 1; i2 >= 0; i2--) {
-				if (nationArray.get(i).getUnit(i2).getID() == UnitID.PLANE) nationArray.get(i).getUnit(i2).render(r);
+				if (nationArray.get(i).getUnit(i2).getID() == UnitID.PLANE)
+					nationArray.get(i).getUnit(i2).render(r);
 			}
 		}
 		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
