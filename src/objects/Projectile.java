@@ -30,7 +30,7 @@ public abstract class Projectile extends Unit {
 	public void shellMove() {
 		velocity = new Vector(0, 0);
 		if (position.getDist(target) > 1) {
-			velocity = position.getTargetVector(target).normalize().scalar(speed);
+			velocity = position.getTargetVector(target).normalize().scalar(getSpeed());
 		} else {
 			hit();
 		}

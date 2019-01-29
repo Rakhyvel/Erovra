@@ -47,40 +47,40 @@ public class Factory extends Unit {
 			nation.coins -= nation.artilleryCost * 2;
 			product = UnitID.ARTILLERY;
 			productWeight = UnitID.HEAVY;
-			start = 61200;
+			start = 28000;
 			maxStart = start;
 		} else if (nation.coins >= nation.artilleryCost) {
 			nation.coins -= nation.artilleryCost;
 			product = UnitID.ARTILLERY;
 			productWeight = UnitID.MEDIUM;
-			start = 32400;
+			start = 12000;
 			maxStart = start;
 		} else if (nation.coins >= nation.artilleryCost / 2) {
 			nation.coins -= nation.artilleryCost / 2;
 			product = UnitID.ARTILLERY;
 			productWeight = UnitID.LIGHT;
-			start = 18000;
+			start = 6000;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost * 2) {
 			//17 mimnutes
 			nation.coins -= nation.cavalryCost * 2;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.HEAVY;
-			start = 61200;
+			start = 14000;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost) {
 			//9 minutes
 			nation.coins -= nation.cavalryCost;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.MEDIUM;
-			start = 32400;
+			start = 6000;
 			maxStart = start;
 		} else if (nation.coins >= nation.cavalryCost / 2) {
 			//5 minutes
 			nation.coins -= nation.cavalryCost / 2;
 			product = UnitID.CAVALRY;
 			productWeight = UnitID.LIGHT;
-			start = 18000;
+			start = 5000;
 			maxStart = start;
 		} else {
 			product = UnitID.NONE;

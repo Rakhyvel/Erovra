@@ -14,14 +14,16 @@ public class Infantry extends Unit {
 	}
 
 	public void tick(double t) {
-		wander();
-		engaged = autoAim(1) || aaAim();
-		detectHit();
-		targetMove();
+		if(!boarded){
+			wander();
+			engaged = autoAim(1) || aaAim();
+			detectHit();
+			targetMove();
+		}
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden") && !boarded) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 

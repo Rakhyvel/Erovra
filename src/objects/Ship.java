@@ -18,6 +18,7 @@ public class Ship extends Unit {
 			cal = 0.5f;
 			target = nation.enemyNation.capital.position.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 			velocity = position.subVec(target).normalize().scalar(speed);
+			loadPassengers();
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			defense = 2;
@@ -36,9 +37,20 @@ public class Ship extends Unit {
 			wander();
 			targetMove();
 		} else {
-			engaged = aaAim();
+			if (passenger1 == null) {
+				nation.coins += 5;
+				nation.unitArray.remove(this);
+			}
+			engaged = aaAim() || autoAim(0.5f);
 			if (isLanded()) {
-				nation.addUnit(new Infantry(position,nation));
+				if (passenger1 != null) {
+					passenger1.position = position;
+					passenger1.boarded = false;
+					if (passenger2 != null) {
+						passenger2.position = position;
+						passenger2.boarded = false;
+					}
+				}
 				nation.unitArray.remove(this);
 			}
 			position = position.addVector(velocity);
@@ -51,6 +63,30 @@ public class Ship extends Unit {
 	// craft
 	boolean isLanded() {
 		return Map.getArray(position) > 0.505f;
+	}
+
+	void loadPassengers() {
+		int smallestDistance = 73728;
+		Unit firstUnit = null;
+		Unit secondUnit = null;
+		for (int i = 0; i < nation.unitSize(); i++) {
+			Unit tempUnit = nation.getUnit(i);
+			Point tempPoint = tempUnit.getPosition();
+			int tempDist = (int) position.getDist(tempPoint);
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY)) && !tempUnit.engaged && !tempUnit.boarded) {
+				smallestDistance = tempDist;
+				secondUnit = firstUnit;
+				firstUnit = tempUnit;
+			}
+		}
+		if (firstUnit != null) {
+			firstUnit.boarded = true;
+			passenger1 = firstUnit;
+			if (secondUnit != null) {
+				secondUnit.boarded = true;
+				passenger2 = secondUnit;
+			}
+		}
 	}
 
 	public void render(Render r) {

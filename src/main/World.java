@@ -34,8 +34,7 @@ public class World {
 	public void render(Render r) {
 		for (int i = 0; i < nationArray.size(); i++) {
 			for (int i2 = nationArray.get(i).unitSize() - 1; i2 >= 0; i2--) {
-				if (nationArray.get(i).getUnit(i2).getID() != UnitID.PLANE)
-					nationArray.get(i).getUnit(i2).render(r);
+				if (nationArray.get(i).getUnit(i2).getID() != UnitID.PLANE) nationArray.get(i).getUnit(i2).render(r);
 			}
 			for (int i2 = 0; i2 < nationArray.get(i).projectileSize(); i2++) {
 				nationArray.get(i).getProjectile(i2).render(r);
@@ -43,9 +42,10 @@ public class World {
 			for (int i2 = 0; i2 < nationArray.get(i).coinSize(); i2++) {
 				nationArray.get(i).getCoin(i2).render(r);
 			}
+		}
+		for (int i = 0; i < nationArray.size(); i++) {
 			for (int i2 = nationArray.get(i).unitSize() - 1; i2 >= 0; i2--) {
-				if (nationArray.get(i).getUnit(i2).getID() == UnitID.PLANE)
-					nationArray.get(i).getUnit(i2).render(r);
+				if (nationArray.get(i).getUnit(i2).getID() == UnitID.PLANE) nationArray.get(i).getUnit(i2).render(r);
 			}
 		}
 		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);

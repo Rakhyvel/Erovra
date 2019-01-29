@@ -21,7 +21,7 @@ public class Port extends Unit {
 
 	public void tick(double t) {
 		if(engaged) spotted = true;
-		engaged = false;
+		disengage();
 		detectHit();
 		start--;
 
@@ -44,12 +44,13 @@ public class Port extends Unit {
 		} else if (nation.coins >= nation.shipCost) {
 			nation.coins -= nation.shipCost;
 			productWeight = UnitID.MEDIUM;
-			start = 5000;
+			nation.shipCost += 10;
+			start = 6000;
 			maxStart = start;
-		} else if (nation.coins >= 5) {
-			nation.coins -= 5;
+		} else if (nation.coins >= nation.shipCost/2) {
+			nation.coins -= nation.shipCost/2;
 			productWeight = UnitID.LIGHT;
-			start = 3000;
+			start = 6000;
 			maxStart = start;
 		} else {
 			productWeight = UnitID.NONE;

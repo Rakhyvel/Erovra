@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 
 import objects.City;
 import objects.Nation;
-import objects.Ship;
+import objects.Port;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -31,7 +31,7 @@ public class Main {
 	public static MapID mapID = MapID.SEA;
 	
 	//GitHub
-	public static String version = "Erovra 0.4.3";
+	public static String version = "Erovra 0.4.4";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -73,8 +73,8 @@ public class Main {
 	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
 	void init() {
 		new Trig();
-		Nation sweden = new Nation(47 << 16 | 100 << 8 | 250, "Sweden");
-		Nation russia = new Nation(250 << 16 | 100 << 8 | 49, "Russia");
+		Nation sweden = new Nation(50 << 16 | 100 << 8 | 255, "Sweden");
+		Nation russia = new Nation(255 << 16 | 100 << 8 | 50, "Russia");
 		world.nationArray.add(russia);
 		world.nationArray.add(sweden);
 		sweden.setEnemyNation(russia);

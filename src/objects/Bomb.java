@@ -11,9 +11,9 @@ public class Bomb extends Projectile {
 
 	public Bomb(Point position, Nation nation) {
 		super(position, nation);
-		speed = 0f;
+		speed = 0;
 		attack = 0;
-		this.velocity = velocity.normalize().scalar(speed);
+		this.velocity = velocity.normalize().scalar(getSpeed());
 		id = UnitID.BOMB;
 	}
 

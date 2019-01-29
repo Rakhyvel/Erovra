@@ -10,7 +10,7 @@ public class Shell extends Projectile {
 		super(position, nation);
 		speed = 2f;
 		attack = 0;
-		this.velocity = velocity.normalize().scalar(speed);
+		this.velocity = velocity.normalize().scalar(getSpeed());
 		this.target = target;
 		id = UnitID.SHELL;
 	}

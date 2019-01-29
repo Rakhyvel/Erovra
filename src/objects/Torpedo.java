@@ -12,7 +12,7 @@ public class Torpedo extends Projectile {
 		super(position, nation);
 		speed = 2f;
 		attack = 2;
-		this.velocity = velocity.normalize().scalar(speed);
+		this.velocity = (velocity.normalize().scalar(getSpeed()));
 		id = UnitID.TORPEDO;
 	}
 

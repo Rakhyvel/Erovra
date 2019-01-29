@@ -36,7 +36,7 @@ public class Plane extends Unit {
 		} else {
 			aaAim();
 			if (bombsAway) {
-				if (position.getDist(target) < 1) {
+				if (position.getDist(target)< 1) {
 					nation.coins += 1.5 * health;
 					nation.unitArray.remove(this);
 				}
@@ -49,7 +49,7 @@ public class Plane extends Unit {
 			}
 		}
 		detectHit();
-		velocity = position.getTargetVector(target).normalize().scalar(speed);
+		velocity = position.getTargetVector(target).normalize().scalar(getSpeed());
 		position = position.addVector(velocity);
 		if (position.getX() < 0) {
 			position.setX(0);
@@ -69,10 +69,10 @@ public class Plane extends Unit {
 		// If you're not dead on target, turn, or if you're too close, turn
 		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99
 				|| position.getDist(patrolPoint) < 8192)
-			a += 0.035 * speed;
+			a += 0.035 * getSpeed();
 		// If you're directly behind, turn slower
 		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < -0.5)
-			a -= 0.025 * speed;
+			a -= 0.025 * getSpeed();
 		target = position.addPoint(new Point(Trig.sin(a), Trig.cos(a)));
 
 	}
@@ -97,7 +97,7 @@ public class Plane extends Unit {
 			}
 		}
 		if (smallestPoint.getX() != -1) {
-			smallestUnit.engaged = true;
+			smallestUnit.engage();
 			patrolPoint = smallestPoint.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance)/4));
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && smallestDistance < 73728) {
 				if ((Main.ticks - born) % 15 == 0 && weight == UnitID.LIGHT) {
@@ -120,6 +120,7 @@ public class Plane extends Unit {
 	void acquireTarget() {
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
+		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if (tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
@@ -132,9 +133,11 @@ public class Plane extends Unit {
 					smallestDistance = tempDist;
 					smallestPoint = tempPoint;
 				}
+				smallestUnit = tempUnit;
 			}
 		}
-		target = smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5));
+		smallestUnit.engage();
+		target = (smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5)));
 	}
 
 	public void render(Render r) {

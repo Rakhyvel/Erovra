@@ -22,7 +22,7 @@ public class City extends Unit {
 		if ((Main.ticks - born) % 600 == 0) {
 			nation.addCoin(position);
 		}
-		if(capital && Main.ticks % 28800 == 28799){
+		if((Main.ticks-born) % 36000 == 35999){
 			nation.addUnit(new Infantry(position, nation));
 		}
 	}

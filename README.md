@@ -1,4 +1,8 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.4.4
+- Re-added factories
+- Landing craft now board passengers
+
 ### Erovra 0.4.3
 - Made shooting more random
 - Balanced game further
