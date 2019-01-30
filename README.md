@@ -1,4 +1,7 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.4.5
+- Fixed AI so that it decides what to produce based on its current strengths/weaknesses
+
 ### Erovra 0.4.4
 - Re-added factories
 - Landing craft now board passengers
