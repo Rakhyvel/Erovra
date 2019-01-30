@@ -67,8 +67,7 @@ public class Plane extends Unit {
 
 	void patrol() {
 		// If you're not dead on target, turn, or if you're too close, turn
-		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99
-				|| position.getDist(patrolPoint) < 8192)
+		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99)
 			a += 0.035 * getSpeed();
 		// If you're directly behind, turn slower
 		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < -0.5)
@@ -124,16 +123,15 @@ public class Plane extends Unit {
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if (tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
-					|| tempUnit.id == UnitID.AIRFIELD) {
+					|| tempUnit.id == UnitID.AIRFIELD && !tempUnit.capital) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
-				if (tempUnit.capital)
-					tempDist *= 16;
+				if(tempUnit.id == UnitID.FACTORY) tempDist/=2;
 				if (tempDist < smallestDistance) {
 					smallestDistance = tempDist;
 					smallestPoint = tempPoint;
+					smallestUnit = tempUnit;
 				}
-				smallestUnit = tempUnit;
 			}
 		}
 		smallestUnit.engage();

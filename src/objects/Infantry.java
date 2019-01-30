@@ -16,7 +16,7 @@ public class Infantry extends Unit {
 	public void tick(double t) {
 		if(!boarded){
 			wander();
-			engaged = autoAim(1) || aaAim();
+			engaged = autoAim(1);
 			detectHit();
 			targetMove();
 		}

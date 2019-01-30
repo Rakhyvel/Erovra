@@ -31,7 +31,7 @@ public class Main {
 	public static MapID mapID = MapID.SEA;
 	
 	//GitHub
-	public static String version = "Erovra 0.4.4";
+	public static String version = "Erovra 0.4.5";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {

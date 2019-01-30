@@ -18,7 +18,8 @@ public class Airfield extends Unit {
 	}
 
 	public void tick(double t) {
-		if(engaged) spotted = true;
+		if (engaged)
+			spotted = true;
 		engaged = false;
 		detectHit();
 		start--;
@@ -30,29 +31,40 @@ public class Airfield extends Unit {
 	}
 
 	public void addProduct() {
-		if (productWeight != UnitID.NONE && productWeight != null) nation.addUnit(new Plane(position, nation, productWeight));
+		if (productWeight != UnitID.NONE && productWeight != null) {
+			nation.addUnit(new Plane(position, nation, productWeight));
+			if(productWeight == UnitID.LIGHT) nation.airSupremacy++;
+		}
 	}
 
 	public void decideNewProduct() {
-		if (nation.coins >= nation.planeCost * 2) {
-			nation.coins -= nation.planeCost * 2;
-			productWeight = UnitID.MEDIUM;
-			start = 14000;
-			maxStart = start;
-		} else if (nation.coins >= nation.planeCost) {
-			nation.coins -= nation.planeCost;
-			productWeight = UnitID.HEAVY;
-			start = 6000;
-			maxStart = start;
-		} else if (nation.coins >= nation.planeCost * 0.75) {
-			nation.coins -= nation.planeCost * 0.75;
-			productWeight = UnitID.LIGHT;
-			start = 5000;
-			maxStart = start;
+		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
+			if (nation.coins >= (nation.planeCost / 2)) {
+				nation.coins -= nation.planeCost / 2;
+				productWeight = UnitID.LIGHT;
+				start = 5400;
+				maxStart = start;
+			} else {
+				productWeight = UnitID.NONE;
+				start = 1;
+				maxStart = start;
+			}
 		} else {
-			productWeight = UnitID.NONE;
-			start = 1;
-			maxStart = start;
+			if (nation.coins >= nation.planeCost * 2) {
+				nation.coins -= nation.planeCost * 2;
+				productWeight = UnitID.MEDIUM;
+				start = 14400;
+				maxStart = start;
+			} else if (nation.coins >= (nation.planeCost / 3)) {
+				nation.coins -= nation.planeCost / 3;
+				productWeight = UnitID.HEAVY;
+				start = 5400;
+				maxStart = start;
+			} else {
+				productWeight = UnitID.NONE;
+				start = 1;
+				maxStart = start;
+			}
 		}
 	}
 
@@ -60,7 +72,8 @@ public class Airfield extends Unit {
 		if (spotted || nation.name.contains("Sweden")) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+						(int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.airfield, nation.color);
 			if (hit > 1) {

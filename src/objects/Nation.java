@@ -10,14 +10,24 @@ public class Nation {
 
 	int color;
 	int coins = 9;
+	
+	//Units
 	int cavalryCost = 20;
 	int artilleryCost = 40;
 	int shipCost = 20;
-	int planeCost = 14;
+	int planeCost = 20;
+	
+	//Structures
 	int cityCost = 10;
 	int portCost = 15;
-	int factoryCost = 25;
+	int factoryCost = 15;
 	int airfieldCost = 20;
+	
+	//Supremacy
+	//(Number of destroyers/fighters each nation has, if they have less, make more)
+	int airSupremacy = 0;
+	int seaSupremacy = 0;
+	
 	String name;
 	ArrayList<Unit> unitArray = new ArrayList<Unit>();
 	public ArrayList<Projectile> projectileArray = new ArrayList<Projectile>();
@@ -100,10 +110,11 @@ public class Nation {
 	// then checks to see if the land is able to have a city
 	public boolean buyCity(Point position) {
 		if (coins >= cityCost) {
-			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+					((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(cityPoint) > 0.5f) {
 				coins -= cityCost;
-				cityCost += 5;
+				cityCost *= 1.288;
 				addUnit(new City(cityPoint, this, Main.ticks));
 				return true;
 			}
@@ -114,10 +125,11 @@ public class Nation {
 	// buyFactory(Point position): First checks to see if there is enough coins,
 	// then checks to see if the land is able to have a factory
 	public void buyFactory(Point position) {
-		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+				((int) (position.getY() / 64)) * 64 + 32);
 		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost) {
 			coins -= factoryCost;
-			factoryCost += 25;
+			factoryCost += 30;
 			addUnit(new Factory(factoryPoint, this));
 		}
 	}
@@ -132,11 +144,14 @@ public class Nation {
 			addUnit(new Port(portPoint, this));
 		}
 	}
+
 	public void buyAirfield(Point position) {
-		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+				((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(airfieldPoint);
 		if (land > 0.5f && coins >= airfieldCost) {
 			coins -= airfieldCost;
+			airfieldCost += 10;
 			addUnit(new Airfield(airfieldPoint, this));
 		}
 	}

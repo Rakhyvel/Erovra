@@ -29,7 +29,7 @@ public class Cavalry extends Unit {
 	public void tick(double t) {
 		if(!boarded){
 			wander();
-			engaged = autoAim(cal) || aaAim();
+			engaged = autoAim(cal);
 			detectHit();
 			targetMove();
 		}
