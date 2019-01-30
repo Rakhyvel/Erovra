@@ -17,11 +17,11 @@ public class Cavalry extends Unit {
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			defense = 2;
-			cal = 1f;
+			cal = 2f;
 		} else {
 			speed = .05f;
-			defense = 2;
-			cal = 2f;
+			defense = 2.5f;
+			cal = 2.5f;
 		}
 		id = UnitID.CAVALRY;
 	}

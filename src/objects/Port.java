@@ -15,7 +15,7 @@ public class Port extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 9;
+		defense = 3;
 		productWeight = UnitID.NONE;
 	}
 
@@ -37,6 +37,7 @@ public class Port extends Unit {
 			nation.addUnit(new Ship(position, nation, productWeight));
 			if (productWeight != UnitID.LIGHT)
 				nation.seaSupremacy++;
+			productWeight = UnitID.NONE;
 		}
 	}
 
@@ -45,12 +46,12 @@ public class Port extends Unit {
 			if (nation.coins >= nation.shipCost * 2) {
 				nation.coins -= nation.shipCost * 2;
 				productWeight = UnitID.HEAVY;
-				start = 14400;
+				start = 21600;
 				maxStart = start;
 			} else if (nation.coins >= nation.shipCost) {
 				nation.coins -= nation.shipCost;
 				productWeight = UnitID.MEDIUM;
-				start = 5400;
+				start = 10800;
 				maxStart = start;
 			} else {
 				productWeight = UnitID.NONE;

@@ -14,7 +14,7 @@ public class Ship extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			defense = 0.2f;
+			defense = 1f;
 			cal = 0.5f;
 			target = nation.enemyNation.capital.position
 					.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));

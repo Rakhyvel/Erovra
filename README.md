@@ -1,4 +1,8 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.4.6
+- Finally balanced this thing
+- Fixed projectile rendering
+
 ### Erovra 0.4.5
 - Fixed AI so that it decides what to produce based on its current strengths/weaknesses
 
