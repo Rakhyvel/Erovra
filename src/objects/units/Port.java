@@ -1,6 +1,7 @@
-package objects;
+package objects.units;
 
 import main.UnitID;
+import objects.Nation;
 import output.Render;
 import utility.Point;
 
@@ -23,12 +24,14 @@ public class Port extends Unit {
 		if (engaged)
 			spotted = true;
 		disengage();
-		detectHit();
-		start--;
+		if (!(nation.defeated || nation.enemyNation.defeated)) {
+			detectHit();
+			start--;
 
-		if (start < 0) {
-			addProduct();
-			decideNewProduct();
+			if (start < 0) {
+				addProduct();
+				decideNewProduct();
+			}
 		}
 	}
 
@@ -87,7 +90,7 @@ public class Port extends Unit {
 	}
 
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden")) {
+		if (spotted || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,

@@ -169,6 +169,7 @@ public class Render extends Canvas {
 
 		}
 	}
+
 	// drawImageScreen(...): draws an image, applies overlay blending and
 	// rotates
 	// image
@@ -195,10 +196,12 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -207,12 +210,21 @@ public class Render extends Canvas {
 	// lighten(int color): returns a lighter color given a 24 bit int color
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r *= 2;
-		g *= 2;
-		b *= 2;
-		if (r > 255) r = 255;
-		if (g > 255) g = 255;
-		if (b > 255) b = 255;
+		if (r > b) {
+			r += 128;
+			g += 128;
+			b = 0;
+		} else {
+			r = 0;
+			g += 128;
+			b += 128;
+		}
+		if (r > 255)
+			r = 255;
+		if (g > 255)
+			g = 255;
+		if (b > 255)
+			b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -228,6 +240,18 @@ public class Render extends Canvas {
 			g = 0;
 			b *= 0.5;
 		}
+		if (r < 0)
+			r = 0;
+		if (g < 0)
+			g = 0;
+		if (b < 0)
+			b = 0;
 		return r << 16 | g << 8 | b;
+	}
+
+	public void darkenScreen() {
+		for (int i = 0; i < 1025 * 513; i++) {
+			pixels[i] = darken(pixels[i]);
+		}
 	}
 }

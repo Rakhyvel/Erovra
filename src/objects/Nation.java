@@ -3,37 +3,45 @@ package objects;
 import java.util.ArrayList;
 
 import main.Main;
+import main.StateID;
+import objects.projectiles.Projectile;
+import objects.units.Airfield;
+import objects.units.City;
+import objects.units.Factory;
+import objects.units.Port;
+import objects.units.Unit;
 import terrain.Map;
 import utility.Point;
 
 public class Nation {
 
-	int color;
-	int coins = 9;
+	public int color;
+	public int coins = 9;
 	
 	//Units
-	int cavalryCost = 20;
-	int artilleryCost = 20;
-	int shipCost = 20;
-	int planeCost = 20;
+	public int cavalryCost = 20;
+	public int artilleryCost = 20;
+	public int shipCost = 20;
+	public int planeCost = 20;
 	
 	//Structures
-	int cityCost = 10;
-	int portCost = 20;
-	int factoryCost = 15;
-	int airfieldCost = 20;
+	public int cityCost = 10;
+	public int portCost = 20;
+	public int factoryCost = 15;
+	public int airfieldCost = 20;
 	
 	//Supremacy
 	//(Number of destroyers/fighters each nation has, if they have less, make more)
-	int airSupremacy = 0;
-	int seaSupremacy = 0;
+	public int airSupremacy = 0;
+	public int seaSupremacy = 0;
 	
-	String name;
-	ArrayList<Unit> unitArray = new ArrayList<Unit>();
+	public String name;
+	public ArrayList<Unit> unitArray = new ArrayList<Unit>();
 	public ArrayList<Projectile> projectileArray = new ArrayList<Projectile>();
-	ArrayList<Coin> coinArray = new ArrayList<Coin>();
-	Nation enemyNation;
-	Unit capital;
+	public ArrayList<Coin> coinArray = new ArrayList<Coin>();
+	public Nation enemyNation;
+	public Unit capital;
+	public boolean defeated;
 
 	public Nation(int color, String name) {
 		this.color = color;
@@ -155,5 +163,15 @@ public class Nation {
 			airfieldCost += 10;
 			addUnit(new Airfield(airfieldPoint, this));
 		}
+	}
+	public void defeat() {
+		if(name.contains("Sweden")) {
+			Main.setState(StateID.DEFEAT);
+		} else {
+			Main.setState(StateID.VICTORY);
+		}
+	}
+	public void victory() {
+		Main.setState(StateID.VICTORY);
 	}
 }

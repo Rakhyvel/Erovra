@@ -1,6 +1,7 @@
-package objects;
+package objects.units;
 
 import main.UnitID;
+import objects.Nation;
 import output.Render;
 import utility.Point;
 
@@ -14,7 +15,7 @@ public class Infantry extends Unit {
 	}
 
 	public void tick(double t) {
-		if(!boarded){
+		if(!boarded && !(nation.defeated || nation.enemyNation.defeated)){
 			wander();
 			engaged = autoAim(1);
 			detectHit();
@@ -23,7 +24,7 @@ public class Infantry extends Unit {
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden") && !boarded) {
+		if ((engaged || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) && !boarded) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 

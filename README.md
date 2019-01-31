@@ -1,4 +1,9 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.5.0
+- Added game states
+- Added menu objects
+- Reorganized packages to look neat and orderly
+
 ### Erovra 0.4.6
 - Finally balanced this thing
 - Fixed projectile rendering

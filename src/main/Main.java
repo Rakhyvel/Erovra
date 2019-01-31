@@ -4,9 +4,10 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import objects.City;
 import objects.Nation;
-import objects.Port;
+import objects.gui.PauseMenu;
+import objects.units.City;
+import objects.units.Plane;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -17,6 +18,8 @@ public class Main {
 	public static boolean running = true;
 	public static int fps;
 	public static int ticks = 0;
+	public static StateID gameState = StateID.ONGOING;
+	public static MapID mapID = MapID.SEA;
 	
 	//Window
 	public static final int width = 1024;
@@ -28,10 +31,9 @@ public class Main {
 	Map map = new Map();
 	World world = new World();
 	Render render = new Render(1024, 512, world);
-	public static MapID mapID = MapID.SEA;
 	
 	//GitHub
-	public static String version = "Erovra 0.4.6";
+	public static String version = "Erovra 0.5.0";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -39,7 +41,7 @@ public class Main {
 		m.window();
 		m.init();
 
-		double dt = 16.66;
+		double dt = 50/3.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
@@ -73,12 +75,13 @@ public class Main {
 	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
 	void init() {
 		new Trig();
-		Nation sweden = new Nation(50 << 16 | 100 << 8 | 255, "Sweden");
-		Nation russia = new Nation(255 << 16 | 100 << 8 | 50, "Russia");
+		Nation sweden = new Nation(0 << 16 | 128 << 8 | 255, "Sweden");
+		Nation russia = new Nation(255 << 16 | 0 << 8 | 0, "Russia");
 		world.nationArray.add(russia);
 		world.nationArray.add(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
+		world.menuArray.add(new PauseMenu());
 		
 		do {
 			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
@@ -103,15 +106,6 @@ public class Main {
 				}
 			}
 		} while (world.nationArray.get(0).unitSize() + world.nationArray.get(1).unitSize() < 2);
-		/*
-		 * for (int i = 0; i < 84; i++) { int x = ((int) 6 - (i / 6)) * 64 + 544; int y
-		 * = (int) (6 - (i % 6)) * 64 + 32; if (Map.getArray(x, y) < 0.5f &&
-		 * (Map.getArray(x + 16, y) > 0.5f || Map.getArray(x, y + 16) > 0.5f ||
-		 * Map.getArray(x - 16, y) > 0.5f || Map.getArray(x, y - 16) > 0.5f ||
-		 * Map.getArray(x + 16, y + 16) > 0.5f || Map.getArray(x + 16, y - 16) > 0.5f ||
-		 * Map.getArray(x - 16, y + 16) > 0.5f || Map.getArray(x - 16, y - 16) > 0.5f))
-		 * { sweden.addUnit(new Port(new Point(x, y), sweden)); } }
-		 */
 	}
 
 	// window(): Sets up the window for the game
@@ -124,5 +118,7 @@ public class Main {
 		frame.setLocationRelativeTo(null);
 		frame.add(render);
 	}
-
+	public static void setState(StateID id) {
+		Main.gameState = id;
+	}
 }

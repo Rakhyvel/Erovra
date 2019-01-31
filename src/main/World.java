@@ -3,20 +3,20 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Random;
 
 import objects.Nation;
+import objects.gui.Menu;
 import output.Render;
 
 public class World {
 
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
-	Random rand = new Random();
+	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 
 	// tick(double t): Calls the tick method for each object in the game, takes
 	// t as the time in millis since last tick
 	public void tick(double t) {
-		for (int i = 0; i < nationArray.size(); i++) {
+		for (int i = 0; i < nationArray.size() && Main.gameState == StateID.ONGOING; i++) {
 			for (int i2 = 0; i2 < nationArray.get(i).unitSize(); i2++) {
 				nationArray.get(i).getUnit(i2).tick(t);
 			}
@@ -49,7 +49,9 @@ public class World {
 			}
 		}
 		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
-
+		for (int i = 0; i < menuArray.size() && Main.gameState != StateID.ONGOING; i++) {
+			menuArray.get(i).render(r);
+		}
 	}
 
 	// drawCoins(Graphics g): Draws the ammount of coins

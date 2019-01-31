@@ -1,6 +1,7 @@
-package objects;
+package objects.projectiles;
 
 import main.UnitID;
+import objects.Nation;
 import output.Render;
 import terrain.Map;
 import utility.Point;

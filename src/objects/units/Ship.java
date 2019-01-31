@@ -1,6 +1,7 @@
-package objects;
+package objects.units;
 
 import main.UnitID;
+import objects.Nation;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -32,35 +33,36 @@ public class Ship extends Unit {
 	}
 
 	public void tick(double t) {
-		detectHit();
-		if (weight != UnitID.LIGHT) {
-			engaged = torpedoAim() || aaAim();
-			wander();
-			targetMove();
-		} else {
-			engaged = aaAim();
-			if (isLanded()) {
-				if (passenger1 != null) {
-					passenger1.position = position;
-					passenger1.boarded = false;
-					if (passenger2 != null) {
-						passenger2.position = position;
-						passenger2.boarded = false;
-					}
-				}
-				nation.unitArray.remove(this);
-			}
-			if (passenger2 != null) {
-				position = position.addVector(velocity);
+		if (!(nation.defeated || nation.enemyNation.defeated)) {
+			detectHit();
+			if (weight != UnitID.LIGHT) {
+				engaged = torpedoAim() || aaAim();
+				wander();
+				targetMove();
 			} else {
-				loadPassengers();
-			}
-			if (health < 0) {
-				nation.unitArray.remove(passenger1);
-				nation.unitArray.remove(passenger2);
+				engaged = aaAim();
+				if (isLanded()) {
+					if (passenger1 != null) {
+						passenger1.position = position;
+						passenger1.boarded = false;
+						if (passenger2 != null) {
+							passenger2.position = position;
+							passenger2.boarded = false;
+						}
+					}
+					nation.unitArray.remove(this);
+				}
+				if (passenger2 != null) {
+					position = position.addVector(velocity);
+				} else {
+					loadPassengers();
+				}
+				if (health < 0) {
+					nation.unitArray.remove(passenger1);
+					nation.unitArray.remove(passenger2);
+				}
 			}
 		}
-
 	}
 
 	// isLander(): checks to see if the boat has reached land, used for landind
@@ -99,7 +101,7 @@ public class Ship extends Unit {
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden")) {
+		if (engaged || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
 			float direction = position.subVec(target).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;

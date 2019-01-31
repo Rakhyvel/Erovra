@@ -1,13 +1,15 @@
-package objects;
+package objects.projectiles;
 
 import main.UnitID;
+import objects.Nation;
+import objects.units.Unit;
 import output.Render;
 import utility.Point;
 import utility.Vector;
 
 public abstract class Projectile extends Unit {
 
-	float attack = 0;
+	public float attack = 0;
 
 	public Projectile(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);

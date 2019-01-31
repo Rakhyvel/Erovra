@@ -1,7 +1,10 @@
-package objects;
+package objects.units;
 
 import main.Main;
 import main.UnitID;
+import objects.Nation;
+import objects.projectiles.Bomb;
+import objects.projectiles.Bullet;
 import output.Render;
 import utility.Point;
 import utility.Trig;
@@ -31,12 +34,14 @@ public class Plane extends Unit {
 
 	public void tick(double t) {
 		if (weight != UnitID.HEAVY) {
-			planeAim();
+			if (!(nation.defeated || nation.enemyNation.defeated))
+				planeAim();
 			patrol();
 		} else {
+			if(!(nation.defeated || nation.enemyNation.defeated))
 			aaAim();
 			if (bombsAway) {
-				if (position.getDist(target)< 1) {
+				if (position.getDist(target) < 1) {
 					nation.coins += 1.5 * health;
 					nation.unitArray.remove(this);
 				}
@@ -49,7 +54,7 @@ public class Plane extends Unit {
 			}
 		}
 		detectHit();
-		velocity = position.getTargetVector(target).normalize().scalar(getSpeed());
+		velocity=position.getTargetVector(target).normalize().scalar(getSpeed());
 		position = position.addVector(velocity);
 		if (position.getX() < 0) {
 			position.setX(0);
@@ -97,18 +102,18 @@ public class Plane extends Unit {
 		}
 		if (smallestPoint.getX() != -1) {
 			smallestUnit.engage();
-			patrolPoint = smallestPoint.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance)/4));
+			patrolPoint = smallestPoint
+					.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4));
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && smallestDistance < 73728) {
 				if ((Main.ticks - born) % 15 == 0 && weight == UnitID.LIGHT) {
-					nation.addProjectile(new Bullet(position, nation,
-							position.getTargetVector(patrolPoint), 0.49f));
+					nation.addProjectile(new Bullet(position, nation, position.getTargetVector(patrolPoint), 0.49f));
 				} else if ((Main.ticks - born) % 60 == 0 && weight == UnitID.MEDIUM) {
 					Point pointA = new Point(22 * Trig.sin(a + 0.1f), 22 * Trig.cos(a + 0.1f));
 					Point pointB = new Point(22 * Trig.sin(a - 0.1f), 22 * Trig.cos(a - 0.1f));
-					nation.addProjectile(new Bullet(position.addPoint(pointA), nation,
-							position.getTargetVector(patrolPoint), 1f));
-					nation.addProjectile(new Bullet(position.addPoint(pointB), nation,
-							position.getTargetVector(patrolPoint), 1f));
+					nation.addProjectile(
+							new Bullet(position.addPoint(pointA), nation, position.getTargetVector(patrolPoint), 1f));
+					nation.addProjectile(
+							new Bullet(position.addPoint(pointB), nation, position.getTargetVector(patrolPoint), 1f));
 				}
 			}
 		} else {
@@ -122,11 +127,10 @@ public class Plane extends Unit {
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
-			if (tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
-					|| tempUnit.id == UnitID.AIRFIELD && !tempUnit.capital) {
+			if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
+					|| tempUnit.id == UnitID.AIRFIELD)) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
-				if(tempUnit.id == UnitID.FACTORY) tempDist/=2;
 				if (tempDist < smallestDistance) {
 					smallestDistance = tempDist;
 					smallestPoint = tempPoint;
@@ -164,12 +168,14 @@ public class Plane extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 67, r.bomber2, r.darken(nation.color),
 						direction);
 		}
-		if(hit > 1 && weight == UnitID.LIGHT)r.drawImageScreen((int) position.getX(), (int) position.getY(), 40, r.fighterHit, r.lighten(nation.color),
-				direction);
-		if(hit > 1 && weight == UnitID.MEDIUM)r.drawImageScreen((int) position.getX(), (int) position.getY(), 48, r.attackerHit, r.lighten(nation.color),
-				direction);
-		if(hit > 1 && weight == UnitID.HEAVY)r.drawImageScreen((int) position.getX(), (int) position.getY(), 71, r.bomberHit, nation.color,
-				direction);
+		if (hit > 1 && weight == UnitID.LIGHT)
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 40, r.fighterHit, r.lighten(nation.color),
+					direction);
+		if (hit > 1 && weight == UnitID.MEDIUM)
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 48, r.attackerHit, r.lighten(nation.color),
+					direction);
+		if (hit > 1 && weight == UnitID.HEAVY)
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 71, r.bomberHit, nation.color, direction);
 	}
 
 }

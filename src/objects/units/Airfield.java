@@ -1,6 +1,7 @@
-package objects;
+package objects.units;
 
 import main.UnitID;
+import objects.Nation;
 import output.Render;
 import utility.Point;
 
@@ -18,21 +19,25 @@ public class Airfield extends Unit {
 	}
 
 	public void tick(double t) {
-		if (engaged) spotted = true;
+		if (engaged)
+			spotted = true;
 		engaged = false;
-		detectHit();
-		start--;
+		if (!(nation.defeated || nation.enemyNation.defeated)) {
+			detectHit();
+			start--;
 
-		if (start < 0) {
-			addProduct();
-			decideNewProduct();
+			if (start < 0) {
+				addProduct();
+				decideNewProduct();
+			}
 		}
 	}
 
 	public void addProduct() {
 		if (productWeight != UnitID.NONE && productWeight != null) {
 			nation.addUnit(new Plane(position, nation, productWeight));
-			if (productWeight == UnitID.LIGHT) nation.airSupremacy++;
+			if (productWeight == UnitID.LIGHT)
+				nation.airSupremacy++;
 			productWeight = UnitID.NONE;
 		}
 	}
@@ -69,10 +74,11 @@ public class Airfield extends Unit {
 	}
 
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden")) {
+		if (spotted || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+						(int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.airfield, nation.color);
 			if (hit > 1) {
