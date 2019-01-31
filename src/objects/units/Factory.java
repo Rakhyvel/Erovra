@@ -1,5 +1,7 @@
 package objects.units;
 
+import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -18,7 +20,7 @@ public class Factory extends Unit {
 		speed = 0;
 		id = UnitID.FACTORY;
 		defense = 3;
-		if (((nation.factoryCost-15)/10 & 1) == 0) {
+		if (((nation.factoryCost - 15) / 10 & 3) == 0) {
 			product = UnitID.ARTILLERY;
 		} else {
 			product = UnitID.CAVALRY;
@@ -26,17 +28,14 @@ public class Factory extends Unit {
 	}
 
 	public void tick(double t) {
-		if (engaged)
-			spotted = true;
+		if (engaged) spotted = true;
 		engaged = false;
-		if (!(nation.defeated || nation.enemyNation.defeated)) {
-			detectHit();
-			start--;
+		detectHit();
+		start--;
 
-			if (start < 0) {
-				addProduct();
-				decideNewProduct();
-			}
+		if (start < 0) {
+			addProduct();
+			decideNewProduct();
 		}
 	}
 
@@ -44,8 +43,10 @@ public class Factory extends Unit {
 		if (productWeight != null && productWeight != UnitID.NONE) {
 			if (product == UnitID.CAVALRY) {
 				nation.addUnit(new Cavalry(position, nation, productWeight));
+				nation.landSupremacy++;
 			} else if (product == UnitID.ARTILLERY) {
 				nation.addUnit(new Artillery(position, nation, productWeight));
+				nation.landSupremacy++;
 			}
 			productWeight = UnitID.NONE;
 		}
@@ -66,7 +67,7 @@ public class Factory extends Unit {
 			} else if (nation.coins >= nation.artilleryCost / 2) {
 				nation.coins -= nation.artilleryCost / 2;
 				productWeight = UnitID.LIGHT;
-				start = 7200;
+				start = 10800;
 				maxStart = start;
 			} else {
 				start = 1;
@@ -89,7 +90,7 @@ public class Factory extends Unit {
 				// 2 minutes
 				nation.coins -= nation.cavalryCost / 2;
 				productWeight = UnitID.LIGHT;
-				start = 7200;
+				start = 10800;
 				maxStart = start;
 			} else {
 				start = 1;
@@ -102,11 +103,10 @@ public class Factory extends Unit {
 	}
 
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
+		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (start > 1) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
-						(int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.factory, nation.color);
 			if (hit > 1) {

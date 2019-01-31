@@ -1,5 +1,7 @@
 package objects.units;
 
+import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -90,7 +92,7 @@ public class Port extends Unit {
 	}
 
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
+		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,

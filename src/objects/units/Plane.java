@@ -1,6 +1,7 @@
 package objects.units;
 
 import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.projectiles.Bomb;
@@ -34,11 +35,9 @@ public class Plane extends Unit {
 
 	public void tick(double t) {
 		if (weight != UnitID.HEAVY) {
-			if (!(nation.defeated || nation.enemyNation.defeated))
 				planeAim();
 			patrol();
 		} else {
-			if(!(nation.defeated || nation.enemyNation.defeated))
 			aaAim();
 			if (bombsAway) {
 				if (position.getDist(target) < 1) {
@@ -128,7 +127,7 @@ public class Plane extends Unit {
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
-					|| tempUnit.id == UnitID.AIRFIELD)) {
+					|| tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempDist < smallestDistance) {
@@ -138,8 +137,13 @@ public class Plane extends Unit {
 				}
 			}
 		}
-		smallestUnit.engage();
-		target = (smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5)));
+		if(smallestUnit != null){
+			smallestUnit.engage();
+			target = (smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5)));
+		} else {
+			nation.unitArray.remove(this);
+			nation.coins+=10;
+		}
 	}
 
 	public void render(Render r) {

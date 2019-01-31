@@ -19,7 +19,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState = StateID.ONGOING;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.RIVER;
 	
 	//Window
 	public static final int width = 1024;
@@ -33,7 +33,7 @@ public class Main {
 	Render render = new Render(1024, 512, world);
 	
 	//GitHub
-	public static String version = "Erovra 0.5.0";
+	public static String version = "Erovra 0.5.1";
 
 	// main(String args[]: Contains the game loop, is the first method called when running
 	public static void main(String args[]) {
@@ -75,8 +75,8 @@ public class Main {
 	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
 	void init() {
 		new Trig();
-		Nation sweden = new Nation(0 << 16 | 128 << 8 | 255, "Sweden");
-		Nation russia = new Nation(255 << 16 | 0 << 8 | 0, "Russia");
+		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
+		Nation russia = new Nation(220 << 16 | 50 << 8 | 0, "Russia");
 		world.nationArray.add(russia);
 		world.nationArray.add(sweden);
 		sweden.setEnemyNation(russia);
@@ -91,8 +91,8 @@ public class Main {
 				int x = (int) (i / 6) * 64 + 96;
 				int y = (int) (i % 6) * 64 + 96;
 				if (Map.getArray(x, y) > 0.5f) {
-					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
-					russia.setCaptial(1);
+					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
+					sweden.setCaptial(1);
 					break;
 				}
 			}
@@ -100,8 +100,8 @@ public class Main {
 				int x = ((int) 6 - (i / 6)) * 64 + 544;
 				int y = (int) (6 - (i % 6)) * 64 + 32;
 				if (Map.getArray(x, y) > 0.5f) {
-					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
-					sweden.setCaptial(1);
+					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
+					russia.setCaptial(1);
 					break;
 				}
 			}

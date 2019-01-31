@@ -1,5 +1,7 @@
 package objects.units;
 
+import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -101,7 +103,7 @@ public class Ship extends Unit {
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) {
+		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			float direction = position.subVec(target).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;

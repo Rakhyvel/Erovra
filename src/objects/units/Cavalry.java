@@ -1,5 +1,7 @@
 package objects.units;
 
+import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -28,7 +30,7 @@ public class Cavalry extends Unit {
 	}
 
 	public void tick(double t) {
-		if(!boarded && !(nation.defeated || nation.enemyNation.defeated)){
+		if(!boarded){
 			wander();
 			engaged = autoAim(cal);
 			detectHit();
@@ -37,7 +39,7 @@ public class Cavalry extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) && !boarded) {
+		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !boarded) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 			

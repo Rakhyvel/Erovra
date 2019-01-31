@@ -9,6 +9,7 @@ import java.awt.image.DataBufferInt;
 
 import main.Image;
 import main.Main;
+import main.SpriteSheet;
 import main.World;
 import terrain.Map;
 
@@ -63,6 +64,7 @@ public class Render extends Canvas {
 	public int[] hitSprite = image.loadImage("/res/hit.png", 36, 20);
 	public int[] cityHit = image.loadImage("/res/buildingHit.png", 36, 36);
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
+	public SpriteSheet font = new SpriteSheet("/res/font32.png", 512);
 
 	public Render(int x, int y, World world) {
 		width = x;
@@ -135,12 +137,18 @@ public class Render extends Canvas {
 	// drawImage(...): draws an image
 	public void drawImage(int x, int y, int w, int[] image) {
 		for (int i = 0; i < image.length; i++) {
+			int color = image[i];
+			float alpha = (color >> 24 & 255) / 255.0f;
 			int x1 = (int) (i % w) + x;
 			int y1 = (int) (i / w);
 			int id = (y1 + y) * (width + 1) + x1;
-			int color = image[i];
-			float alpha = (color >> 24 & 255) / 255.0f;
-			pixels[id] = (int) ((alpha * color) + ((1 - alpha) * pixels[id]));
+			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
+			r = ((pixels[id] >> 16) & 255);
+			g = ((pixels[id] >> 8) & 255);
+			b = (pixels[id] & 255);
+			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
+			pixels[id] = (int) (newColor + (newColor2));
 		}
 	}
 
@@ -150,6 +158,7 @@ public class Render extends Canvas {
 		for (int i = 0; i < image.length; i++) {
 			int x1 = (int) ((i % w) + x - w / 2);
 			int y1 = (int) (i / w) - h / 2;
+			int id = (int) ((y1 + y) * (width + 1) + x1);
 			float screen = (image[i] & 255) / 255.0f;
 			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 			if (screen <= 0.5f) {
@@ -162,10 +171,13 @@ public class Render extends Canvas {
 				g = (int) (255 - 2 * (255 - g) * (1 - screen));
 				b = (int) (255 - 2 * (255 - b) * (1 - screen));
 			}
-			int newColor = r << 16 | g << 8 | b;
 			float alpha = (image[i] >> 24 & 255) / 255.0f;
-			int id = (int) ((y1 + y) * (width + 1) + x1);
-			pixels[id] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[id]));
+			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
+			r = ((pixels[id] >> 16) & 255);
+			g = ((pixels[id] >> 8) & 255);
+			b = (pixels[id] & 255);
+			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
+			pixels[id] = (int) (newColor + (newColor2));
 
 		}
 	}
@@ -196,12 +208,10 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -210,48 +220,41 @@ public class Render extends Canvas {
 	// lighten(int color): returns a lighter color given a 24 bit int color
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		if (r > b) {
-			r += 128;
-			g += 128;
-			b = 0;
-		} else {
-			r = 0;
-			g += 128;
-			b += 128;
-		}
-		if (r > 255)
-			r = 255;
-		if (g > 255)
-			g = 255;
-		if (b > 255)
-			b = 255;
+		r <<=2;
+		g <<=2;
+		b <<=2;
+		if (r > 255) r = 255;
+		if (g > 255) g = 255;
+		if (b > 255) b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
 	// lighten(int color): returns a darker color given a 24 bit int color
 	public int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		if (r > b) {
-			r *= 0.5;
-			g = 0;
-			b = 0;
-		} else {
-			r = 0;
-			g = 0;
-			b *= 0.5;
-		}
-		if (r < 0)
-			r = 0;
-		if (g < 0)
-			g = 0;
-		if (b < 0)
-			b = 0;
+		r >>= 1;
+		g >>= 1;
+		b >>= 1;
+		if (r < 0) r = 0;
+		if (g < 0) g = 0;
+		if (b < 0) b = 0;
 		return r << 16 | g << 8 | b;
 	}
 
 	public void darkenScreen() {
 		for (int i = 0; i < 1025 * 513; i++) {
 			pixels[i] = darken(pixels[i]);
+		}
+	}
+	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color){
+		int carriage = 0;
+		for(int i = 0; i < label.length(); i++){
+			int letter = (int)label.charAt(i);
+			if(letter != 13){
+					drawImageScreen(x + (i*((size/16)*9)),y+7+carriage, size, font.getSubset(letter % 16, letter / 16, size),color);
+			} else {
+				carriage+=size;
+			}
 		}
 	}
 }

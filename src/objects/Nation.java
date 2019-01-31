@@ -34,6 +34,7 @@ public class Nation {
 	//(Number of destroyers/fighters each nation has, if they have less, make more)
 	public int airSupremacy = 0;
 	public int seaSupremacy = 0;
+	public int landSupremacy = 0;
 	
 	public String name;
 	public ArrayList<Unit> unitArray = new ArrayList<Unit>();

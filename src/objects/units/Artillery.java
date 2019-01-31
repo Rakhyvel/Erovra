@@ -1,5 +1,7 @@
 package objects.units;
 
+import main.Main;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -23,11 +25,11 @@ public class Artillery extends Unit {
 	}
 
 	public void tick(double t) {
-		if(!boarded && !(nation.defeated || nation.enemyNation.defeated)) {
+		if (!boarded) {
 			wander();
-			if(weight == UnitID.LIGHT) {
+			if (weight == UnitID.LIGHT) {
 				aaAim();
-			} else if (weight == UnitID.MEDIUM){
+			} else if (weight == UnitID.MEDIUM) {
 				autoArtilleryAim(256);
 			} else {
 				autoArtilleryAim(128);
@@ -38,13 +40,13 @@ public class Artillery extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || nation.enemyNation.defeated || nation.defeated) && !boarded) {
+		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !boarded) {
 			float direction = position.subVec(target).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
-			
-			if(weight == UnitID.LIGHT)r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.lighten(nation.color), direction);
-			if(weight == UnitID.MEDIUM)r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color, direction);
-			if(weight == UnitID.HEAVY)r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.darken(nation.color), direction);
+
+			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.lighten(nation.color), direction);
+			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color, direction);
+			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.darken(nation.color), direction);
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
