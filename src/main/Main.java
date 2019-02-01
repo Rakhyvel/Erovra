@@ -21,7 +21,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState = StateID.ONGOING;
-	public static MapID mapID = MapID.PLAINS;
+	public static MapID mapID = MapID.RIVER;
 
 	// Window
 	public static final int width = 1024;

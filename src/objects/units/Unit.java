@@ -4,7 +4,6 @@ import java.util.Random;
 
 import main.Image;
 import main.Main;
-import main.MapID;
 import main.UnitID;
 import objects.Nation;
 import objects.projectiles.Bullet;
