@@ -46,7 +46,7 @@ public class Main {
 		m.window();
 		m.init();
 
-		double dt = 50/300.0;
+		double dt = 50/3.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
