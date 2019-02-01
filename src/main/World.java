@@ -5,8 +5,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Nation;
+import objects.gui.GameMenu;
 import objects.gui.Menu;
+import objects.units.City;
 import output.Render;
+import terrain.Map;
+import utility.Point;
 
 public class World {
 
@@ -89,8 +93,8 @@ public class World {
 			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
 				hostile.getCoin(i2).render(r);
 			}
+			r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 		}
-		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 		for (int i = 0; i < menuArray.size() && Main.gameState != StateID.ONGOING; i++) {
 			menuArray.get(i).render(r);
 		}

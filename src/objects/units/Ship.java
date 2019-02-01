@@ -19,8 +19,7 @@ public class Ship extends Unit {
 			speed = .3f;
 			defense = 1f;
 			cal = 0.5f;
-			target = nation.enemyNation.capital.position
-					.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
+			target = nation.enemyNation.capital.position.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 			velocity = position.subVec(target).normalize().scalar(speed);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
@@ -84,8 +83,7 @@ public class Ship extends Unit {
 			Unit tempUnit = nation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY)
-					|| (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.boarded) {
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.boarded) {
 				smallestDistance = tempDist;
 				secondUnit = firstUnit;
 				firstUnit = tempUnit;
@@ -105,18 +103,15 @@ public class Ship extends Unit {
 	public void render(Render r) {
 		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			float direction = position.subVec(target).getRadian();
-			if (velocity.getY() > 0)
-				direction += 3.14f;
+			if (velocity.getY() > 0) direction += 3.14f;
 
-			if (weight == UnitID.LIGHT)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, r.lighten(nation.color),
-						direction);
-			if (weight == UnitID.MEDIUM)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color,
-						direction);
-			if (weight == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color),
-						direction);
+			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, r.lighten(nation.color), direction);
+			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color, direction);
+			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color), direction);
+
+			if (hit > 1 && weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.landingHit, r.lighten(nation.color), direction);
+			if (hit > 1 && weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color, direction);
+			if (hit > 1 && weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 65, r.cruiserHit, r.darken(nation.color), direction);
 		}
 	}
 }

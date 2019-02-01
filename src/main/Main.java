@@ -3,12 +3,15 @@ package main;
 import input.Keyboard;
 import input.Mouse;
 
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
 import objects.Nation;
 import objects.gui.GameMenu;
+import objects.gui.MainMenu;
 import objects.units.City;
 import output.Render;
 import terrain.Map;
@@ -16,12 +19,13 @@ import utility.Point;
 import utility.Trig;
 
 public class Main {
+
 	// Game Loop
 	public static boolean running = true;
 	public static int fps;
 	public static int ticks = 0;
-	public static StateID gameState = StateID.ONGOING;
-	public static MapID mapID = MapID.RIVER;
+	public static StateID gameState;
+	public static MapID mapID = MapID.SEA;
 
 	// Window
 	public static final int width = 1024;
@@ -31,22 +35,23 @@ public class Main {
 	// Objects
 	Random rand = new Random();
 	static Map map = new Map();
-	World world = new World();
+	static World world = new World();
 	Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
 
 	// GitHub
-	public static String version = "Erovra 0.5.3";
+	public static String version = "Erovra 0.5.4";
 
-	// main(String args[]: Contains the game loop, is the first method called when
+	// main(String args[]: Contains the game loop, is the first method called
+	// when
 	// running
 	public static void main(String args[]) {
 		Main m = new Main();
 		m.window();
 		m.init();
 
-		double dt = 50/3.0;
+		double dt = 50 / 30.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
@@ -61,11 +66,10 @@ public class Main {
 			accumulator += frameTime;
 
 			while (accumulator >= dt) {
-				m.world.tick(t);
+				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if(gameState == StateID.ONGOING)
-					ticks++;
+				if (gameState == StateID.ONGOING) ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -75,19 +79,43 @@ public class Main {
 				frames = 0;
 			}
 		}
+		// Pulling the plug after the game loop
+		WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+
+		frame.setVisible(false);
+		frame.dispose();
+		System.exit(0);
 	}
 
 	// init(): Creates the two nations, generates the map and find apropriate
 	// locations for the nation's cities
 	void init() {
 		new Trig();
+		world.menuArray.add(new GameMenu());
+		world.menuArray.add(new MainMenu());
+		Main.setState(StateID.MENU);
+	}
+
+	// window(): Sets up the window for the game
+	void window() {
+		frame.setSize(width + 7, height + 30);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setTitle(Main.version);
+		frame.setLocationRelativeTo(null);
+		frame.add(render);
+	}
+
+	public static void startNewMatch() {
+		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 50 << 8 | 0, "Russia");
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
-		world.menuArray.add(new GameMenu());
 
 		do {
 			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
@@ -111,26 +139,18 @@ public class Main {
 					break;
 				}
 			}
-		} while (sweden.unitSize() + russia.unitSize() < 2);
-	}
-
-	// window(): Sets up the window for the game
-	void window() {
-		frame.setSize(width + 7, height + 30);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		frame.setResizable(false);
-		frame.setTitle(Main.version);
-		frame.setLocationRelativeTo(null);
-		frame.add(render);
+		}
+		while (sweden.unitSize() + russia.unitSize() < 2);
 	}
 
 	public static void setState(StateID id) {
 		Main.gameState = id;
 	}
+
 	public static int getFrameX() {
 		return frame.getX();
 	}
+
 	public static int getFrameY() {
 		return frame.getY();
 	}

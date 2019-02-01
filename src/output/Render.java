@@ -23,6 +23,7 @@ public class Render extends Canvas {
 	BufferedImage img;
 	int[] pixels;
 	int[] background = new int[1025 * 513];
+	int[] menu = eggShellScreen();
 	float zoom = 1f;
 	World world;
 	int[] newMap;
@@ -38,6 +39,9 @@ public class Render extends Canvas {
 	public int[] landing = image.loadImage("/res/landing.png", 13, 32);
 	public int[] destroyer = image.loadImage("/res/destroyer.png", 13, 45);
 	public int[] cruiser = image.loadImage("/res/cruiser.png", 16, 61);
+	public int[] landingHit = image.loadImage("/res/landingHit.png", 17, 36);
+	public int[] destroyerHit = image.loadImage("/res/destroyerHit.png", 17, 49);
+	public int[] cruiserHit = image.loadImage("/res/cruiserHit.png", 20, 65);
 
 	// Air Units
 	public int[] fighter1 = image.loadImage("/res/fighter.png", 36, 35);
@@ -94,17 +98,19 @@ public class Render extends Canvas {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
-		} else {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
 			}
 			System.arraycopy(background, 0, pixels, 0, 1025 * 513);
+		} else if (Main.gameState == StateID.MENU) {
+			System.arraycopy(menu, 0, pixels, 0, 1025 * 513);
 		}
 		world.render(this);
 
 		g.drawImage(img, 0, 0, null);
-		world.drawCoins(g);
+		if (Main.gameState == StateID.ONGOING) world.drawCoins(g);
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf(Main.version), 5, 17);
 		g.setColor(new Color(255, 255, 255));
@@ -190,18 +196,18 @@ public class Render extends Canvas {
 		for (int i = 0; i < image.length; i++) {
 			alpha = (image[i] >> 24 & 255) / 255.0f;
 			if (alpha > 0.9f) {
-				//Finding position on game pixel array
+				// Finding position on game pixel array
 				x1 = (int) ((i % w) + x - w / 2);
 				y1 = (int) (i / w) - h / 2;
 				id = (int) ((y1 + y) * (width + 1) + x1);
-				
-				//Finding and splitting starting colors
+
+				// Finding and splitting starting colors
 				screen = (image[i] & 255) / 255.0f;
 				r = ((color >> 16) & 255);
 				g = ((color >> 8) & 255);
 				b = (color & 255);
-				
-				//Setting new colors
+
+				// Setting new colors
 				if (screen <= 0.5f) {
 					screen *= 2;
 					r = (int) (r * screen);
@@ -212,17 +218,17 @@ public class Render extends Canvas {
 					g = (int) (255 - 2 * (255 - g) * (1 - screen));
 					b = (int) (255 - 2 * (255 - b) * (1 - screen));
 				}
-				
-				//Recombining colors
+
+				// Recombining colors
 				newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-				
-				//Finding alpha
+
+				// Finding alpha
 				r = ((pixels[id] >> 16) & 255);
 				g = ((pixels[id] >> 8) & 255);
 				b = (pixels[id] & 255);
 				newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-				
-				//Finally adding colors to pixel array
+
+				// Finally adding colors to pixel array
 				pixels[id] = (int) (newColor + (newColor2));
 			}
 		}
@@ -303,20 +309,28 @@ public class Render extends Canvas {
 		return image;
 	}
 
+	public int[] eggShellScreen() {
+		int[] image = new int[1025 * 513];
+		for (int i = 0; i < 1025 * 513; i++) {
+			image[i] = 128 << 16 | 125 << 8 | 122;
+		}
+		return image;
+	}
+
 	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color) {
 		int carriage = 0;
 		int letter;
-		int length = label.length()*10;
-		int fix=0;
-		if(size == 16){
+		int length = label.length() * 10;
+		int fix = 0;
+		if (size == 16) {
 			fix = 9;
-		} else if(size == 32){
+		} else if (size == 32) {
 			fix = -18;
 		}
 		for (int i = 0; i < label.length(); i++) {
 			letter = (int) label.charAt(i);
 			if (letter != 13) {
-				drawImageScreen(x + (i * ((size / 16) * 9))-length/2+fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
+				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
 			} else {
 				carriage += (size / 16) * 9;
 			}

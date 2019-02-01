@@ -1,4 +1,9 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.5.4
+- Added main menu
+- Made menu buttons functional
+- Added match clock at the end
+
 ### Erovra 0.5.3
 - Optimized string rendering
 - Added keyboard input

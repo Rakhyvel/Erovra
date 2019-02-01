@@ -1,5 +1,5 @@
 package main;
 
 public enum StateID {
-	ONGOING, PAUSED, VICTORY, DEFEAT;
+	ONGOING, PAUSED, VICTORY, DEFEAT, MENU, SETTINGS;
 }
