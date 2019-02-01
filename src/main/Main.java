@@ -4,38 +4,40 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import input.Mouse;
 import objects.Nation;
-import objects.gui.PauseMenu;
+import objects.gui.GameMenu;
 import objects.units.City;
-import objects.units.Plane;
 import output.Render;
 import terrain.Map;
 import utility.Point;
 import utility.Trig;
 
 public class Main {
-	//Game Loop
+	// Game Loop
 	public static boolean running = true;
 	public static int fps;
 	public static int ticks = 0;
-	public static StateID gameState = StateID.ONGOING;
-	public static MapID mapID = MapID.RIVER;
-	
-	//Window
+	public static StateID gameState = StateID.PAUSED;
+	public static MapID mapID = MapID.ISLANDS;
+
+	// Window
 	public static final int width = 1024;
 	public static final int height = 512;
-	JFrame frame = new JFrame();
-	
-	//Objects
+	static JFrame frame = new JFrame();
+
+	// Objects
 	Random rand = new Random();
-	Map map = new Map();
+	static Map map = new Map();
 	World world = new World();
 	Render render = new Render(1024, 512, world);
-	
-	//GitHub
-	public static String version = "Erovra 0.5.1";
+	public static Mouse mouse = new Mouse();
 
-	// main(String args[]: Contains the game loop, is the first method called when running
+	// GitHub
+	public static String version = "Erovra 0.5.2";
+
+	// main(String args[]: Contains the game loop, is the first method called when
+	// running
 	public static void main(String args[]) {
 		Main m = new Main();
 		m.window();
@@ -46,13 +48,12 @@ public class Main {
 		double accumulator = 0.0;
 		double t = 0;
 		int frames = 0;
-
+		double frameTime;
 		double currentFrameTime = System.currentTimeMillis();
 
 		while (running) {
-			double newTime = System.currentTimeMillis();
-			double frameTime = newTime - currentTime;
-			currentTime = newTime;
+			frameTime = System.currentTimeMillis() - currentTime;
+			currentTime = System.currentTimeMillis();
 
 			accumulator += frameTime;
 
@@ -60,7 +61,8 @@ public class Main {
 				m.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				ticks++;
+				if(gameState == StateID.ONGOING)
+					ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -72,17 +74,18 @@ public class Main {
 		}
 	}
 
-	//init(): Creates the two nations, generates the map and find apropriate locations for the nation's cities
+	// init(): Creates the two nations, generates the map and find apropriate
+	// locations for the nation's cities
 	void init() {
 		new Trig();
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 50 << 8 | 0, "Russia");
-		world.nationArray.add(russia);
-		world.nationArray.add(sweden);
+		world.setHostile(russia);
+		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
-		world.menuArray.add(new PauseMenu());
-		
+		world.menuArray.add(new GameMenu());
+
 		do {
 			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
 			sweden.purgeAll();
@@ -105,12 +108,12 @@ public class Main {
 					break;
 				}
 			}
-		} while (world.nationArray.get(0).unitSize() + world.nationArray.get(1).unitSize() < 2);
+		} while (sweden.unitSize() + russia.unitSize() < 2);
 	}
 
 	// window(): Sets up the window for the game
 	void window() {
-		frame.setSize(width+7, height + 30);
+		frame.setSize(width + 7, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -118,7 +121,14 @@ public class Main {
 		frame.setLocationRelativeTo(null);
 		frame.add(render);
 	}
+
 	public static void setState(StateID id) {
 		Main.gameState = id;
+	}
+	public static int getFrameX() {
+		return frame.getX();
+	}
+	public static int getFrameY() {
+		return frame.getY();
 	}
 }

@@ -18,7 +18,7 @@ public class Port extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 3;
+		defense = 5;
 		productWeight = UnitID.NONE;
 	}
 

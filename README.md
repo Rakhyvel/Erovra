@@ -1,4 +1,9 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.5.2
+- Worked in mouse input
+- Added buttons
+- Fixed up pause menu
+
 ### Erovra 0.5.1
 - Added string rendering
 - Added defeat/victory screens

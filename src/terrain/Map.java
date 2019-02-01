@@ -5,6 +5,8 @@ import java.util.Random;
 import main.Image;
 import main.Main;
 import main.MapID;
+import main.UnitID;
+import objects.units.Unit;
 import utility.Point;
 
 public class Map {
@@ -12,12 +14,36 @@ public class Map {
 	Random rand = new Random();
 	public static float[][] mountain = new float[Main.width + 1][Main.height + 1];
 	public static int[] mapData = new int[513 * 1025];
+	public static float[] islandMask = new float[513 * 1025];
+	public static Point[] points = new Point[7];
 	Image image = new Image();
 
 	// generateMap(int seed): Uses simplex noise and linear interpolation to
 	// render the terrain for the game.
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
+		if (id == MapID.ISLANDS) {
+			for (int i = 0; i < 7; i++) {
+				points[i] = new Point((int) (i % 7) * 170, rand.nextInt(512));
+			}
+			points[0].setY(64 + rand.nextInt(100));
+			points[0].setX(64);
+			points[6].setY(400 + rand.nextInt(100));
+			points[6].setX(960);
+			for (int i = 0; i < 1025 * 513; i++) {
+				int x = (int) (i % 1025);
+				int y = (int) (i / 1025);
+				int smallestDistance = 35000;
+				Point point = new Point(x, y);
+				for (int i2 = 0; i2 < 7; i2++) {
+					int tempDist = (int) point.getDist(points[i2]);
+					if (tempDist < smallestDistance) {
+						smallestDistance = tempDist;
+					}
+				}
+				islandMask[i] = (float) (1 - ((smallestDistance) / 25000.0f))/2 + 0.2f;
+			}
+		}
 		for (int i = 0; i < 45; i++) {
 			int x = (i % 9);
 			int y = (i / 9);
@@ -26,7 +52,8 @@ public class Map {
 			} else if (id == MapID.RIVER) {
 				mountain[x * 128][y * 128] = Math.max(((1 - x) + (1 - y) + 10), x + y) * 0.07f;
 			} else if (id == MapID.ISLANDS) {
-				mountain[x * 128][y * 128] = rand.nextFloat();
+				int pos = (y * 128) * 1025 + (x*128);
+				mountain[x*128][y*128] = islandMask[pos];
 			} else if (id == MapID.SEA) {
 				if (x == 0 || x == 8) {
 					mountain[x * 128][y * 128] = .9f;
@@ -78,13 +105,16 @@ public class Map {
 
 				if (x + 2 * p < Main.width + 1 && y + 2 * p < Main.height + 1) {
 					m = (rand.nextFloat() - .5f) / (4 << i);
-					mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f) + 2 * m;
+					mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f)
+							+ 2 * m;
 
 					m = (rand.nextFloat() - .5f) / (4 << i);
-					mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f) + 2 * m;
+					mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f)
+							+ 2 * m;
 
 					m = (rand.nextFloat() - .5f) / (4 << i);
-					mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p] + mountain[x][y + p] + mountain[x + p][y]) * .25f) + 4 * m;
+					mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p]
+							+ mountain[x][y + p] + mountain[x + p][y]) * .25f) + 4 * m;
 				}
 			}
 		}
@@ -92,7 +122,12 @@ public class Map {
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = (int) (i % 1025);
 			int y = (int) (i / 1025);
-			mapData[i] = getColor(getArray(x, y));
+			if (id == MapID.ISLANDS) {
+
+				mapData[i] = getColor(getArray(x, y));
+			} else {
+				mapData[i] = getColor(getArray(x, y));
+			}
 		}
 	}
 
@@ -103,7 +138,8 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
+			return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
@@ -127,12 +163,18 @@ public class Map {
 			green = (int) (value * value * value * 85);
 			red = (int) (value * value * value * 85);
 		}
-		if (blue < 0) blue = 0;
-		if (green < 0) green = 0;
-		if (red < 0) red = 0;
-		if (blue > 255) blue = 255;
-		if (green > 255) green = 255;
-		if (red > 255) red = 255;
+		if (blue < 0)
+			blue = 0;
+		if (green < 0)
+			green = 0;
+		if (red < 0)
+			red = 0;
+		if (blue > 255)
+			blue = 255;
+		if (green > 255)
+			green = 255;
+		if (red > 255)
+			red = 255;
 		return 255 << 24 | red << 16 | green << 8 | blue;
 	}
 }

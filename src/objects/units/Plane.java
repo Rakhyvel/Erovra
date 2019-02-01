@@ -38,6 +38,10 @@ public class Plane extends Unit {
 				planeAim();
 			patrol();
 		} else {
+			if(target.getX() == -1) {
+				nation.unitArray.remove(this);
+				nation.coins+=10;
+			}
 			aaAim();
 			if (bombsAway) {
 				if (position.getDist(target) < 1) {
@@ -141,8 +145,7 @@ public class Plane extends Unit {
 			smallestUnit.engage();
 			target = (smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5)));
 		} else {
-			nation.unitArray.remove(this);
-			nation.coins+=10;
+			target = smallestPoint;
 		}
 	}
 

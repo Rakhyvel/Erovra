@@ -8,7 +8,6 @@ import output.Render;
 import utility.Point;
 
 public class Airfield extends Unit {
-
 	int start = 0;
 	float maxStart = 1;
 	UnitID productWeight;
@@ -16,7 +15,7 @@ public class Airfield extends Unit {
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
-		defense = 3;
+		defense = 4;
 		id = UnitID.AIRFIELD;
 	}
 
@@ -53,7 +52,7 @@ public class Airfield extends Unit {
 				maxStart = start;
 			}
 		} else {
-			if (nation.enemyNation.landSupremacy >= nation.landSupremacy) {
+			if ((nation.enemyNation.landSupremacy+nation.enemyNation.seaSupremacy) >= (nation.landSupremacy+nation.seaSupremacy)) {
 				if (nation.coins >= nation.planeCost) {
 					nation.coins -= nation.planeCost;
 					productWeight = UnitID.MEDIUM;

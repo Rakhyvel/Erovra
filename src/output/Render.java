@@ -72,6 +72,7 @@ public class Render extends Canvas {
 		img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 		this.world = world;
+		this.addMouseListener(Main.mouse);
 	}
 
 	public void render() {
@@ -131,6 +132,20 @@ public class Render extends Canvas {
 			int x1 = (int) (i % w) + x;
 			int y1 = (int) (i / w);
 			pixels[(y1 + y) * (width + 1) + x1] = color;
+		}
+	}
+	public void drawRect(int x, int y, int w, int h, int color, float alpha) {
+		for (int i = 0; i < w * h; i++) {
+			int x1 = (int) (i % w) + x;
+			int y1 = (int) (i / w);
+			int id = (y1 + y) * (width + 1) + x1;
+			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
+			r = (pixels[id] >> 16) & 255;
+			g = (pixels[id] >> 8) & 255;
+			b = pixels[id] & 255;
+			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
+			pixels[id] = newColor+newColor2;
 		}
 	}
 
@@ -240,10 +255,22 @@ public class Render extends Canvas {
 		if (b < 0) b = 0;
 		return r << 16 | g << 8 | b;
 	}
-
+	public int desaturate(int color) {
+		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+		int a = (int)(r+g+b)>>2;
+		r = (a+r)>>1;
+		g = (a+g)>>1;
+		b = (a+b)>>1;
+		return r << 16 | g << 8 | b;
+	}
 	public void darkenScreen() {
 		for (int i = 0; i < 1025 * 513; i++) {
-			pixels[i] = darken(pixels[i]);
+			int r = ((pixels[i] >> 16) & 255), g = ((pixels[i] >> 8) & 255), b = (pixels[i] & 255);
+			int a = (r+g+b)>>3;
+			r = (r+a)>>1;
+			g = (g+a)>>1;
+			b = (b+a)>>1;
+			pixels[i] = r << 16 | g << 8 | b;
 		}
 	}
 	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color){
