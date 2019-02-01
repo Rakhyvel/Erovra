@@ -1,4 +1,8 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.5.3
+- Optimized string rendering
+- Added keyboard input
+
 ### Erovra 0.5.2
 - Worked in mouse input
 - Added buttons

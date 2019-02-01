@@ -25,17 +25,14 @@ public class GameMenu extends Menu {
 
 	public void render(Render r) {
 		if (Main.gameState == StateID.VICTORY) {
-			r.darkenScreen();
-			r.drawString("Victory!", 441, 160, 32, r.font, 128 << 8 | 220);
+			r.drawString("Victory!", 512, 160, 32, r.font32, 128 << 8 | 220);
 			drawButton("New Game", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
 		} else if (Main.gameState == StateID.DEFEAT) {
-			r.darkenScreen();
-			r.drawString("Defeat!", 450, 160, 32, r.font, 220 << 16 | 50 << 8);
+			r.drawString("Defeat!", 512, 160, 32, r.font32, 220 << 16 | 50 << 8);
 			drawButton("New Game", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
 		} else if (Main.gameState == StateID.PAUSED) {
-			r.darkenScreen();
 			drawButton("Continue", 512, 208, 1, r);
 			drawButton("New Game", 512, 256, 2, r);
 			drawButton("Surrender", 512, 304, 3, r);
@@ -45,10 +42,10 @@ public class GameMenu extends Menu {
 	void drawButton(String label, int x, int y, int buttonID, Render r) {
 		if (buttonsHovered == buttonID) {
 			r.drawRect(x - 110, y - 20, 220, 40, 255 << 16 | 255 << 8 | 255, 0.5f);
-			r.drawString(label, x - 50, y - 5, 32, r.font, 0);
+			r.drawString(label, x, y - 2, 16, r.font16, 0);
 		} else {
 			r.drawRect(x - 110, y - 20, 220, 40, 0, 0.5f);
-			r.drawString(label, x - 50, y - 5, 32, r.font, 0);
+			r.drawString(label, x, y - 2, 16, r.font16, 0);
 		}
 	}
 }

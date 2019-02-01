@@ -9,10 +9,12 @@ import objects.gui.Menu;
 import output.Render;
 
 public class World {
+
 	Nation friendly;
 	Nation hostile;
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
+	boolean pauseClicked = false;
 
 	// tick(double t): Calls the tick method for each object in the game, takes
 	// t as the time in millis since last tick
@@ -42,41 +44,51 @@ public class World {
 				menuArray.get(i).tick();
 			}
 		}
+		if (Main.keyboard.esc.isPressed()) {
+			if (!pauseClicked) {
+				pauseClicked = true;
+				if (Main.gameState == StateID.PAUSED) {
+					Main.setState(StateID.ONGOING);
+				} else {
+					Main.setState(StateID.PAUSED);
+				}
+			}
+		} else {
+			pauseClicked = false;
+		}
 	}
 
 	// render(Render r): Calls for each object in the game to draw, takes in the
 	// custom Render object, r.
 	public void render(Render r) {
-		for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-			if (friendly.getUnit(i2).getID() != UnitID.PLANE)
-				friendly.getUnit(i2).render(r);
-		}
-		for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-			if (hostile.getUnit(i2).getID() != UnitID.PLANE)
-				hostile.getUnit(i2).render(r);
-		}
+		if (Main.gameState == StateID.ONGOING) {
+			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
+				if (friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
+			}
+			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
+				if (hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
+			}
 
-		for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
-			friendly.getProjectile(i2).render(r);
-		}
-		for (int i2 = 0; i2 < hostile.projectileSize(); i2++) {
-			hostile.getProjectile(i2).render(r);
-		}
+			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
+				friendly.getProjectile(i2).render(r);
+			}
+			for (int i2 = 0; i2 < hostile.projectileSize(); i2++) {
+				hostile.getProjectile(i2).render(r);
+			}
 
-		for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-			if (friendly.getUnit(i2).getID() == UnitID.PLANE)
-				friendly.getUnit(i2).render(r);
-		}
-		for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-			if (hostile.getUnit(i2).getID() == UnitID.PLANE)
-				hostile.getUnit(i2).render(r);
-		}
+			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
+				if (friendly.getUnit(i2).getID() == UnitID.PLANE) friendly.getUnit(i2).render(r);
+			}
+			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
+				if (hostile.getUnit(i2).getID() == UnitID.PLANE) hostile.getUnit(i2).render(r);
+			}
 
-		for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
-			friendly.getCoin(i2).render(r);
-		}
-		for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
-			hostile.getCoin(i2).render(r);
+			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
+				friendly.getCoin(i2).render(r);
+			}
+			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
+				hostile.getCoin(i2).render(r);
+			}
 		}
 		r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 		for (int i = 0; i < menuArray.size() && Main.gameState != StateID.ONGOING; i++) {

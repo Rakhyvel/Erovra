@@ -10,6 +10,7 @@ import java.awt.image.DataBufferInt;
 import main.Image;
 import main.Main;
 import main.SpriteSheet;
+import main.StateID;
 import main.World;
 import terrain.Map;
 
@@ -21,9 +22,11 @@ public class Render extends Canvas {
 	int height;
 	BufferedImage img;
 	int[] pixels;
+	int[] background = new int[1025 * 513];
 	float zoom = 1f;
 	World world;
 	int[] newMap;
+	boolean captured = false;
 
 	Image image = new Image();
 	// Ground Units
@@ -64,7 +67,8 @@ public class Render extends Canvas {
 	public int[] hitSprite = image.loadImage("/res/hit.png", 36, 20);
 	public int[] cityHit = image.loadImage("/res/buildingHit.png", 36, 36);
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
-	public SpriteSheet font = new SpriteSheet("/res/font32.png", 512);
+	public SpriteSheet font32 = new SpriteSheet("/res/font32.png", 512);
+	public SpriteSheet font16 = new SpriteSheet("/res/font16.png", 256);
 
 	public Render(int x, int y, World world) {
 		width = x;
@@ -73,6 +77,7 @@ public class Render extends Canvas {
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 		this.world = world;
 		this.addMouseListener(Main.mouse);
+		this.addKeyListener(Main.keyboard);
 	}
 
 	public void render() {
@@ -85,8 +90,17 @@ public class Render extends Canvas {
 
 		Graphics g = bs.getDrawGraphics();
 		// //////////////////////////////////////
-		System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
-		drawLongLat();
+		if (Main.gameState == StateID.ONGOING) {
+			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
+			drawLongLat();
+			captured = false;
+		} else {
+			if (!captured) {
+				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
+				captured = true;
+			}
+			System.arraycopy(background, 0, pixels, 0, 1025 * 513);
+		}
 		world.render(this);
 
 		g.drawImage(img, 0, 0, null);
@@ -134,18 +148,19 @@ public class Render extends Canvas {
 			pixels[(y1 + y) * (width + 1) + x1] = color;
 		}
 	}
+
 	public void drawRect(int x, int y, int w, int h, int color, float alpha) {
 		for (int i = 0; i < w * h; i++) {
 			int x1 = (int) (i % w) + x;
 			int y1 = (int) (i / w);
 			int id = (y1 + y) * (width + 1) + x1;
 			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
+			int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			r = (pixels[id] >> 16) & 255;
 			g = (pixels[id] >> 8) & 255;
 			b = pixels[id] & 255;
-			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
-			pixels[id] = newColor+newColor2;
+			int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+			pixels[id] = newColor + newColor2;
 		}
 	}
 
@@ -158,11 +173,11 @@ public class Render extends Canvas {
 			int y1 = (int) (i / w);
 			int id = (y1 + y) * (width + 1) + x1;
 			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
+			int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			r = ((pixels[id] >> 16) & 255);
 			g = ((pixels[id] >> 8) & 255);
 			b = (pixels[id] & 255);
-			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
+			int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 			pixels[id] = (int) (newColor + (newColor2));
 		}
 	}
@@ -170,30 +185,46 @@ public class Render extends Canvas {
 	// drawImageScreen(...): draws an image, applies overlay blending
 	public void drawImageScreen(int x, int y, float w, int[] image, int color) {
 		int h = (int) (image.length / w);
+		int x1, y1, id, r, g, b, newColor, newColor2;
+		float screen, alpha;
 		for (int i = 0; i < image.length; i++) {
-			int x1 = (int) ((i % w) + x - w / 2);
-			int y1 = (int) (i / w) - h / 2;
-			int id = (int) ((y1 + y) * (width + 1) + x1);
-			float screen = (image[i] & 255) / 255.0f;
-			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			if (screen <= 0.5f) {
-				screen *= 2;
-				r = (int) (r * screen);
-				g = (int) (g * screen);
-				b = (int) (b * screen);
-			} else {
-				r = (int) (255 - 2 * (255 - r) * (1 - screen));
-				g = (int) (255 - 2 * (255 - g) * (1 - screen));
-				b = (int) (255 - 2 * (255 - b) * (1 - screen));
+			alpha = (image[i] >> 24 & 255) / 255.0f;
+			if (alpha > 0.9f) {
+				//Finding position on game pixel array
+				x1 = (int) ((i % w) + x - w / 2);
+				y1 = (int) (i / w) - h / 2;
+				id = (int) ((y1 + y) * (width + 1) + x1);
+				
+				//Finding and splitting starting colors
+				screen = (image[i] & 255) / 255.0f;
+				r = ((color >> 16) & 255);
+				g = ((color >> 8) & 255);
+				b = (color & 255);
+				
+				//Setting new colors
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+				}
+				
+				//Recombining colors
+				newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				
+				//Finding alpha
+				r = ((pixels[id] >> 16) & 255);
+				g = ((pixels[id] >> 8) & 255);
+				b = (pixels[id] & 255);
+				newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+				
+				//Finally adding colors to pixel array
+				pixels[id] = (int) (newColor + (newColor2));
 			}
-			float alpha = (image[i] >> 24 & 255) / 255.0f;
-			int newColor = (int)(r*alpha) << 16 | (int)(g*alpha) << 8 | (int)(b*alpha);
-			r = ((pixels[id] >> 16) & 255);
-			g = ((pixels[id] >> 8) & 255);
-			b = (pixels[id] & 255);
-			int newColor2 = (int)(r*(1-alpha)) << 16 | (int)(g*(1-alpha)) << 8 | (int)(b*(1-alpha));
-			pixels[id] = (int) (newColor + (newColor2));
-
 		}
 	}
 
@@ -235,9 +266,9 @@ public class Render extends Canvas {
 	// lighten(int color): returns a lighter color given a 24 bit int color
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r <<=2;
-		g <<=2;
-		b <<=2;
+		r <<= 2;
+		g <<= 2;
+		b <<= 2;
 		if (r > 255) r = 255;
 		if (g > 255) g = 255;
 		if (b > 255) b = 255;
@@ -255,32 +286,39 @@ public class Render extends Canvas {
 		if (b < 0) b = 0;
 		return r << 16 | g << 8 | b;
 	}
+
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		int a = (int)(r+g+b)>>2;
-		r = (a+r)>>1;
-		g = (a+g)>>1;
-		b = (a+b)>>1;
+		int a = (int) (r + g + b) >> 2;
+		r = (a + r) >> 1;
+		g = (a + g) >> 1;
+		b = (a + b) >> 1;
 		return r << 16 | g << 8 | b;
 	}
-	public void darkenScreen() {
+
+	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
-			int r = ((pixels[i] >> 16) & 255), g = ((pixels[i] >> 8) & 255), b = (pixels[i] & 255);
-			int a = (r+g+b)>>3;
-			r = (r+a)>>1;
-			g = (g+a)>>1;
-			b = (b+a)>>1;
-			pixels[i] = r << 16 | g << 8 | b;
+			image[i] = darken(desaturate(pixels[i]));
 		}
+		return image;
 	}
-	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color){
+
+	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color) {
 		int carriage = 0;
-		for(int i = 0; i < label.length(); i++){
-			int letter = (int)label.charAt(i);
-			if(letter != 13){
-					drawImageScreen(x + (i*((size/16)*9)),y+7+carriage, size, font.getSubset(letter % 16, letter / 16, size),color);
+		int letter;
+		int length = label.length()*10;
+		int fix=0;
+		if(size == 16){
+			fix = 9;
+		} else if(size == 32){
+			fix = -18;
+		}
+		for (int i = 0; i < label.length(); i++) {
+			letter = (int) label.charAt(i);
+			if (letter != 13) {
+				drawImageScreen(x + (i * ((size / 16) * 9))-length/2+fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
 			} else {
-				carriage+=size;
+				carriage += (size / 16) * 9;
 			}
 		}
 	}

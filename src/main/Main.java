@@ -1,10 +1,12 @@
 package main;
 
+import input.Keyboard;
+import input.Mouse;
+
 import java.util.Random;
 
 import javax.swing.JFrame;
 
-import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.units.City;
@@ -18,8 +20,8 @@ public class Main {
 	public static boolean running = true;
 	public static int fps;
 	public static int ticks = 0;
-	public static StateID gameState = StateID.PAUSED;
-	public static MapID mapID = MapID.ISLANDS;
+	public static StateID gameState = StateID.ONGOING;
+	public static MapID mapID = MapID.PLAINS;
 
 	// Window
 	public static final int width = 1024;
@@ -32,9 +34,10 @@ public class Main {
 	World world = new World();
 	Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
+	public static Keyboard keyboard = new Keyboard();
 
 	// GitHub
-	public static String version = "Erovra 0.5.2";
+	public static String version = "Erovra 0.5.3";
 
 	// main(String args[]: Contains the game loop, is the first method called when
 	// running
@@ -43,7 +46,7 @@ public class Main {
 		m.window();
 		m.init();
 
-		double dt = 50/3.0;
+		double dt = 50/300.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
