@@ -22,8 +22,16 @@ public class Keyboard extends KeyAdapter {
 		if(keyCode == KeyEvent.VK_ESCAPE){
 			esc.setPressed(pressed);
 		}
+		if(keyCode == KeyEvent.VK_EQUALS){
+			plus.setPressed(pressed);
+		}
+		if(keyCode == KeyEvent.VK_MINUS){
+			minus.setPressed(pressed);
+		}
 	}
 	public Key esc = new Key();
+	public Key plus = new Key();
+	public Key minus = new Key();
 
 	public class Key {
 

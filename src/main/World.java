@@ -53,12 +53,18 @@ public class World {
 				pauseClicked = true;
 				if (Main.gameState == StateID.PAUSED) {
 					Main.setState(StateID.ONGOING);
-				} else {
+				} else if(Main.gameState == StateID.ONGOING){
 					Main.setState(StateID.PAUSED);
 				}
 			}
 		} else {
 			pauseClicked = false;
+		}
+		if(Main.keyboard.minus.isPressed()) {
+			Main.zoomOut();
+		}
+		if(Main.keyboard.plus.isPressed()) {
+			Main.zoomIn();
 		}
 	}
 

@@ -22,83 +22,96 @@ public class Render extends Canvas {
 	int height;
 	BufferedImage img;
 	int[] pixels;
+	int[] map;
 	int[] background = new int[1025 * 513];
 	int[] menu = eggShellScreen();
-	float zoom = 1f;
+	float zoom = 0f;
 	World world;
 	int[] newMap;
 	boolean captured = false;
 
 	Image image = new Image();
 	// Ground Units
-	public int[] artillery = image.loadImage("/res/artillery.png", 32, 16);
-	public int[] infantry = image.loadImage("/res/infantry.png", 32, 16);
-	public int[] cavalry = image.loadImage("/res/cavalry.png", 32, 16);
+	public int[] artillery = image.loadImage("/res/ground/artillery.png", 32, 16);
+	public int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
+	public int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
+	public int[] hitSprite = image.loadImage("/res/ground/hit.png", 36, 20);
 
 	// Water Units
-	public int[] landing = image.loadImage("/res/landing.png", 13, 32);
-	public int[] destroyer = image.loadImage("/res/destroyer.png", 13, 45);
-	public int[] cruiser = image.loadImage("/res/cruiser.png", 16, 61);
-	public int[] landingHit = image.loadImage("/res/landingHit.png", 17, 36);
-	public int[] destroyerHit = image.loadImage("/res/destroyerHit.png", 17, 49);
-	public int[] cruiserHit = image.loadImage("/res/cruiserHit.png", 20, 65);
+	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
+	public int[] destroyer = image.loadImage("/res/water/destroyer.png", 13, 45);
+	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 16, 61);
+	public int[] landingHit = image.loadImage("/res/water/landingHit.png", 17, 36);
+	public int[] destroyerHit = image.loadImage("/res/water/destroyerHit.png", 17, 49);
+	public int[] cruiserHit = image.loadImage("/res/water/cruiserHit.png", 20, 65);
 
 	// Air Units
-	public int[] fighter1 = image.loadImage("/res/fighter.png", 36, 35);
-	public int[] fighter2 = image.loadImage("/res/fighter1.png", 36, 35);
-	public int[] attacker1 = image.loadImage("/res/attack.png", 44, 33);
-	public int[] attacker2 = image.loadImage("/res/attack1.png", 44, 33);
-	public int[] bomber1 = image.loadImage("/res/bomber1.png", 67, 40);
-	public int[] bomber2 = image.loadImage("/res/bomber2.png", 67, 40);
-	public int[] fighterHit = image.loadImage("/res/fighterHit.png", 40, 39);
-	public int[] attackerHit = image.loadImage("/res/attackHit.png", 48, 37);
-	public int[] bomberHit = image.loadImage("/res/bomberHit.png", 71, 44);
+	public int[] fighter1 = image.loadImage("/res/air/fighter.png", 36, 35);
+	public int[] fighter2 = image.loadImage("/res/air/fighter1.png", 36, 35);
+	public int[] attacker1 = image.loadImage("/res/air/attack.png", 44, 33);
+	public int[] attacker2 = image.loadImage("/res/air/attack1.png", 44, 33);
+	public int[] bomber1 = image.loadImage("/res/air/bomber1.png", 67, 40);
+	public int[] bomber2 = image.loadImage("/res/air/bomber2.png", 67, 40);
+	public int[] fighterHit = image.loadImage("/res/air/fighterHit.png", 40, 39);
+	public int[] attackerHit = image.loadImage("/res/air/attackHit.png", 48, 37);
+	public int[] bomberHit = image.loadImage("/res/air/bomberHit.png", 71, 44);
 
 	// Buildings
-	public int[] city = image.loadImage("/res/city.png", 32, 32);
-	public int[] port = image.loadImage("/res/port.png", 32, 32);
-	public int[] factory = image.loadImage("/res/factory.png", 32, 32);
-	public int[] capital = image.loadImage("/res/capital.png", 32, 32);
-	public int[] airfield = image.loadImage("/res/airfield.png", 32, 32);
+	public int[] city = image.loadImage("/res/buildings/city.png", 32, 32);
+	public int[] port = image.loadImage("/res/buildings/port.png", 32, 32);
+	public int[] factory = image.loadImage("/res/buildings/factory.png", 32, 32);
+	public int[] capital = image.loadImage("/res/buildings/capital.png", 32, 32);
+	public int[] airfield = image.loadImage("/res/buildings/airfield.png", 32, 32);
+	public int[] cityHit = image.loadImage("/res/buildings/buildingHit.png", 36, 36);
 
 	// Projectiles
-	public int[] shell = image.loadImage("/res/shell.png", 4, 4);
-	public int[] torpedo = image.loadImage("/res/torpedo.png", 2, 7);
-	public int[] bullet = image.loadImage("/res/bullet.png", 2, 2);
-	public int[] bomb = image.loadImage("/res/bomb.png", 16, 8);
+	public int[] shell = image.loadImage("/res/projectiles/shell.png", 4, 4);
+	public int[] torpedo = image.loadImage("/res/projectiles/torpedo.png", 2, 7);
+	public int[] bullet = image.loadImage("/res/projectiles/bullet.png", 2, 2);
+	public int[] bomb = image.loadImage("/res/projectiles/bomb.png", 16, 8);
 
 	// Misc
-	public int[] hitSprite = image.loadImage("/res/hit.png", 36, 20);
-	public int[] cityHit = image.loadImage("/res/buildingHit.png", 36, 36);
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
-	public SpriteSheet font32 = new SpriteSheet("/res/font32.png", 512);
-	public SpriteSheet font16 = new SpriteSheet("/res/font16.png", 256);
+
+	// Fonts
+	public SpriteSheet font32 = new SpriteSheet("/res/fonts/font32.png", 512);
+	public SpriteSheet font16 = new SpriteSheet("/res/fonts/font16.png", 256);
 
 	public Render(int x, int y, World world) {
 		width = x;
 		height = y;
 		img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+		map = new int[1025*513];
 		this.world = world;
 		this.addMouseListener(Main.mouse);
 		this.addKeyListener(Main.keyboard);
+		zoom=0;
 	}
 
 	public void render() {
+		if(Main.zoom == 1) {
+			
+		} else {
+			if (zoom != Main.zoom) {
+				zoom = Main.zoom;
+				System.arraycopy(Image.rescale(Map.mapData, 1025, zoom), 0, map, 0, 1025 * 513);
+			}
+		}
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
 			createBufferStrategy(2);
 			return;
-
 		}
 
 		Graphics g = bs.getDrawGraphics();
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
-			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
+			System.arraycopy(map, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
-		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
+				|| Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
@@ -110,7 +123,8 @@ public class Render extends Canvas {
 		world.render(this);
 
 		g.drawImage(img, 0, 0, null);
-		if (Main.gameState == StateID.ONGOING) world.drawCoins(g);
+		if (Main.gameState == StateID.ONGOING)
+			world.drawCoins(g);
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf(Main.version), 5, 17);
 		g.setColor(new Color(255, 255, 255));
@@ -126,23 +140,29 @@ public class Render extends Canvas {
 
 	// drawLongLat(): Draws the longitude and latitude lines on the map
 	void drawLongLat() {
+		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
-			int x = (int) ((i % 17) * 64);
-			int y = (int) (i / 17);
+			int x = (int) (((i % 17) * 64) / zoom - (512 / zoom)) + 512;
+			int y = (int) ((i / 17));
 			int id = y * (width + 1) + x;
-			int r = (int) (((pixels[id] >> 16) & 255) * .75);
-			int g = (int) (((pixels[id] >> 8) & 255) * .75);
-			int b = (int) ((pixels[id] & 255) * .75);
-			pixels[id] = r << 16 | g << 8 | b;
+			if (x < 1025 && x > 0) {
+				int r = (int) (((pixels[id] >> 16) & 255) * .75);
+				int g = (int) (((pixels[id] >> 8) & 255) * .75);
+				int b = (int) ((pixels[id] & 255) * .75);
+				pixels[id] = r << 16 | g << 8 | b;
+			}
 		}
+		// Longitude
 		for (int i = 0; i < 512 * 18; i++) {
-			int x = (int) (i % 1024);
-			int y = (int) (i / 1024) * 64;
+			int x = (int) ((i % 1024));
+			int y = (int) (((i / 1024) * 64) / zoom - (256 / zoom)) + 256;
 			int id = y * (width + 1) + x;
-			int r = (int) (((pixels[id] >> 16) & 255) * .75);
-			int g = (int) (((pixels[id] >> 8) & 255) * .75);
-			int b = (int) ((pixels[id] & 255) * .75);
-			pixels[id] = r << 16 | g << 8 | b;
+			if (id < 1024 * 512 && id > 0) {
+				int r = (int) (((pixels[id] >> 16) & 255) * .75);
+				int g = (int) (((pixels[id] >> 8) & 255) * .75);
+				int b = (int) ((pixels[id] & 255) * .75);
+				pixels[id] = r << 16 | g << 8 | b;
+			}
 		}
 	}
 
@@ -260,10 +280,12 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
+							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -275,9 +297,12 @@ public class Render extends Canvas {
 		r <<= 2;
 		g <<= 2;
 		b <<= 2;
-		if (r > 255) r = 255;
-		if (g > 255) g = 255;
-		if (b > 255) b = 255;
+		if (r > 255)
+			r = 255;
+		if (g > 255)
+			g = 255;
+		if (b > 255)
+			b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -287,9 +312,12 @@ public class Render extends Canvas {
 		r >>= 1;
 		g >>= 1;
 		b >>= 1;
-		if (r < 0) r = 0;
-		if (g < 0) g = 0;
-		if (b < 0) b = 0;
+		if (r < 0)
+			r = 0;
+		if (g < 0)
+			g = 0;
+		if (b < 0)
+			b = 0;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -330,7 +358,8 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = (int) label.charAt(i);
 			if (letter != 13) {
-				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
+				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size,
+						font.getSubset(letter % 16, letter / 16, size), color);
 			} else {
 				carriage += (size / 16) * 9;
 			}

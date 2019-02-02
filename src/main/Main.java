@@ -39,9 +39,10 @@ public class Main {
 	Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
+	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 0.5.4";
+	public static String version = "Erovra 0.5.5";
 
 	// main(String args[]: Contains the game loop, is the first method called
 	// when
@@ -51,7 +52,7 @@ public class Main {
 		m.window();
 		m.init();
 
-		double dt = 50 / 30.0;
+		double dt = 50 / 3.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
@@ -69,7 +70,8 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if (gameState == StateID.ONGOING) ticks++;
+				if (gameState == StateID.ONGOING)
+					ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -139,8 +141,7 @@ public class Main {
 					break;
 				}
 			}
-		}
-		while (sweden.unitSize() + russia.unitSize() < 2);
+		} while (sweden.unitSize() + russia.unitSize() < 2);
 	}
 
 	public static void setState(StateID id) {
@@ -153,5 +154,21 @@ public class Main {
 
 	public static int getFrameY() {
 		return frame.getY();
+	}
+
+	public static void zoomIn() {
+		if (zoom > 0.25f) {
+			zoom /= 1.01;
+		} else {
+			zoom = 0.25f;
+		}
+	}
+
+	public static void zoomOut() {
+		if (zoom < 1) {
+			zoom *= 1.01;
+		} else {
+			zoom = 1;
+		}
 	}
 }

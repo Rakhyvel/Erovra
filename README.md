@@ -1,4 +1,8 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 0.5.5
+- Reorganized resource folder
+- Added a semi-fast zoom, could be way improved
+
 ### Erovra 0.5.4
 - Added main menu
 - Made menu buttons functional

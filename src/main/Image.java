@@ -33,15 +33,29 @@ public class Image {
 		return img2;
 	}
 
-	// resize(): A not-so complicated resizing algorithm that returns an int array that is both scaled by a given factor and the same size as the original array
+	// resize(): A complicated resizing algorithm that returns an int array that is both scaled by a given factor and the same size as the original array
 	public static int[] rescale(int[] img, int width, float factor) {
-		float invFactor = 1 / factor;
+		//Set up the new variables
 		int[] img2 = new int[img.length];
-		for (int i = 0; i < img2.length; i++) {
-			int x = (int) (((i % width) * invFactor)+((-2/factor) + 2)*256);
-			int y = (int) (((i / width) * invFactor)+((-2/factor) + 2)*128);
-			int id = (y * width + x);
-			if(id >= 0 && id < img.length)
+		int xCenter = (int)(512*Main.zoom)-512;
+		int yCenter = (int)(256*Main.zoom)-256;
+		float inverseNewWidth = Main.zoom/width;
+		int x, y, id, modulus = 0;
+		
+		//Walk through the new image
+		for (int i = 0; i < img2.length; i++, modulus++) {
+			// If the modulus is greater than the width, reset the modulus
+			// This acts just like the % symbol, but is faster as it doesn't require division
+			if(modulus >= width)
+				modulus = 0;
+			
+			//Find the new coordinates
+			x = (int) (modulus * factor - xCenter);
+			y = (int) (i * inverseNewWidth  - yCenter);
+			
+			//If the new coordinates are on screen, print them
+			id = (y * width + x);
+			if(id >= 0 && id < img.length && x >=0 && x < 1025)
 				img2[i] = img[id];
 		}
 		return img2;
