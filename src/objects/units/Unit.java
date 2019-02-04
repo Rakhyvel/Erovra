@@ -2,7 +2,6 @@ package objects.units;
 
 import java.util.Random;
 
-import main.Image;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
@@ -22,12 +21,11 @@ public abstract class Unit {
 	protected Point target;
 	protected Point facing;
 	protected Vector velocity;
-	protected Nation nation;
+	public Nation nation;
 	protected int hit = 0;
 	protected float defense;
 	protected float speed;
 	float health;
-	static Image image = new Image();
 	protected UnitID id;
 	UnitID weight;
 	Random rand = new Random();
@@ -36,6 +34,13 @@ public abstract class Unit {
 	public boolean capital = false;
 	boolean boarded = false;
 	int born;
+	boolean selected = false;
+	boolean rightClicked = false;
+	boolean leftClicked = false;
+	int start = 0;
+	float maxStart = 1;
+	UnitID product;
+	UnitID productWeight;
 
 	public Unit(Point position, Nation nation, UnitID weight) {
 		this.position = position;
@@ -90,6 +95,16 @@ public abstract class Unit {
 		engaged = false;
 	}
 
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+
+	public void setWeight(UnitID weight) {
+		if (id == UnitID.FACTORY || id == UnitID.PORT || id == UnitID.AIRFIELD) {
+			this.weight = weight;
+		}
+	}
+
 	// wander(): Finds the closest spotted enemy, if there are any, moves the
 	// unit to engage. If there are no spotted enemy, moves around randomly
 	public void wander() {
@@ -113,7 +128,7 @@ public abstract class Unit {
 			target = smallestPoint;
 			facing = target;
 		} else {
-			if (position.getDist(target) < .75) retarget();
+			if (position.getDist(target) < 1) retarget();
 			if (id == UnitID.INFANTRY && !engaged) settle();
 		}
 	}
@@ -157,14 +172,22 @@ public abstract class Unit {
 			if (Map.getArray(newPoint) > 0.5f) {
 				velocityMove();
 			} else {
-				escapeEdge();
+				if (nation.isAIControlled()) {
+					escapeEdge();
+				} else {
+					position = position.addVector(velocity.scalar(-1));
+				}
 			}
 		} else {
 			if (weight != UnitID.LIGHT) {
 				if (Map.getArray(newPoint) < 0.5f && Map.getArray(newPoint) != -1) {
 					velocityMove();
 				} else {
-					escapeEdge();
+					if (nation.isAIControlled()) {
+						escapeEdge();
+					} else {
+						target.setX(0);
+					}
 				}
 			} else {
 				velocityMove();
@@ -174,7 +197,7 @@ public abstract class Unit {
 
 	void velocityMove() {
 		velocity = position.getTargetVector(target).normalize().scalar(speed);
-		position = position.addVector(velocity);
+		if (position.getDist(target) > 1) position = position.addVector(velocity);
 	}
 
 	// detectHit(): checks enemy projectile array. If there are any close enough
@@ -335,6 +358,37 @@ public abstract class Unit {
 		}
 	}
 
+	void clickToMove() {
+		if (position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY() - 24)) < 512) {
+			hit = 3;
+			if (Main.mouse.getMouseLeftDown()) {
+				if (!leftClicked) {
+					leftClicked = true;
+					selected = true;
+				}
+			} else {
+				leftClicked = false;
+			}
+		}
+		if (selected && !leftClicked) {
+			if (Main.mouse.getMouseLeftDown()) {
+				selected = false;
+				target.setX(Main.mouse.getX());
+				target.setY(Main.mouse.getY() - 24);
+				facing = target;
+			}
+		}
+	}
+
+	void clickToDropDown() {
+		if (position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY() - 24)) < 512) {
+			hit = 3;
+			if (Main.mouse.getMouseRightDown()) {
+				Main.world.getDropDown().show(this);
+			}
+		}
+	}
+
 	// retarget(): changes the target of the unit to one on a circle at radius r
 	// away
 	void retarget() {
@@ -364,7 +418,6 @@ public abstract class Unit {
 	// escapeEdge(): Tries to pathfind around obstacles such as the coast or the
 	// world edge. Very buggy and can cause the game to slow
 	void escapeEdge() {
-		target = position;
 		Point p1;
 		Point p2;
 		float r = 10;
@@ -398,5 +451,22 @@ public abstract class Unit {
 			}
 		}
 		velocityMove();
+	}
+
+	public boolean buyUnit(UnitID product, UnitID productWeight, int cost, int time) {
+		if (nation.coins >= cost) {
+			nation.coins -= cost;
+			this.product = product;
+			this.productWeight = productWeight;
+			start = time;
+			maxStart = start;
+			return true;
+		} else {
+			this.product = UnitID.NONE;
+			this.productWeight = UnitID.NONE;
+			start = 1;
+			maxStart = start;
+		}
+		return false;
 	}
 }

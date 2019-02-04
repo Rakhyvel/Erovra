@@ -9,10 +9,6 @@ import utility.Point;
 
 public class Factory extends Unit {
 
-	int start = 0;
-	float maxStart = 1;
-	UnitID product;
-	UnitID productWeight;
 	boolean spotted = false;
 
 	public Factory(Point position, Nation nation) {
@@ -32,10 +28,13 @@ public class Factory extends Unit {
 		engaged = false;
 		detectHit();
 		start--;
+		if (!nation.isAIControlled()) {
+			clickToDropDown();
+		}
 
 		if (start < 0) {
 			addProduct();
-			decideNewProduct();
+			if (nation.isAIControlled()) decideNewProduct();
 		}
 	}
 
@@ -53,52 +52,18 @@ public class Factory extends Unit {
 	}
 
 	public void decideNewProduct() {
-		if (product == UnitID.ARTILLERY) {
-			if (nation.coins >= nation.artilleryCost * 2) {
-				nation.coins -= nation.artilleryCost * 2;
-				productWeight = UnitID.HEAVY;
-				start = 21600;
-				maxStart = start;
-			} else if (nation.coins >= nation.artilleryCost) {
-				nation.coins -= nation.artilleryCost;
-				productWeight = UnitID.MEDIUM;
-				start = 10800;
-				maxStart = start;
-			} else if (nation.coins >= nation.artilleryCost / 2) {
-				nation.coins -= nation.artilleryCost / 2;
-				productWeight = UnitID.LIGHT;
-				start = 10800;
-				maxStart = start;
-			} else {
-				start = 1;
-				maxStart = start;
-			}
-		} else if (product == UnitID.CAVALRY) {
-			if (nation.coins >= nation.cavalryCost * 2) {
-				// 6 mimnutes
-				nation.coins -= nation.cavalryCost * 2;
-				productWeight = UnitID.HEAVY;
-				start = 21600;
-				maxStart = start;
-			} else if (nation.coins >= nation.cavalryCost) {
-				// 3 minutes
-				nation.coins -= nation.cavalryCost;
-				productWeight = UnitID.MEDIUM;
-				start = 10800;
-				maxStart = start;
-			} else if (nation.coins >= nation.cavalryCost / 2) {
-				// 2 minutes
-				nation.coins -= nation.cavalryCost / 2;
-				productWeight = UnitID.LIGHT;
-				start = 10800;
-				maxStart = start;
-			} else {
-				start = 1;
-				maxStart = start;
-			}
-		} else {
-			start = 1;
-			maxStart = start;
+		if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.artilleryCost * 2, 21600)) {
+			// Heavy artillery
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.cavalryCost * 2, 21600)) {
+			// Heavy cavalry
+		} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.artilleryCost, 10800)) {
+			// Medium artillery
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.cavalryCost, 10800)) {
+			// Medium cavalry
+		} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.artilleryCost/2, 10800)) {
+			// Anti Air artillery
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.cavalryCost/2, 10800)) {
+			// Light Cavalry
 		}
 	}
 
@@ -109,7 +74,7 @@ public class Factory extends Unit {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.factory, nation.color);
-			if (hit > 1) {
+			if (hit > 1 || selected) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}
 		}

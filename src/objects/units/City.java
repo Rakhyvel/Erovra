@@ -24,7 +24,7 @@ public class City extends Unit {
 		if (engaged) spotted = true;
 		engaged = false;
 		detectHit();
-		if ((Main.ticks - born) % 600 == 0) {
+		if ((Main.ticks - born) % 320 == 0) {
 			nation.addCoin(position);
 		}
 	}

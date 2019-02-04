@@ -31,7 +31,11 @@ public class Cavalry extends Unit {
 
 	public void tick(double t) {
 		if(!boarded){
-			wander();
+			if(nation.isAIControlled()){
+				wander();
+			} else {
+				clickToMove();
+			}
 			engaged = autoAim(cal);
 			detectHit();
 			targetMove();
@@ -46,7 +50,7 @@ public class Cavalry extends Unit {
 			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), direction);
 			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, direction);
 			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), direction);
-			if (hit > 1) {
+			if (hit > 1 || selected) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}

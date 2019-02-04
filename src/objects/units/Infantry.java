@@ -17,8 +17,13 @@ public class Infantry extends Unit {
 	}
 
 	public void tick(double t) {
-		if(!boarded){
-			wander();
+		if (!boarded) {
+			if (nation.isAIControlled()) {
+				wander();
+			} else {
+				clickToMove();
+				clickToDropDown();
+			}
 			engaged = autoAim(1);
 			detectHit();
 			targetMove();
@@ -31,7 +36,7 @@ public class Infantry extends Unit {
 			if (velocity.getY() > 0) direction += 3.14f;
 
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
-			if (hit > 1) {
+			if (hit > 1 || selected) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}

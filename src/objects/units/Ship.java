@@ -38,7 +38,11 @@ public class Ship extends Unit {
 			detectHit();
 			if (weight != UnitID.LIGHT) {
 				engaged = torpedoAim() || aaAim();
-				wander();
+				if (nation.isAIControlled()) {
+					wander();
+				} else {
+					clickToMove();
+				}
 				targetMove();
 			} else {
 				engaged = aaAim();
@@ -109,9 +113,9 @@ public class Ship extends Unit {
 			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color, direction);
 			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color), direction);
 
-			if (hit > 1 && weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.landingHit, r.lighten(nation.color), direction);
-			if (hit > 1 && weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color, direction);
-			if (hit > 1 && weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 65, r.cruiserHit, r.darken(nation.color), direction);
+			if ((hit > 1 || selected) && weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.landingHit, r.lighten(nation.color), direction);
+			if ((hit > 1 || selected) && weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color, direction);
+			if ((hit > 1 || selected) && weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 20, r.cruiserHit, r.darken(nation.color), direction);
 		}
 	}
 }

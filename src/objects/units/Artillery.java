@@ -30,9 +30,9 @@ public class Artillery extends Unit {
 			if (weight == UnitID.LIGHT) {
 				aaAim();
 			} else if (weight == UnitID.MEDIUM) {
-				autoArtilleryAim(256);
+				autoArtilleryAim(64);
 			} else {
-				autoArtilleryAim(128);
+				autoArtilleryAim(32);
 			}
 			detectHit();
 			targetMove();

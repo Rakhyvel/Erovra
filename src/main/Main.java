@@ -25,7 +25,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.ISLANDS;
 
 	// Window
 	public static final int width = 1024;
@@ -35,14 +35,14 @@ public class Main {
 	// Objects
 	Random rand = new Random();
 	static Map map = new Map();
-	static World world = new World();
+	public static World world = new World();
 	Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 0.5.5";
+	public static String version = "Erovra 1.0.1";
 
 	// main(String args[]: Contains the game loop, is the first method called
 	// when
@@ -96,12 +96,13 @@ public class Main {
 		new Trig();
 		world.menuArray.add(new GameMenu());
 		world.menuArray.add(new MainMenu());
+		world.menuArray.add(world.getDropDown());
 		Main.setState(StateID.MENU);
 	}
 
 	// window(): Sets up the window for the game
 	void window() {
-		frame.setSize(width + 7, height + 30);
+		frame.setSize(width + 7, height + 29);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -114,6 +115,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 50 << 8 | 0, "Russia");
+		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);

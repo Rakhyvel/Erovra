@@ -25,7 +25,7 @@ public class Render extends Canvas {
 	int[] map;
 	int[] background = new int[1025 * 513];
 	int[] menu = eggShellScreen();
-	float zoom = 0f;
+	float zoom = 1f;
 	World world;
 	int[] newMap;
 	boolean captured = false;
@@ -82,22 +82,14 @@ public class Render extends Canvas {
 		height = y;
 		img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
 		pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-		map = new int[1025*513];
+		map = new int[1025 * 513];
 		this.world = world;
 		this.addMouseListener(Main.mouse);
 		this.addKeyListener(Main.keyboard);
-		zoom=0;
+		zoom = 1;
 	}
 
 	public void render() {
-		if(Main.zoom == 1) {
-			
-		} else {
-			if (zoom != Main.zoom) {
-				zoom = Main.zoom;
-				System.arraycopy(Image.rescale(Map.mapData, 1025, zoom), 0, map, 0, 1025 * 513);
-			}
-		}
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
 			createBufferStrategy(2);
@@ -107,11 +99,10 @@ public class Render extends Canvas {
 		Graphics g = bs.getDrawGraphics();
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
-			System.arraycopy(map, 0, pixels, 0, 1025 * 513);
+			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
-		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
-				|| Main.gameState == StateID.VICTORY) {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
@@ -123,8 +114,7 @@ public class Render extends Canvas {
 		world.render(this);
 
 		g.drawImage(img, 0, 0, null);
-		if (Main.gameState == StateID.ONGOING)
-			world.drawCoins(g);
+		if (Main.gameState == StateID.ONGOING) world.drawCoins(g);
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf(Main.version), 5, 17);
 		g.setColor(new Color(255, 255, 255));
@@ -142,8 +132,8 @@ public class Render extends Canvas {
 	void drawLongLat() {
 		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
-			int x = (int) (((i % 17) * 64) / zoom - (512 / zoom)) + 512;
-			int y = (int) ((i / 17));
+			int x = (int) (i % 17) * 64;
+			int y = (int) (i / 17);
 			int id = y * (width + 1) + x;
 			if (x < 1025 && x > 0) {
 				int r = (int) (((pixels[id] >> 16) & 255) * .75);
@@ -154,8 +144,8 @@ public class Render extends Canvas {
 		}
 		// Longitude
 		for (int i = 0; i < 512 * 18; i++) {
-			int x = (int) ((i % 1024));
-			int y = (int) (((i / 1024) * 64) / zoom - (256 / zoom)) + 256;
+			int x = (int) (i % 1024);
+			int y = (int) ((i / 1024) * 64);
 			int id = y * (width + 1) + x;
 			if (id < 1024 * 512 && id > 0) {
 				int r = (int) (((pixels[id] >> 16) & 255) * .75);
@@ -171,7 +161,10 @@ public class Render extends Canvas {
 		for (int i = 0; i < w * h; i++) {
 			int x1 = (int) (i % w) + x;
 			int y1 = (int) (i / w);
-			pixels[(y1 + y) * (width + 1) + x1] = color;
+			int id = (y1 + y) * (width + 1) + x1;
+			if (id < 1025 * 513 && id >= 0) {
+				pixels[id] = color;
+			}
 		}
 	}
 
@@ -180,13 +173,15 @@ public class Render extends Canvas {
 			int x1 = (int) (i % w) + x;
 			int y1 = (int) (i / w);
 			int id = (y1 + y) * (width + 1) + x1;
-			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-			r = (pixels[id] >> 16) & 255;
-			g = (pixels[id] >> 8) & 255;
-			b = pixels[id] & 255;
-			int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-			pixels[id] = newColor + newColor2;
+			if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+				int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				r = (pixels[id] >> 16) & 255;
+				g = (pixels[id] >> 8) & 255;
+				b = pixels[id] & 255;
+				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+				pixels[id] = newColor + newColor2;
+			}
 		}
 	}
 
@@ -220,36 +215,37 @@ public class Render extends Canvas {
 				x1 = (int) ((i % w) + x - w / 2);
 				y1 = (int) (i / w) - h / 2;
 				id = (int) ((y1 + y) * (width + 1) + x1);
+				if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+					// Finding and splitting starting colors
+					screen = (image[i] & 255) / 255.0f;
+					r = ((color >> 16) & 255);
+					g = ((color >> 8) & 255);
+					b = (color & 255);
 
-				// Finding and splitting starting colors
-				screen = (image[i] & 255) / 255.0f;
-				r = ((color >> 16) & 255);
-				g = ((color >> 8) & 255);
-				b = (color & 255);
+					// Setting new colors
+					if (screen <= 0.5f) {
+						screen *= 2;
+						r = (int) (r * screen);
+						g = (int) (g * screen);
+						b = (int) (b * screen);
+					} else {
+						r = (int) (255 - 2 * (255 - r) * (1 - screen));
+						g = (int) (255 - 2 * (255 - g) * (1 - screen));
+						b = (int) (255 - 2 * (255 - b) * (1 - screen));
+					}
 
-				// Setting new colors
-				if (screen <= 0.5f) {
-					screen *= 2;
-					r = (int) (r * screen);
-					g = (int) (g * screen);
-					b = (int) (b * screen);
-				} else {
-					r = (int) (255 - 2 * (255 - r) * (1 - screen));
-					g = (int) (255 - 2 * (255 - g) * (1 - screen));
-					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+					// Recombining colors
+					newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+
+					// Finding alpha
+					r = ((pixels[id] >> 16) & 255);
+					g = ((pixels[id] >> 8) & 255);
+					b = (pixels[id] & 255);
+					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+
+					// Finally adding colors to pixel array
+					pixels[id] = (int) (newColor + (newColor2));
 				}
-
-				// Recombining colors
-				newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-
-				// Finding alpha
-				r = ((pixels[id] >> 16) & 255);
-				g = ((pixels[id] >> 8) & 255);
-				b = (pixels[id] & 255);
-				newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-
-				// Finally adding colors to pixel array
-				pixels[id] = (int) (newColor + (newColor2));
 			}
 		}
 	}
@@ -280,12 +276,10 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor)
-							+ ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -297,12 +291,9 @@ public class Render extends Canvas {
 		r <<= 2;
 		g <<= 2;
 		b <<= 2;
-		if (r > 255)
-			r = 255;
-		if (g > 255)
-			g = 255;
-		if (b > 255)
-			b = 255;
+		if (r > 255) r = 255;
+		if (g > 255) g = 255;
+		if (b > 255) b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -312,12 +303,9 @@ public class Render extends Canvas {
 		r >>= 1;
 		g >>= 1;
 		b >>= 1;
-		if (r < 0)
-			r = 0;
-		if (g < 0)
-			g = 0;
-		if (b < 0)
-			b = 0;
+		if (r < 0) r = 0;
+		if (g < 0) g = 0;
+		if (b < 0) b = 0;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -358,8 +346,7 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = (int) label.charAt(i);
 			if (letter != 13) {
-				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size,
-						font.getSubset(letter % 16, letter / 16, size), color);
+				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
 			} else {
 				carriage += (size / 16) * 9;
 			}

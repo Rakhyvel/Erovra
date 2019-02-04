@@ -9,9 +9,6 @@ import utility.Point;
 
 public class Port extends Unit {
 
-	int start = 0;
-	float maxStart = 1;
-	UnitID productWeight;
 	boolean spotted = false;
 
 	public Port(Point position, Nation nation) {
@@ -23,16 +20,18 @@ public class Port extends Unit {
 	}
 
 	public void tick(double t) {
-		if (engaged)
-			spotted = true;
+		if (engaged) spotted = true;
 		disengage();
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
 			detectHit();
 			start--;
+			if (!nation.isAIControlled()) {
+				clickToDropDown();
+			}
 
 			if (start < 0) {
 				addProduct();
-				decideNewProduct();
+				if (nation.isAIControlled()) decideNewProduct();
 			}
 		}
 	}
@@ -40,30 +39,13 @@ public class Port extends Unit {
 	public void addProduct() {
 		if (productWeight != UnitID.NONE && productWeight != null) {
 			nation.addUnit(new Ship(position, nation, productWeight));
-			if (productWeight != UnitID.LIGHT)
-				nation.seaSupremacy++;
+			if (productWeight != UnitID.LIGHT) nation.seaSupremacy++;
 			productWeight = UnitID.NONE;
 		}
 	}
 
 	public void decideNewProduct() {
 		if (nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
-			if (nation.coins >= nation.shipCost * 2) {
-				nation.coins -= nation.shipCost * 2;
-				productWeight = UnitID.HEAVY;
-				start = 21600;
-				maxStart = start;
-			} else if (nation.coins >= nation.shipCost) {
-				nation.coins -= nation.shipCost;
-				productWeight = UnitID.MEDIUM;
-				start = 10800;
-				maxStart = start;
-			} else {
-				productWeight = UnitID.NONE;
-				start = 0;
-				maxStart = start;
-			}
-		} else {
 			if (nation.coins >= (nation.shipCost / 4)) {
 				int smallestDistance = 524288;
 				int unitCount = 0;
@@ -71,22 +53,19 @@ public class Port extends Unit {
 					Unit tempUnit = nation.getUnit(i);
 					Point tempPoint = tempUnit.getPosition();
 					int tempDist = (int) position.getDist(tempPoint);
-					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY)
-							|| (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY))
-							&& !tempUnit.engaged && !tempUnit.boarded) {
+					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.boarded) {
 						unitCount++;
 					}
 				}
 				if (unitCount > 3) {
-					nation.coins -= nation.shipCost / 4;
-					productWeight = UnitID.LIGHT;
-					start = 3000;
-					maxStart = start;
+					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.shipCost / 4, 3000);
 				}
+			}
+		} else {
+			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.airSupremacy >= nation.airSupremacy) {
+				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.shipCost, 10800);
 			} else {
-				productWeight = UnitID.NONE;
-				start = 0;
-				maxStart = start;
+				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.shipCost * 2, 10800);
 			}
 		}
 	}
@@ -95,8 +74,7 @@ public class Port extends Unit {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (productWeight != UnitID.NONE) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
-						(int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, r.darken(nation.color));
 			if (hit > 1) {

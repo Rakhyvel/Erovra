@@ -8,9 +8,7 @@ import output.Render;
 import utility.Point;
 
 public class Airfield extends Unit {
-	int start = 0;
-	float maxStart = 1;
-	UnitID productWeight;
+
 	boolean spotted = false;
 
 	public Airfield(Point position, Nation nation) {
@@ -24,10 +22,13 @@ public class Airfield extends Unit {
 		engaged = false;
 		detectHit();
 		start--;
+		if (!nation.isAIControlled()) {
+			clickToDropDown();
+		}
 
 		if (start < 0) {
 			addProduct();
-			decideNewProduct();
+			if (nation.isAIControlled()) decideNewProduct();
 		}
 	}
 
@@ -41,39 +42,12 @@ public class Airfield extends Unit {
 
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			if (nation.coins >= (nation.planeCost / 2)) {
-				nation.coins -= nation.planeCost / 2;
-				productWeight = UnitID.LIGHT;
-				start = 5400;
-				maxStart = start;
-			} else {
-				productWeight = UnitID.NONE;
-				start = 1;
-				maxStart = start;
-			}
+			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.planeCost / 2, 5400);
 		} else {
-			if ((nation.enemyNation.landSupremacy+nation.enemyNation.seaSupremacy) >= (nation.landSupremacy+nation.seaSupremacy)) {
-				if (nation.coins >= nation.planeCost) {
-					nation.coins -= nation.planeCost;
-					productWeight = UnitID.MEDIUM;
-					start = 10800;
-					maxStart = start;
-				} else {
-					productWeight = UnitID.NONE;
-					start = 1;
-					maxStart = start;
-				}
+			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.planeCost, 10800);
 			} else {
-				if (nation.coins >= (nation.planeCost / 2)) {
-					nation.coins -= nation.planeCost / 2;
-					productWeight = UnitID.HEAVY;
-					start = 7200;
-					maxStart = start;
-				} else {
-					productWeight = UnitID.NONE;
-					start = 1;
-					maxStart = start;
-				}
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.planeCost / 2, 7200);
 			}
 		}
 	}

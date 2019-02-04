@@ -1,4 +1,12 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.1
+- Infantry drop down added
+- Factory, airfield, and port drop down added
+- * Weird bug that happens when units are engaged and then moved, teleport to target location *
+
+### Erovra 1.0.0
+- Infantry units may now be moved using the mouse
+
 ### Erovra 0.5.5
 - Reorganized resource folder
 - Added a semi-fast zoom, could be way improved

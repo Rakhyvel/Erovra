@@ -5,12 +5,9 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Nation;
-import objects.gui.GameMenu;
+import objects.gui.DropDown;
 import objects.gui.Menu;
-import objects.units.City;
 import output.Render;
-import terrain.Map;
-import utility.Point;
 
 public class World {
 
@@ -19,6 +16,7 @@ public class World {
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 	boolean pauseClicked = false;
+	DropDown dropDown = new DropDown();
 
 	// tick(double t): Calls the tick method for each object in the game, takes
 	// t as the time in millis since last tick
@@ -43,27 +41,26 @@ public class World {
 			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
 				hostile.getCoin(i2).tick(t);
 			}
-		} else {
-			for (int i = 0; i < menuArray.size(); i++) {
-				menuArray.get(i).tick();
-			}
+		}
+		for (int i = 0; i < menuArray.size(); i++) {
+			menuArray.get(i).tick();
 		}
 		if (Main.keyboard.esc.isPressed()) {
 			if (!pauseClicked) {
 				pauseClicked = true;
 				if (Main.gameState == StateID.PAUSED) {
 					Main.setState(StateID.ONGOING);
-				} else if(Main.gameState == StateID.ONGOING){
+				} else if (Main.gameState == StateID.ONGOING) {
 					Main.setState(StateID.PAUSED);
 				}
 			}
 		} else {
 			pauseClicked = false;
 		}
-		if(Main.keyboard.minus.isPressed()) {
+		if (Main.keyboard.minus.isPressed()) {
 			Main.zoomOut();
 		}
-		if(Main.keyboard.plus.isPressed()) {
+		if (Main.keyboard.plus.isPressed()) {
 			Main.zoomIn();
 		}
 	}
@@ -101,7 +98,7 @@ public class World {
 			}
 			r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 		}
-		for (int i = 0; i < menuArray.size() && Main.gameState != StateID.ONGOING; i++) {
+		for (int i = 0; i < menuArray.size(); i++) {
 			menuArray.get(i).render(r);
 		}
 	}
@@ -120,5 +117,9 @@ public class World {
 
 	public void setHostile(Nation nation) {
 		hostile = nation;
+	}
+
+	public DropDown getDropDown() {
+		return dropDown;
 	}
 }
