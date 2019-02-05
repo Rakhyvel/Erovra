@@ -17,9 +17,9 @@ public class Factory extends Unit {
 		id = UnitID.FACTORY;
 		defense = 3;
 		if (((nation.factoryCost - 15) / 10 & 3) == 0) {
-			product = UnitID.ARTILLERY;
+			setProduct(UnitID.ARTILLERY);
 		} else {
-			product = UnitID.CAVALRY;
+			setProduct(UnitID.CAVALRY);
 		}
 	}
 
@@ -40,10 +40,10 @@ public class Factory extends Unit {
 
 	public void addProduct() {
 		if (productWeight != null && productWeight != UnitID.NONE) {
-			if (product == UnitID.CAVALRY) {
+			if (getProduct() == UnitID.CAVALRY) {
 				nation.addUnit(new Cavalry(position, nation, productWeight));
 				nation.landSupremacy++;
-			} else if (product == UnitID.ARTILLERY) {
+			} else if (getProduct() == UnitID.ARTILLERY) {
 				nation.addUnit(new Artillery(position, nation, productWeight));
 				nation.landSupremacy++;
 			}

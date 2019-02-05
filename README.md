@@ -3,6 +3,8 @@
 - Fixed teleportation bug mentioned in 1.0.1
 - Rigorized mouse input logic
 - Added landing craft drop down
+- Fixed ship teleportation bug
+- Added health bar to drop down
 
 ### Erovra 1.0.1
 - Infantry drop down added

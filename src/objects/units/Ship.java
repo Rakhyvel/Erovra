@@ -16,7 +16,7 @@ public class Ship extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			defense = 1f;
+			defense = .3f;
 			cal = 0.5f;
 			if (nation.isAIControlled()) {
 				target = nation.enemyNation.capital.position

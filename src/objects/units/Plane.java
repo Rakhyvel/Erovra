@@ -73,7 +73,7 @@ public class Plane extends Unit {
 
 	void patrol() {
 		// If you're not dead on target, turn, or if you're too close, turn
-		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99 && position.getDist(patrolPoint) < 2048) a += 0.035 * getSpeed();
+		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99) a += 0.035 * getSpeed();
 		// If you're directly behind, turn slower
 		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < -0.5) a -= 0.025 * getSpeed();
 		target = position.addPoint(new Point(Trig.sin(a), Trig.cos(a)));

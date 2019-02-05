@@ -1,19 +1,18 @@
 package main;
 
+import input.Keyboard;
+import input.Mouse;
+
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
-import input.Keyboard;
-import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
-import objects.units.Cavalry;
 import objects.units.City;
-import objects.units.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -71,8 +70,7 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if (gameState == StateID.ONGOING)
-					ticks++;
+				if (gameState == StateID.ONGOING) ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -144,9 +142,8 @@ public class Main {
 					break;
 				}
 			}
-		} while (sweden.unitSize() + russia.unitSize() < 2);
-		sweden.addUnit(new Ship(new Point(512,256),sweden, UnitID.LIGHT));
-		sweden.addUnit(new Cavalry(new Point(51,25),sweden, UnitID.LIGHT));
+		}
+		while (sweden.unitSize() + russia.unitSize() < 2);
 	}
 
 	public static void setState(StateID id) {

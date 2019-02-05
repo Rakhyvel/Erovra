@@ -115,39 +115,34 @@ public class DropDown extends Menu {
 
 	public void render(Render r) {
 		if (shown) {
+			r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
+			r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 			if (unit.getID() == UnitID.INFANTRY) {
-				r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-				r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 				drawOption("City (" + unit.nation.cityCost + ")", 1, r);
 				drawOption("Factory (" + unit.nation.factoryCost + ")", 2, r);
 				drawOption("Port (" + unit.nation.portCost + ")", 3, r);
 				drawOption("Airfield (" + unit.nation.airfieldCost + ")", 4, r);
 			} else if (unit.getID() == UnitID.FACTORY) {
-				r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-				r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 				drawOption("Light tank (" + unit.nation.cavalryCost / 2 + ")", 1, r);
 				drawOption("Medium tank (" + unit.nation.cavalryCost + ")", 2, r);
 				drawOption("Heavy tank (" + unit.nation.cavalryCost * 2 + ")", 3, r);
 			} else if (unit.getID() == UnitID.PORT) {
-				r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-				r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 				drawOption("Landing craft (" + unit.nation.shipCost / 4 + ")", 1, r);
 				drawOption("Destroyer (" + unit.nation.shipCost + ")", 2, r);
 				drawOption("Cruiser (" + unit.nation.shipCost * 2 + ")", 3, r);
 			} else if (unit.getID() == UnitID.AIRFIELD) {
-				r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-				r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 				drawOption("Fighter (" + unit.nation.planeCost / 2 + ")", 1, r);
 				drawOption("Attacker (" + unit.nation.planeCost + ")", 2, r);
 				drawOption("Bomber (" + unit.nation.planeCost / 2 + ")", 3, r);
 			} else if (unit.getID() == UnitID.SHIP) {
-				r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-				r.drawString("Landing craft", (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
 				drawOption("", 1, r);
 				drawOption("", 2, r);
 				drawSlot(1, r);
 				drawSlot(2, r);
 			}
+
+			r.drawRect((int) position.getX()+5, (int) position.getY()+23, 156, 6, 0);
+			r.drawRect((int) position.getX()+7, (int) position.getY()+25, (int) (15.2 * unit.getHealth()), 2, unit.nation.color);
 		}
 	}
 
