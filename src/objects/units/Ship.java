@@ -11,7 +11,6 @@ import utility.Point;
 public class Ship extends Unit {
 
 	float cal;
-	Unit passenger1, passenger2;
 
 	public Ship(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -19,8 +18,11 @@ public class Ship extends Unit {
 			speed = .3f;
 			defense = 1f;
 			cal = 0.5f;
-			target = nation.enemyNation.capital.position.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
-			velocity = position.subVec(target).normalize().scalar(speed);
+			if (nation.isAIControlled()) {
+				target = nation.enemyNation.capital.position
+						.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
+				velocity = position.subVec(target).normalize().scalar(speed);
+			}
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			defense = 2;
@@ -47,24 +49,30 @@ public class Ship extends Unit {
 			} else {
 				engaged = aaAim();
 				if (isLanded()) {
-					if (passenger1 != null) {
-						passenger1.position = position;
-						passenger1.boarded = false;
-						if (passenger2 != null) {
-							passenger2.position = position;
-							passenger2.boarded = false;
+					if (getPassenger1() != null) {
+						getPassenger1().position = position;
+						getPassenger1().setBoarded(false);
+						if (getPassenger2() != null) {
+							getPassenger2().position = position;
+							getPassenger2().setBoarded(false);
 						}
 					}
 					nation.unitArray.remove(this);
 				}
-				if (passenger2 != null) {
-					position = position.addVector(velocity);
+				if (nation.isAIControlled()) {
+					if (getPassenger2() != null) {
+						position = position.addVector(velocity);
+					} else {
+						loadPassengers();
+					}
 				} else {
-					loadPassengers();
+					clickToMove();
+					targetMove();
+					clickToDropDown();
 				}
 				if (health < 0) {
-					nation.unitArray.remove(passenger1);
-					nation.unitArray.remove(passenger2);
+					nation.unitArray.remove(getPassenger1());
+					nation.unitArray.remove(getPassenger2());
 				}
 			}
 		}
@@ -80,14 +88,15 @@ public class Ship extends Unit {
 		int smallestDistance = 524288;
 		Unit firstUnit = null;
 		Unit secondUnit = null;
-		passenger1 = null;
-		passenger2 = null;
+		setPassenger1(null);
+		setPassenger2(null);
 		int unitCount = 0;
 		for (int i = 0; i < nation.unitSize(); i++) {
 			Unit tempUnit = nation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.boarded) {
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY)
+					|| (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				secondUnit = firstUnit;
 				firstUnit = tempUnit;
@@ -95,27 +104,41 @@ public class Ship extends Unit {
 			}
 		}
 		if (firstUnit != null && unitCount > 2) {
-			firstUnit.boarded = true;
-			passenger1 = firstUnit;
+			firstUnit.setBoarded(true);
+			setPassenger1(firstUnit);
 			if (secondUnit != null) {
-				secondUnit.boarded = true;
-				passenger2 = secondUnit;
+				secondUnit.setBoarded(true);
+				setPassenger2(secondUnit);
 			}
 		}
 	}
 
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
+		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) {
 			float direction = position.subVec(target).getRadian();
-			if (velocity.getY() > 0) direction += 3.14f;
+			if (velocity.getY() > 0)
+				direction += 3.14f;
 
-			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, r.lighten(nation.color), direction);
-			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color, direction);
-			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color), direction);
+			if (weight == UnitID.LIGHT)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.landing, r.lighten(nation.color),
+						direction);
+			if (weight == UnitID.MEDIUM)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color,
+						direction);
+			if (weight == UnitID.HEAVY)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color),
+						direction);
 
-			if ((hit > 1 || selected) && weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.landingHit, r.lighten(nation.color), direction);
-			if ((hit > 1 || selected) && weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color, direction);
-			if ((hit > 1 || selected) && weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 20, r.cruiserHit, r.darken(nation.color), direction);
+			if ((hit > 1 || isSelected()) && weight == UnitID.LIGHT)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.landingHit,
+						r.lighten(nation.color), direction);
+			if ((hit > 1 || isSelected()) && weight == UnitID.MEDIUM)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color,
+						direction);
+			if ((hit > 1 || isSelected()) && weight == UnitID.HEAVY)
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 20, r.cruiserHit,
+						r.darken(nation.color), direction);
 		}
 	}
 }

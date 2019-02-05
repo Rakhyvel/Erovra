@@ -1,18 +1,19 @@
 package main;
 
-import input.Keyboard;
-import input.Mouse;
-
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
+import input.Keyboard;
+import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
+import objects.units.Cavalry;
 import objects.units.City;
+import objects.units.Ship;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -25,7 +26,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.ISLANDS;
+	public static MapID mapID = MapID.SEA;
 
 	// Window
 	public static final int width = 1024;
@@ -42,7 +43,7 @@ public class Main {
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.1";
+	public static String version = "Erovra 1.0.2";
 
 	// main(String args[]: Contains the game loop, is the first method called
 	// when
@@ -144,6 +145,8 @@ public class Main {
 				}
 			}
 		} while (sweden.unitSize() + russia.unitSize() < 2);
+		sweden.addUnit(new Ship(new Point(512,256),sweden, UnitID.LIGHT));
+		sweden.addUnit(new Cavalry(new Point(51,25),sweden, UnitID.LIGHT));
 	}
 
 	public static void setState(StateID id) {

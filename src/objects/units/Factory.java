@@ -74,7 +74,7 @@ public class Factory extends Unit {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.factory, nation.color);
-			if (hit > 1 || selected) {
+			if (hit > 1 || isSelected()) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}
 		}

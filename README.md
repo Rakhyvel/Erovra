@@ -1,4 +1,9 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.2
+- Fixed teleportation bug mentioned in 1.0.1
+- Rigorized mouse input logic
+- Added landing craft drop down
+
 ### Erovra 1.0.1
 - Infantry drop down added
 - Factory, airfield, and port drop down added

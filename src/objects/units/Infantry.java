@@ -17,7 +17,7 @@ public class Infantry extends Unit {
 	}
 
 	public void tick(double t) {
-		if (!boarded) {
+		if (!isBoarded()) {
 			if (nation.isAIControlled()) {
 				wander();
 			} else {
@@ -31,12 +31,12 @@ public class Infantry extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !boarded) {
+		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(facing).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
-			if (hit > 1 || selected) {
+			if (hit > 1 || isSelected()) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}

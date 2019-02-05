@@ -25,7 +25,7 @@ public class Artillery extends Unit {
 	}
 
 	public void tick(double t) {
-		if (!boarded) {
+		if (!isBoarded()) {
 			wander();
 			if (weight == UnitID.LIGHT) {
 				aaAim();
@@ -40,7 +40,7 @@ public class Artillery extends Unit {
 	}
 
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !boarded) {
+		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(target).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 

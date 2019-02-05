@@ -53,7 +53,7 @@ public class Port extends Unit {
 					Unit tempUnit = nation.getUnit(i);
 					Point tempPoint = tempUnit.getPosition();
 					int tempDist = (int) position.getDist(tempPoint);
-					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.boarded) {
+					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.isBoarded()) {
 						unitCount++;
 					}
 				}
