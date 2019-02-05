@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import main.Main;
 
 public class Mouse extends MouseAdapter {
+	// The mouse class gets mouse input from the user. It handles mouse presses and the position of the mouse
 	private boolean mouseLeftDown = false;
 	private boolean mouseRightDown = false;
 

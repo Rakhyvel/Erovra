@@ -89,8 +89,7 @@ public class Main {
 		System.exit(0);
 	}
 
-	// init(): Creates the two nations, generates the map and find apropriate
-	// locations for the nation's cities
+	// init(): Adds the menus to the game
 	void init() {
 		new Trig();
 		world.menuArray.add(new GameMenu());
@@ -110,6 +109,7 @@ public class Main {
 		frame.add(render);
 	}
 
+	// startNewMatch(): Sets the state of the game to ongoing, creates two teams, and generates a new map. 
 	public static void startNewMatch() {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
@@ -121,9 +121,14 @@ public class Main {
 		russia.setEnemyNation(sweden);
 
 		do {
+			//Generate a new map
 			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
+			
+			// Clear all objects in each nation
 			sweden.purgeAll();
 			russia.purgeAll();
+			
+			// Start at the top left corner and try to find a suitable place for a city
 			for (int i = 0; i < 84; i++) {
 				int x = (int) (i / 6) * 64 + 96;
 				int y = (int) (i % 6) * 64 + 96;
@@ -133,6 +138,8 @@ public class Main {
 					break;
 				}
 			}
+			
+			// Start at the bottom right corner and try to find a suitable place for a city
 			for (int i = 0; i < 84; i++) {
 				int x = ((int) 6 - (i / 6)) * 64 + 544;
 				int y = (int) (6 - (i % 6)) * 64 + 32;

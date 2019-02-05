@@ -3,32 +3,36 @@ package input;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-
 public class Keyboard extends KeyAdapter {
 
+	// The keyboard class gets keyboard input from the user. It stores these key
+	// inputs in key objects that return whether or not they are being pressed
 	String letter = "";
-	
+
 	public void keyPressed(KeyEvent e) {
-		setKey(e.getKeyCode(),true);
+		setKey(e.getKeyCode(), true);
 		letter = String.valueOf(e.getKeyChar());
 	}
 
 	public void keyReleased(KeyEvent e) {
-		setKey(e.getKeyCode(),false);
+		setKey(e.getKeyCode(), false);
 		letter = "";
 	}
-	
-	public void setKey(int keyCode, boolean pressed){
-		if(keyCode == KeyEvent.VK_ESCAPE){
+
+	// This is where keys are set to true or false
+	public void setKey(int keyCode, boolean pressed) {
+		if (keyCode == KeyEvent.VK_ESCAPE) {
 			esc.setPressed(pressed);
 		}
-		if(keyCode == KeyEvent.VK_EQUALS){
+		if (keyCode == KeyEvent.VK_EQUALS) {
 			plus.setPressed(pressed);
 		}
-		if(keyCode == KeyEvent.VK_MINUS){
+		if (keyCode == KeyEvent.VK_MINUS) {
 			minus.setPressed(pressed);
 		}
 	}
+
+	// This is where keys are created and instantiated
 	public Key esc = new Key();
 	public Key plus = new Key();
 	public Key minus = new Key();
@@ -45,8 +49,8 @@ public class Keyboard extends KeyAdapter {
 			this.pressed = pressed;
 		}
 	}
-	
-	public String getLetter(){
+
+	public String getLetter() {
 		return letter;
 	}
 }

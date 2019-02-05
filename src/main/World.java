@@ -11,6 +11,11 @@ import output.Render;
 
 public class World {
 
+	/*
+	 * The world class is used to contain all objects within the game. This includes
+	 * units, menus, etc. The world calls all objects' tick and render methods
+	 */
+
 	Nation friendly;
 	Nation hostile;
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
@@ -70,10 +75,12 @@ public class World {
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() != UnitID.PLANE)
+					friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() != UnitID.PLANE)
+					hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
@@ -84,10 +91,12 @@ public class World {
 			}
 
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() == UnitID.PLANE) friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() == UnitID.PLANE)
+					friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() == UnitID.PLANE) hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() == UnitID.PLANE)
+					hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
@@ -103,7 +112,7 @@ public class World {
 		}
 	}
 
-	// drawCoins(Graphics g): Draws the ammount of coins
+	// drawCoins(Graphics g): Draws the amount of coins
 	public void drawCoins(Graphics g) {
 		g.setColor(new Color(0, 0, 0));
 		g.drawString(String.valueOf(friendly.getCoinAmount()), 973, 17);
