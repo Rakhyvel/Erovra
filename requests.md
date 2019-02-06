@@ -15,3 +15,7 @@
 - Drop down should show health number
 - Target should show
 - Arrow that shows where cities will be built
+- Doesn't show what one can afford
+- No kerning
+- Artillery should be able to be aimed
+- Bombers should be able to be selected
