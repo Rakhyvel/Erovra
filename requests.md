@@ -1,4 +1,4 @@
-- ~~Create a request file~~
+- ~~Create a changelog file~~
 - Should be able to only select one unit at a time
 - Can build cities on top of one another
 - Drop down isn't hidden by pause
@@ -12,3 +12,6 @@
 - Attackers don't show their targets
 - Attackers can shoot buildings
 - Add settings
+- Drop down should show health number
+- Target should show
+- Arrow that shows where cities will be built
