@@ -43,7 +43,7 @@ public class Main {
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.2";
+	public static String version = "Erovra 1.0.3";
 
 	// main(String args[]: Contains the game loop, is the first method called
 	// when

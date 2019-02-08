@@ -11,7 +11,7 @@ public class Infantry extends Unit {
 
 	public Infantry(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
-		speed = 1f;
+		speed = .1f;
 		defense = 1;
 		id = UnitID.INFANTRY;
 	}
