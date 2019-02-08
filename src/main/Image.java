@@ -28,7 +28,7 @@ public class Image {
 		for (int i = 0; i < img2.length; i++) {
 			int x = (int) ((i % newWidth) * invFactor);
 			int y = (int) ((i / newWidth) * invFactor);
-			img2[i] = img[(int) (y * width + x)];
+			img2[i] = img[y * width + x];
 		}
 		return img2;
 	}

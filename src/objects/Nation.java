@@ -17,20 +17,20 @@ import utility.Point;
 public class Nation {
 
 	public int color;
-	public int coins = 35;
+	public int coins = 9;
 	boolean ai = true;
 
 	// Units
-	public int cavalryCost = 20;
-	public int artilleryCost = 20;
-	public int shipCost = 20;
-	public int planeCost = 20;
+	private final int cavalryCost = 20;
+	private final int artilleryCost = 20;
+	private final int shipCost = 20;
+	private final int planeCost = 20;
 
 	// Structures
-	public int cityCost = 10;
-	public int portCost = 20;
-	public int factoryCost = 15;
-	public int airfieldCost = 20;
+	private int cityCost = 10;
+	private int portCost = 20;
+	private int factoryCost = 15;
+	private int airfieldCost = 20;
 
 	// Supremacy
 	// (Number of destroyers/fighters each nation has, if they have less, make
@@ -52,80 +52,143 @@ public class Nation {
 		this.name = name;
 	}
 
+	/**
+	 * Adds a Unit object to the nations arrayList of Units
+	 * 
+	 * @param unit The Unit subclass to be added.
+	 * @see Unit
+	 */
 	public void addUnit(Unit unit) {
 		unitArray.add(unit);
 	}
 
+	/**
+	 * Adds a Projectile object to the nations arrayList of projectiles
+	 * 
+	 * @param projectile The Procjectile subclass to be added.
+	 * @see Projectile
+	 * @see Unit
+	 */
 	public void addProjectile(Projectile projectile) {
 		projectileArray.add(projectile);
 	}
 
+	/**
+	 * Adds a Coin object to the nations arrayList of coins
+	 * 
+	 * @param projectile The Coin to be added
+	 * @see Coin
+	 */
 	public void addCoin(Point position) {
 		coinArray.add(new Coin(position, this));
 	}
 
-	// purgeAll(): removes every object from unitArray
+	/**
+	 * Removes all Unit objects from the nation's Unit ArrayList. Used in city
+	 * location finding
+	 */
 	public void purgeAll() {
 		for (int i = 0; i < unitArray.size(); i++) {
 			unitArray.remove(0);
 		}
 	}
 
-	// setCapital(int id): sets the object at a given id to be the nation's
-	// capital
+	/**
+	 * Sets the capital of the nation to the one specified
+	 * 
+	 * @param id The index of the Unit Array to be made capital of the nation.
+	 */
 	public void setCaptial(int id) {
 		getUnit(id).capital = true;
 		capital = getUnit(id);
 	}
 
+	/**
+	 * @return The size of the Unit ArrayList
+	 */
 	public int unitSize() {
 		return unitArray.size();
 	}
 
+	/**
+	 * @return The size of the Projectile ArrayList
+	 */
 	public int projectileSize() {
 		return projectileArray.size();
 	}
 
+	/**
+	 * @return The size of the Coin ArrayList
+	 */
 	public int coinSize() {
 		return coinArray.size();
 	}
 
+	/**
+	 * @param id The index of the Unit in the Unit ArrayList
+	 * @return The Unit at the index specified
+	 */
 	public Unit getUnit(int id) {
-		if (unitArray.isEmpty()) {
+		if (id > unitSize()) {
 			return null;
 		}
 		return unitArray.get(id);
 	}
 
+	/**
+	 * @param id The index of the Projectile in the Projectile ArrayList
+	 * @return The Projectile at the index specified
+	 */
 	public Projectile getProjectile(int id) {
-		if (id < projectileArray.size()) {
-			return projectileArray.get(id);
+		if (id > projectileSize()) {
+			return null;
 		}
-		return null;
+		return projectileArray.get(id);
 	}
 
+	/**
+	 * @param id The index of the Coin in the Coin ArrayList
+	 * @return The Coin at the index specified
+	 */
 	public Coin getCoin(int id) {
+		if (id > coinSize()) {
+			return null;
+		}
 		return coinArray.get(id);
 	}
 
+	/**
+	 * Sets the enemy nation
+	 * 
+	 * @param nation The nation that will be made an enemy
+	 */
 	public void setEnemyNation(Nation nation) {
 		if (nation != this) {
 			enemyNation = nation;
 		}
 	}
 
+	/**
+	 * @return The quantity of coins in the nations balance
+	 */
 	public int getCoinAmount() {
 		return coins;
 	}
 
-	// buyCity(Point position): First checks to see if there is enough coins,
-	// then checks to see if the land is able to have a city
+	/**
+	 * First checks to see if there is enough coins, then checks to see if the land
+	 * is able to have a city
+	 * 
+	 * @param position The position of the infantry unit buying
+	 * @return Whether or not the settlement was successful
+	 */
 	public boolean buyCity(Point position) {
-		if (coins >= cityCost) {
-			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		if (coins >= getCityCost()) {
+			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+					((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(cityPoint) > 0.5f && checkProximity(position)) {
-				coins -= cityCost;
-				cityCost += 7;
+				coins -= getCityCost();
+				setCityCost(getCityCost() + 7);
 				addUnit(new City(cityPoint, this, Main.ticks));
 				return true;
 			}
@@ -133,35 +196,45 @@ public class Nation {
 		return false;
 	}
 
-	// buyFactory(Point position): First checks to see if there is enough coins,
-	// then checks to see if the land is able to have a factory
+	/**
+	 * First checks to see if there is enough coins, then checks to see if the land
+	 * is able to have a factory
+	 * 
+	 * @param position  The position of the infantry unit buying
+	 */
 	public void buyFactory(Point position) {
-		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost && checkProximity(position)) {
-			coins -= factoryCost;
-			factoryCost += 10;
+		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+				((int) (position.getY() / 64)) * 64 + 32);
+		if (Map.getArray(factoryPoint) > 0.5f && getCoinAmount() >= getFactoryCost() && checkProximity(position)) {
+			coins -= getFactoryCost();
+			setFactoryCost(getFactoryCost() + 10);
 			addUnit(new Factory(factoryPoint, this));
 		}
 	}
 
-	// buyPort(Point position): First checks to see if there is enough coins,
-	// then checks to see if the land is able to have a port
+	/**
+	 * First checks to see if there is enough coins,
+	 * then checks to see if the land is able to have a port
+	 * 
+	 * @param position  The position of the infantry unit buying
+	 */
 	public void buyPort(Point position) {
 		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(portPoint);
-		if (land < 0.5f && land > 0 && coins >= portCost && checkProximity(position)) {
-			coins -= portCost;
-			portCost += 10;
+		if (land < 0.5f && land > 0 && getCoinAmount() >= getPortCost() && checkProximity(position)) {
+			coins -= getPortCost();
+			setPortCost(getPortCost() + 10);
 			addUnit(new Port(portPoint, this));
 		}
 	}
 
 	public void buyAirfield(Point position) {
-		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+				((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(airfieldPoint);
-		if (land > 0.5f && coins >= airfieldCost && checkProximity(position)) {
-			coins -= airfieldCost;
-			airfieldCost += 10;
+		if (land > 0.5f && getCoinAmount() >= getAirfieldCost() && checkProximity(position)) {
+			coins -= getAirfieldCost();
+			setAirfieldCost(getAirfieldCost() + 10);
 			addUnit(new Airfield(airfieldPoint, this));
 		}
 	}
@@ -185,6 +258,7 @@ public class Nation {
 	public boolean isAIControlled() {
 		return ai;
 	}
+
 	private boolean checkProximity(Point position) {
 		int smallestDistance = 32;
 		for (int i = 0; i < unitSize(); i++) {
@@ -212,5 +286,53 @@ public class Nation {
 			}
 		}
 		return smallestDistance >= 32;
+	}
+
+	public int getCityCost() {
+		return cityCost;
+	}
+
+	public void setCityCost(int cityCost) {
+		this.cityCost = cityCost;
+	}
+
+	public int getFactoryCost() {
+		return factoryCost;
+	}
+
+	public void setFactoryCost(int factoryCost) {
+		this.factoryCost = factoryCost;
+	}
+
+	public int getPortCost() {
+		return portCost;
+	}
+
+	public void setPortCost(int portCost) {
+		this.portCost = portCost;
+	}
+
+	public int getAirfieldCost() {
+		return airfieldCost;
+	}
+
+	public void setAirfieldCost(int airfieldCost) {
+		this.airfieldCost = airfieldCost;
+	}
+
+	public int getCavalryCost() {
+		return cavalryCost;
+	}
+
+	public int getArtilleryCost() {
+		return artilleryCost;
+	}
+
+	public int getShipCost() {
+		return shipCost;
+	}
+
+	public int getPlaneCost() {
+		return planeCost;
 	}
 }

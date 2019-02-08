@@ -18,6 +18,7 @@ public class Factory extends Unit {
 		defense = 3;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (engaged)
 			spotted = true;
@@ -51,21 +52,22 @@ public class Factory extends Unit {
 	}
 
 	public void decideNewProduct() {
-		if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.artilleryCost * 2, 21600)) {
+		if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2, 21600)) {
 			// Heavy artillery
-		} else if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.cavalryCost * 2, 21600)) {
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2, 21600)) {
 			// Heavy cavalry
-		} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.artilleryCost, 10800)) {
+		} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost(), 10800)) {
 			// Medium artillery
-		} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.cavalryCost, 10800)) {
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost(), 10800)) {
 			// Medium cavalry
-		} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.cavalryCost / 2, 7200)) {
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2, 7200)) {
 			// Light Cavalry
-		} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.artilleryCost / 4, 3600)) {
+		} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 4, 3600)) {
 			// Anti Air artillery
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {

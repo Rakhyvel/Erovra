@@ -133,8 +133,8 @@ public class Render extends Canvas {
 	void drawLongLat() {
 		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
-			int x = (int) (i % 17) * 64;
-			int y = (int) (i / 17);
+			int x = i % 17 * 64;
+			int y = i / 17;
 			int id = y * (width + 1) + x;
 			if (x < 1025 && x > 0) {
 				int r = (int) (((pixels[id] >> 16) & 255) * .75);
@@ -145,8 +145,8 @@ public class Render extends Canvas {
 		}
 		// Longitude
 		for (int i = 0; i < 512 * 18; i++) {
-			int x = (int) (i % 1024);
-			int y = (int) ((i / 1024) * 64);
+			int x = i % 1024;
+			int y = (i / 1024) * 64;
 			int id = y * (width + 1) + x;
 			if (id < 1024 * 512 && id > 0) {
 				int r = (int) (((pixels[id] >> 16) & 255) * .75);
@@ -160,8 +160,8 @@ public class Render extends Canvas {
 	// drawRect(...): draws a rectangle
 	public void drawRect(int x, int y, int w, int h, int color) {
 		for (int i = 0; i < w * h; i++) {
-			int x1 = (int) (i % w) + x;
-			int y1 = (int) (i / w);
+			int x1 = i % w + x;
+			int y1 = i / w;
 			int id = (y1 + y) * (width + 1) + x1;
 			if (id < 1025 * 513 && id >= 0) {
 				pixels[id] = color;
@@ -171,8 +171,8 @@ public class Render extends Canvas {
 
 	public void drawRect(int x, int y, int w, int h, int color, float alpha) {
 		for (int i = 0; i < w * h; i++) {
-			int x1 = (int) (i % w) + x;
-			int y1 = (int) (i / w);
+			int x1 = i % w + x;
+			int y1 = i / w;
 			int id = (y1 + y) * (width + 1) + x1;
 			if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
 				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
@@ -191,8 +191,8 @@ public class Render extends Canvas {
 		for (int i = 0; i < image.length; i++) {
 			int color = image[i];
 			float alpha = (color >> 24 & 255) / 255.0f;
-			int x1 = (int) (i % w) + x;
-			int y1 = (int) (i / w);
+			int x1 = i % w + x;
+			int y1 = i / w;
 			int id = (y1 + y) * (width + 1) + x1;
 			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 			int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
@@ -200,7 +200,7 @@ public class Render extends Canvas {
 			g = ((pixels[id] >> 8) & 255);
 			b = (pixels[id] & 255);
 			int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-			pixels[id] = (int) (newColor + (newColor2));
+			pixels[id] = newColor + (newColor2);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class Render extends Canvas {
 				// Finding position on game pixel array
 				x1 = (int) ((i % w) + x - w / 2);
 				y1 = (int) (i / w) - h / 2;
-				id = (int) ((y1 + y) * (width + 1) + x1);
+				id = (y1 + y) * (width + 1) + x1;
 				if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
 					// Finding and splitting starting colors
 					screen = (image[i] & 255) / 255.0f;
@@ -245,7 +245,7 @@ public class Render extends Canvas {
 					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 
 					// Finally adding colors to pixel array
-					pixels[id] = (int) (newColor + (newColor2));
+					pixels[id] = newColor + (newColor2);
 				}
 			}
 		}
@@ -260,7 +260,7 @@ public class Render extends Canvas {
 				// Finding position on game pixel array
 				x1 = (int) ((i % w) + x);
 				y1 = (int) (i / w);
-				id = (int) ((y1 + y) * (width + 1) + x1);
+				id = (y1 + y) * (width + 1) + x1;
 				if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
 					// Finding and splitting starting colors
 					screen = (image[i] & 255) / 255.0f;
@@ -290,7 +290,7 @@ public class Render extends Canvas {
 					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 
 					// Finally adding colors to pixel array
-					pixels[id] = (int) (newColor + (newColor2));
+					pixels[id] = newColor + (newColor2);
 				}
 			}
 		}
@@ -304,7 +304,7 @@ public class Render extends Canvas {
 		for (int i = 0; i < image.length; i++) {
 			if ((image[i] >> 24 & 255) > 0) {
 				double x1 = (i % w) - w / 2;
-				double y1 = (int) (i / w) - h / 2;
+				double y1 = i / w - h / 2;
 				double x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
 				double y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
 				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
@@ -322,10 +322,10 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) (x2) + (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) ((int) (x2) + (int) (y2))] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) (x2) + (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -357,7 +357,7 @@ public class Render extends Canvas {
 
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		int a = (int) (r + g + b) >> 2;
+		int a = r + g + b >> 2;
 		r = (a + r) >> 1;
 		g = (a + g) >> 1;
 		b = (a + b) >> 1;
@@ -390,7 +390,7 @@ public class Render extends Canvas {
 			fix = -18;
 		}
 		for (int i = 0; i < label.length(); i++) {
-			letter = (int) label.charAt(i);
+			letter = label.charAt(i);
 			if (letter != 13) {
 				drawLetter(x + carriage - length / 2 + fix, y-5, size, font.getLetter(letter), color);
 				carriage += font.getKern(letter)+3;

@@ -20,6 +20,7 @@ public class City extends Unit {
 		nation.landSupremacy++;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (engaged) spotted = true;
 		engaged = false;
@@ -29,6 +30,7 @@ public class City extends Unit {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (capital) {

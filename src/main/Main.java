@@ -12,8 +12,6 @@ import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
 import objects.units.City;
-import objects.units.Factory;
-import objects.units.Plane;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -131,8 +129,8 @@ public class Main {
 			
 			// Start at the top left corner and try to find a suitable place for a city
 			for (int i = 0; i < 84; i++) {
-				int x = (int) (i / 6) * 64 + 96;
-				int y = (int) (i % 6) * 64 + 96;
+				int x = i / 6 * 64 + 96;
+				int y = i % 6 * 64 + 96;
 				if (Map.getArray(x, y) > 0.5f) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(1);
@@ -142,8 +140,8 @@ public class Main {
 			
 			// Start at the bottom right corner and try to find a suitable place for a city
 			for (int i = 0; i < 84; i++) {
-				int x = ((int) 6 - (i / 6)) * 64 + 544;
-				int y = (int) (6 - (i % 6)) * 64 + 32;
+				int x = (6 - (i / 6)) * 64 + 544;
+				int y = (6 - (i % 6)) * 64 + 32;
 				if (Map.getArray(x, y) > 0.5f) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(1);

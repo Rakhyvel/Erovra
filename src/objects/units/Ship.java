@@ -35,6 +35,7 @@ public class Ship extends Unit {
 		id = UnitID.SHIP;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
 			detectHit();
@@ -113,6 +114,7 @@ public class Ship extends Unit {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {

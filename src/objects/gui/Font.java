@@ -33,7 +33,7 @@ public class Font {
 	public int getStringWidth(String label) {
 		int length = 0;
 		for(int i = 0; i < label.length(); i++) {
-			length+=getKern((int)label.charAt(i))+3;
+			length+=getKern(label.charAt(i))+3;
 		}
 		return length+16;
 	}

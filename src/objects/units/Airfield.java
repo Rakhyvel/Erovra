@@ -17,6 +17,7 @@ public class Airfield extends Unit {
 		id = UnitID.AIRFIELD;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (engaged) spotted = true;
 		engaged = false;
@@ -43,16 +44,17 @@ public class Airfield extends Unit {
 
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.planeCost / 2, 5400);
+			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 5400);
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.planeCost, 10800);
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
 			} else {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.planeCost / 2, 7200);
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
 			}
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (getProductWeight() != UnitID.NONE && getStart() > 1) {

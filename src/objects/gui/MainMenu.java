@@ -8,6 +8,7 @@ public class MainMenu extends Menu {
 
 	boolean clicked = false;
 
+	@Override
 	public void tick() {
 		if(Main.gameState == StateID.MENU){
 			if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 208 && Main.mouse.getY() < 344) {
@@ -40,6 +41,7 @@ public class MainMenu extends Menu {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (Main.gameState == StateID.MENU) {
 			r.drawString("Erovra", 512, 130, 32, r.font32, 0);

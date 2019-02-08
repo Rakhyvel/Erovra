@@ -22,15 +22,15 @@ public class Map {
 		rand.setSeed(seed);
 		if (id == MapID.ISLANDS) {
 			for (int i = 0; i < 7; i++) {
-				points[i] = new Point((int) (i % 7) * 170, rand.nextInt(512));
+				points[i] = new Point(i % 7 * 170, rand.nextInt(512));
 			}
 			points[0].setY(64 + rand.nextInt(100));
 			points[0].setX(64);
 			points[6].setY(400 + rand.nextInt(100));
 			points[6].setX(960);
 			for (int i = 0; i < 1025 * 513; i++) {
-				int x = (int) (i % 1025);
-				int y = (int) (i / 1025);
+				int x = i % 1025;
+				int y = i / 1025;
 				int smallestDistance = 35000;
 				Point point = new Point(x, y);
 				for (int i2 = 0; i2 < 7; i2++) {
@@ -39,7 +39,7 @@ public class Map {
 						smallestDistance = tempDist;
 					}
 				}
-				islandMask[i] = (float) (1 - ((smallestDistance) / 25000.0f))/2 + 0.2f;
+				islandMask[i] = (1 - ((smallestDistance) / 25000.0f))/2 + 0.2f;
 			}
 		}
 		for (int i = 0; i < 45; i++) {
@@ -82,8 +82,8 @@ public class Map {
 
 			// Interpolation for the squares on the top and left edges
 			for (int i2 = 0; i2 < 2 * r; i2++) {
-				int x = (int) (i2 % s * 2) * p;
-				int y = (int) (i2 / s * 2) * p;
+				int x = i2 % s * 2 * p;
+				int y = i2 / s * 2 * p;
 
 				float m = (rand.nextFloat() - .5f) / (4 << i);
 				if (x + 2 * p < Main.width + 1) {
@@ -96,8 +96,8 @@ public class Map {
 			}
 			// Interpolation for the rest
 			for (int i2 = 0; i2 < 2 * r; i2++) {
-				int x = (int) (i2 % s * 2) * p;
-				int y = (int) (i2 / s * 2) * p;
+				int x = i2 % s * 2 * p;
+				int y = i2 / s * 2 * p;
 				// m: a random
 				float m = 0;
 
@@ -118,8 +118,8 @@ public class Map {
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
-			int x = (int) (i % 1025);
-			int y = (int) (i / 1025);
+			int x = i % 1025;
+			int y = i / 1025;
 			if (id == MapID.ISLANDS) {
 
 				mapData[i] = getColor(getArray(x, y));

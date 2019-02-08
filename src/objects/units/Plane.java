@@ -31,6 +31,7 @@ public class Plane extends Unit {
 		id = UnitID.PLANE;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (getWeight() != UnitID.HEAVY) {
 			planeAim();
@@ -142,6 +143,7 @@ public class Plane extends Unit {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		float direction = position.subVec(getTarget()).getRadian();
 		if (velocity.getY() > 0) direction += 3.14f;

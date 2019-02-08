@@ -4,7 +4,6 @@ import java.util.Random;
 
 import main.Main;
 import main.UnitID;
-import main.World;
 import objects.Nation;
 import objects.projectiles.Bullet;
 import objects.projectiles.Projectile;
@@ -217,17 +216,17 @@ public abstract class Unit {
 					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT)
 						nation.seaSupremacy--;
 					if (id == UnitID.CITY) {
-						if (nation.cityCost > 10)
-							nation.cityCost -= 7;
+						if (nation.getCityCost() > 10)
+							nation.setCityCost(nation.getCityCost() - 7);
 					} else if (id == UnitID.FACTORY) {
-						if (nation.factoryCost > 15)
-							nation.factoryCost -= 10;
+						if (nation.getFactoryCost() > 15)
+							nation.setFactoryCost(nation.getFactoryCost() - 10);
 					} else if (id == UnitID.PORT) {
-						if (nation.portCost > 20)
-							nation.portCost -= 10;
+						if (nation.getPortCost() > 20)
+							nation.setPortCost(nation.getPortCost() - 10);
 					} else if (id == UnitID.AIRFIELD) {
-						if (nation.airfieldCost > 20)
-							nation.airfieldCost -= 10;
+						if (nation.getAirfieldCost() > 20)
+							nation.setAirfieldCost(nation.getAirfieldCost() - 10);
 					} else if (id == UnitID.INFANTRY) {
 						nation.landSupremacy--;
 					} else if (id == UnitID.CAVALRY) {

@@ -18,6 +18,7 @@ public class Bomb extends Projectile {
 		id = UnitID.BOMB;
 	}
 
+	@Override
 	public void tick(double t) {
 		fall--;
 		if (fall < 1) {
@@ -28,6 +29,7 @@ public class Bomb extends Projectile {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		double scale = (-1/360000.0)*(600.0-fall)*(600.0-fall)+1.0;
 		if (fall > 1) {

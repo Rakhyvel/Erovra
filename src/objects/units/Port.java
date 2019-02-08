@@ -19,6 +19,7 @@ public class Port extends Unit {
 		setProductWeight(UnitID.NONE);
 	}
 
+	@Override
 	public void tick(double t) {
 		if (engaged) spotted = true;
 		disengage();
@@ -47,7 +48,7 @@ public class Port extends Unit {
 
 	public void decideNewProduct() {
 		if (nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
-			if (nation.coins >= (nation.shipCost / 4)) {
+			if (nation.coins >= (nation.getShipCost() / 4)) {
 				int smallestDistance = 524288;
 				int unitCount = 0;
 				for (int i = 0; i < nation.unitSize(); i++) {
@@ -59,18 +60,19 @@ public class Port extends Unit {
 					}
 				}
 				if (unitCount > 3) {
-					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.shipCost / 4, 3000);
+					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4, 3000);
 				}
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.shipCost, 10800);
+				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
 			} else {
-				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.shipCost * 2, 10800);
+				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800);
 			}
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (getProductWeight() != UnitID.NONE && getStart() > 1) {

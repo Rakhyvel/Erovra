@@ -17,12 +17,14 @@ public class Torpedo extends Projectile {
 		id = UnitID.TORPEDO;
 	}
 
+	@Override
 	public void tick(double t) {
 		bulletMove();
 		if (Map.getArray(position) > 0.5f) hit();
 
 	}
 
+	@Override
 	public void render(Render r) {
 		r.drawImageScreen((int) position.getX(), (int) position.getY(), 1, r.torpedo, nation.color, velocity.getRadian());
 

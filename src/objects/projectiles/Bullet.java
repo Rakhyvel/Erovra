@@ -16,6 +16,7 @@ public class Bullet extends Projectile {
 		id = UnitID.BULLET;
 	}
 
+	@Override
 	public void tick(double t) {
 		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 			hit();
@@ -23,6 +24,7 @@ public class Bullet extends Projectile {
 		bulletMove();
 	}
 
+	@Override
 	public void render(Render r) {
 		r.drawImageScreen((int) position.getX(), (int) position.getY(), 2, r.bullet, nation.color, 0);
 	}

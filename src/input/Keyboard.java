@@ -9,11 +9,13 @@ public class Keyboard extends KeyAdapter {
 	// inputs in key objects that return whether or not they are being pressed
 	String letter = "";
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		setKey(e.getKeyCode(), true);
 		letter = String.valueOf(e.getKeyChar());
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 		setKey(e.getKeyCode(), false);
 		letter = "";

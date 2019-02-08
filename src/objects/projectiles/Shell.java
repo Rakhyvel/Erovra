@@ -16,6 +16,7 @@ public class Shell extends Projectile {
 		id = UnitID.SHELL;
 	}
 
+	@Override
 	public void tick(double t) {
 		shellMove();
 		if (position.getDist(getTarget()) < 1024) {
@@ -23,6 +24,7 @@ public class Shell extends Projectile {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		r.drawImageScreen((int) position.getX(), (int) position.getY(), 4, r.shell, nation.color, a);
 	}

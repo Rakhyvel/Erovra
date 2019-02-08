@@ -8,6 +8,7 @@ public class GameMenu extends Menu {
 
 	boolean clicked = false;
 
+	@Override
 	public void tick() {
 		if (Main.gameState != StateID.ONGOING) {
 			if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 208 && Main.mouse.getY() < 344) {
@@ -48,6 +49,7 @@ public class GameMenu extends Menu {
 		}
 	}
 
+	@Override
 	public void render(Render r) {
 		if (Main.gameState == StateID.VICTORY) {
 			r.drawString("Victory!", 512, 160, 32, r.font32, 128 << 8 | 220);

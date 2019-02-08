@@ -15,8 +15,10 @@ public abstract class Projectile extends Unit {
 		super(position, nation, UnitID.NONE);
 	}
 
+	@Override
 	public abstract void tick(double t);
 
+	@Override
 	public abstract void render(Render r);
 
 	public void hit() {

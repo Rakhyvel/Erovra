@@ -11,6 +11,7 @@ public class Mouse extends MouseAdapter {
 	private boolean mouseLeftDown = false;
 	private boolean mouseRightDown = false;
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			mouseLeftDown = true;
@@ -19,6 +20,7 @@ public class Mouse extends MouseAdapter {
 		}
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			mouseLeftDown = false;
