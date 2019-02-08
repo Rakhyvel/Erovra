@@ -1,7 +1,9 @@
 package objects.gui;
 
 import main.Main;
+import main.StateID;
 import main.UnitID;
+import objects.Nation;
 import objects.units.Unit;
 import output.Render;
 import utility.Point;
@@ -13,136 +15,113 @@ public class DropDown extends Menu {
 	boolean shown = false;
 	String name = "";
 	Unit passenger1, passenger2;
-	int passengers;
+	int passengers = 0;
+	boolean shouldClose = false;
+	int closeTick;
+	int dropDownHeight;
+	boolean chanceToSelect = false;
+	boolean cavalry = true;
+	boolean leftClicked;
 
 	public void tick() {
+		if (shouldClose) {
+			if (Main.ticks - closeTick > 1) {
+				shouldClose = false;
+				hide();
+			}
+		}
 		if (shown) {
 			unit.setHit(3);
 			if (passengers == 0) {
-				if (Main.mouse.getX() >= position.getX() && Main.mouse.getX() < position.getX() + 170
-						&& Main.mouse.getY() > position.getY() && Main.mouse.getY() < position.getY() + 175) {
-					if (Main.mouse.getY() >= position.getY() + 55 && Main.mouse.getY() < position.getY() + 85) {
-						buttonsHovered = 1;
-						if (Main.mouse.getMouseLeftDown()) {
-							if (unit.getID() == UnitID.INFANTRY) {
-								unit.nation.buyCity(unit.getPosition());
-							} else if (unit.getID() == UnitID.FACTORY) {
-								unit.buyUnit(UnitID.CAVALRY, UnitID.LIGHT, unit.nation.cavalryCost / 2, 10800);
-							} else if (unit.getID() == UnitID.PORT) {
-								unit.buyUnit(UnitID.SHIP, UnitID.LIGHT, unit.nation.shipCost / 4, 3000);
-							} else if (unit.getID() == UnitID.AIRFIELD) {
-								unit.buyUnit(UnitID.PLANE, UnitID.LIGHT, unit.nation.cavalryCost / 2, 5400);
-							} else if (unit.getID() == UnitID.SHIP) {
-
-							}
-						}
-					} else if (Main.mouse.getY() >= position.getY() + 85 && Main.mouse.getY() < position.getY() + 115) {
-						buttonsHovered = 2;
-						if (Main.mouse.getMouseLeftDown()) {
-							if (unit.getID() == UnitID.INFANTRY) {
-								unit.nation.buyFactory(unit.getPosition());
-							} else if (unit.getID() == UnitID.FACTORY) {
-								unit.buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, unit.nation.cavalryCost, 10800);
-							} else if (unit.getID() == UnitID.PORT) {
-								unit.buyUnit(UnitID.SHIP, UnitID.MEDIUM, unit.nation.shipCost, 10800);
-							} else if (unit.getID() == UnitID.AIRFIELD) {
-								unit.buyUnit(UnitID.PLANE, UnitID.MEDIUM, unit.nation.planeCost, 10800);
-							}
-						}
-					} else if (Main.mouse.getY() >= position.getY() + 115
-							&& Main.mouse.getY() < position.getY() + 145) {
-						buttonsHovered = 3;
-						if (Main.mouse.getMouseLeftDown()) {
-							if (unit.getID() == UnitID.INFANTRY) {
-								unit.nation.buyPort(unit.getPosition());
-							} else if (unit.getID() == UnitID.FACTORY) {
-								unit.buyUnit(UnitID.CAVALRY, UnitID.HEAVY, unit.nation.cavalryCost * 2, 21600);
-							} else if (unit.getID() == UnitID.PORT) {
-								unit.buyUnit(UnitID.SHIP, UnitID.HEAVY, unit.nation.shipCost * 2, 10800);
-							} else if (unit.getID() == UnitID.AIRFIELD) {
-								unit.buyUnit(UnitID.PLANE, UnitID.HEAVY, unit.nation.planeCost / 2, 7200);
-							}
-						}
-					} else if (Main.mouse.getY() >= position.getY() + 145
-							&& Main.mouse.getY() < position.getY() + 175) {
-						buttonsHovered = 4;
-						if (Main.mouse.getMouseLeftDown())
-							unit.nation.buyAirfield(unit.getPosition());
-					} else {
-						if (unit.getID() != UnitID.SHIP)
-							buttonsHovered = 0;
-					}
-				} else {
-					if (unit.getID() != UnitID.SHIP)
-						buttonsHovered = 0;
-				}
-			}
-			if (Main.mouse.getMouseLeftDown()) {
-				if (unit.getID() != UnitID.SHIP) {
-					hide();
-				} else {
-					if (Main.mouse.getX() >= position.getX() && Main.mouse.getX() < position.getX() + 170
-							&& Main.mouse.getY() > position.getY() && Main.mouse.getY() < position.getY() + 120) {
-						passengers = buttonsHovered;
-					} else {
-						if(passengers == 0) {
-							hide();
+				setDropDownHeight();
+				if (isMouseInsideDropDown()) {
+					buttonsHovered = getButtonsHovered();
+					if (Main.mouse.getMouseLeftDown()) {
+						leftClicked = true;
+					} else if (leftClicked) {
+						leftClicked = false;
+						if (unit.getID() == UnitID.INFANTRY) {
+							detectInfantry();
+							shouldClose();
+						} else if (unit.getID() == UnitID.FACTORY) {
+							detectFactory();
+						} else if (unit.getID() == UnitID.PORT) {
+							detectPort();
+						} else if (unit.getID() == UnitID.AIRFIELD) {
+							detectAirfield();
+						} else if (unit.getID() == UnitID.SHIP) {
+							passengers = buttonsHovered;
 						}
 					}
+				} else if (unit.getID() != UnitID.SHIP) {
+					buttonsHovered = 0;
+					if (Main.mouse.getMouseLeftDown())
+						shouldClose();
 				}
 			}
-			if (passengers != 0 && unit != null) {
-				for (int i = 0; i < unit.nation.unitSize(); i++) {
-					if (unit.nation.getUnit(i).isSelected() && !unit.nation.getUnit(i).equals(unit)) {
-						unit.nation.getUnit(i).setBoarded(true);
-						unit.nation.getUnit(i).setSelected(false);
-						if (passengers == 1) {
-							unit.setPassenger1(unit.nation.getUnit(i));
-							passengers = 0;
-							hide();
-							break;
-						} else if (passengers == 2) {
-							unit.setPassenger2(unit.nation.getUnit(i));
-							passengers = 0;
-							hide();
-							break;
-						}
-					}
-				}
-			}
+			detectShip();
 		}
+
 	}
 
 	public void render(Render r) {
-		if (shown) {
+		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRect((int) position.getX(), (int) position.getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-			r.drawString(name, (int) position.getX() + 91, (int) position.getY() + 10, 16, r.font16, 0);
+			r.drawString(name + " (" + (int) unit.getHealth() + "/10)", (int) position.getX() + 85,
+					(int) position.getY() + 10, 16, r.font16, 255 << 16 | 255 << 8 | 255);
 			if (unit.getID() == UnitID.INFANTRY) {
-				drawOption("City (" + unit.nation.cityCost + ")", 1, r);
-				drawOption("Factory (" + unit.nation.factoryCost + ")", 2, r);
-				drawOption("Port (" + unit.nation.portCost + ")", 3, r);
-				drawOption("Airfield (" + unit.nation.airfieldCost + ")", 4, r);
+				if (unit.nation.getCoinAmount() >= unit.nation.cityCost) {
+					drawOption("City (" + unit.nation.cityCost + ")", 1, 0.5f, r);
+				} else {
+					drawOption("City (" + unit.nation.cityCost + ")", 1, 0.7f, r);
+				}
+				if (unit.nation.getCoinAmount() >= unit.nation.factoryCost) {
+					drawOption("Factory (" + unit.nation.factoryCost + ")", 2, 0.5f, r);
+				} else {
+					drawOption("Factory (" + unit.nation.factoryCost + ")", 2, 0.7f, r);
+				}
+				if (unit.nation.getCoinAmount() >= unit.nation.portCost) {
+					drawOption("Port (" + unit.nation.portCost + ")", 3, 0.5f, r);
+				} else {
+					drawOption("Port (" + unit.nation.portCost + ")", 3, 0.7f, r);
+				}
+				if (unit.nation.getCoinAmount() >= unit.nation.airfieldCost) {
+					drawOption("Airfield (" + unit.nation.airfieldCost + ")", 4, 0.5f, r);
+				} else {
+					drawOption("Airfield (" + unit.nation.airfieldCost + ")", 4, 0.7f, r);
+				}
 			} else if (unit.getID() == UnitID.FACTORY) {
-				drawOption("Light tank (" + unit.nation.cavalryCost / 2 + ")", 1, r);
-				drawOption("Medium tank (" + unit.nation.cavalryCost + ")", 2, r);
-				drawOption("Heavy tank (" + unit.nation.cavalryCost * 2 + ")", 3, r);
+				if (cavalry) {
+					drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", unit.nation.cavalryCost / 2,
+							unit.nation.cavalryCost, unit.nation.cavalryCost * 2);
+
+					if (unit.getProduct() == UnitID.NONE) {
+						drawOption("[ Cavalry >", 4, 0.5f, r);
+					}
+				} else {
+					drawIndustry(r, "Anti air", "Mortar", "Howitzer", unit.nation.artilleryCost / 4,
+							unit.nation.artilleryCost, unit.nation.artilleryCost * 2);
+
+					if (unit.getProduct() == UnitID.NONE) {
+						drawOption("< Artillery ]", 4, 0.5f, r);
+					}
+				}
 			} else if (unit.getID() == UnitID.PORT) {
-				drawOption("Landing craft (" + unit.nation.shipCost / 4 + ")", 1, r);
-				drawOption("Destroyer (" + unit.nation.shipCost + ")", 2, r);
-				drawOption("Cruiser (" + unit.nation.shipCost * 2 + ")", 3, r);
+				drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", unit.nation.shipCost / 4, unit.nation.shipCost,
+						unit.nation.shipCost * 2);
 			} else if (unit.getID() == UnitID.AIRFIELD) {
-				drawOption("Fighter (" + unit.nation.planeCost / 2 + ")", 1, r);
-				drawOption("Attacker (" + unit.nation.planeCost + ")", 2, r);
-				drawOption("Bomber (" + unit.nation.planeCost / 2 + ")", 3, r);
+				drawIndustry(r, "Fighter", "Attacker", "Bomber", unit.nation.planeCost / 2, unit.nation.planeCost,
+						unit.nation.planeCost / 2);
 			} else if (unit.getID() == UnitID.SHIP) {
-				drawOption("", 1, r);
-				drawOption("", 2, r);
+				drawOption("", 1, 0.5f, r);
+				drawOption("", 2, 0.5f, r);
 				drawSlot(1, r);
 				drawSlot(2, r);
 			}
 
-			r.drawRect((int) position.getX()+5, (int) position.getY()+23, 156, 6, 0);
-			r.drawRect((int) position.getX()+7, (int) position.getY()+25, (int) (15.2 * unit.getHealth()), 2, unit.nation.color);
+			r.drawRect((int) position.getX() + 5, (int) position.getY() + 23, 156, 6, 0);
+			r.drawRect((int) position.getX() + 7, (int) position.getY() + 25, (int) (15.2 * unit.getHealth()), 2,
+					unit.nation.color);
 		}
 	}
 
@@ -159,19 +138,23 @@ public class DropDown extends Menu {
 				name = String.valueOf(unit.getPassenger2().getID());
 			}
 		}
-		r.drawString(name, x + 85, y + slotID * 30 + 13, 16, r.font16, 0);
+		r.drawString(name, x + 85, y + slotID * 30 + 13, 16, r.font16, 255 << 16 | 255 << 8 | 255);
 
 	}
 
-	void drawOption(String label, int buttonID, Render r) {
+	void drawOption(String label, int buttonID, float shade, Render r) {
 		int x = (int) position.getX();
 		int y = (int) position.getY();
-		if (buttonsHovered == buttonID) {
+		int textColor = 255 << 16 | 255 << 8 | 255;
+		if (shade == 0.7f) {
+			textColor = 255 << 16;
+		}
+		if (buttonsHovered == buttonID && shade != 0.7f) {
 			r.drawRect(x, y + buttonID * 30, 170, 30, 255 << 16 | 255 << 8 | 255, 0.5f);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, 16, r.font16, 0);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, 16, r.font16, 255 << 16 | 255 << 8 | 255);
 		} else {
-			r.drawRect(x, y + buttonID * 30, 170, 30, 0, 0.5f);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, 16, r.font16, 0);
+			r.drawRect(x, y + buttonID * 30, 170, 30, 0, shade);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, 16, r.font16, textColor);
 		}
 	}
 
@@ -186,10 +169,10 @@ public class DropDown extends Menu {
 			position.setX(0);
 		}
 		if (p.getY() > 0) {
-			if (p.getY() < 363) {
+			if (p.getY() < 512 - dropDownHeight + 30) {
 				position.setY(p.getY());
 			} else {
-				position.setY(363);
+				position.setY(512 - dropDownHeight + 30);
 			}
 		} else {
 			position.setY(0);
@@ -202,6 +185,24 @@ public class DropDown extends Menu {
 		shown = true;
 		setPosition(unit.getPosition());
 		name = String.valueOf(unit.getID());
+		setDropDownHeight();
+	}
+
+	private void setDropDownHeight() {
+		if (unit.getID() == UnitID.INFANTRY) {
+			dropDownHeight = 30 * 6;
+		} else if (unit.getID() == UnitID.FACTORY || unit.getID() == UnitID.PORT || unit.getID() == UnitID.CITY
+				|| unit.getID() == UnitID.AIRFIELD) {
+			if (unit.getProduct() == UnitID.NONE) {
+				dropDownHeight = 30 * 6;
+			} else {
+				dropDownHeight = 30;
+			}
+		} else if (unit.getID() == UnitID.SHIP) {
+			dropDownHeight = 30 * 4;
+		} else {
+			dropDownHeight = 60;
+		}
 	}
 
 	private void hide() {
@@ -213,5 +214,157 @@ public class DropDown extends Menu {
 	public void setPassengers(Unit unit1, Unit unit2) {
 		this.passenger1 = unit1;
 		this.passenger2 = unit2;
+	}
+
+	private void shouldClose() {
+		shouldClose = true;
+		closeTick = Main.ticks;
+	}
+
+	public boolean getShown() {
+		return shown && (unit.getID() != UnitID.SHIP);
+	}
+
+	public boolean isMouseInsideDropDown() {
+		return Main.mouse.getX() >= position.getX() && Main.mouse.getX() < position.getX() + 170
+				&& Main.mouse.getY() > position.getY() && Main.mouse.getY() < position.getY() + dropDownHeight;
+	}
+
+	public int getButtonsHovered() {
+		if (Main.mouse.getY() < position.getY() + 30)
+			return 0;
+		if (Main.mouse.getY() > position.getY() + dropDownHeight) {
+			return 0;
+		}
+		return (int) (Main.mouse.getY() - position.getY() + 5) / 30 - 1;
+	}
+
+	public void detectInfantry() {
+		if (buttonsHovered == 1) {
+			unit.nation.buyCity(unit.getPosition());
+		} else if (buttonsHovered == 2) {
+			unit.nation.buyFactory(unit.getPosition());
+		} else if (buttonsHovered == 3) {
+			unit.nation.buyPort(unit.getPosition());
+		} else if (buttonsHovered == 4) {
+			unit.nation.buyAirfield(unit.getPosition());
+		}
+	}
+
+	public void detectFactory() {
+		if (unit.getProduct() == UnitID.NONE) {
+			if (cavalry) {
+				if (buttonsHovered == 1) {
+					unit.buyUnit(UnitID.CAVALRY, UnitID.LIGHT, unit.nation.cavalryCost / 2, 7200);
+				} else if (buttonsHovered == 2) {
+					unit.buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, unit.nation.cavalryCost, 10800);
+				} else if (buttonsHovered == 3) {
+					unit.buyUnit(UnitID.CAVALRY, UnitID.HEAVY, unit.nation.cavalryCost * 2, 21600);
+				} else if (buttonsHovered == 4) {
+					cavalry = !cavalry;
+				}
+			} else {
+				if (buttonsHovered == 1) {
+					unit.buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, unit.nation.artilleryCost / 4, 3600);
+				} else if (buttonsHovered == 2) {
+					unit.buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, unit.nation.artilleryCost, 10800);
+				} else if (buttonsHovered == 3) {
+					unit.buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, unit.nation.artilleryCost * 2, 21600);
+				} else if (buttonsHovered == 4) {
+					cavalry = !cavalry;
+				}
+			}
+		}
+	}
+
+	public void detectPort() {
+		if (unit.getProduct() == UnitID.NONE) {
+			if (buttonsHovered == 1) {
+				unit.buyUnit(UnitID.SHIP, UnitID.LIGHT, unit.nation.shipCost / 4, 3600);
+			} else if (buttonsHovered == 2) {
+				unit.buyUnit(UnitID.SHIP, UnitID.MEDIUM, unit.nation.shipCost, 10800);
+			} else if (buttonsHovered == 3) {
+				unit.buyUnit(UnitID.SHIP, UnitID.HEAVY, unit.nation.shipCost * 2, 10800);
+			}
+		}
+	}
+
+	public void detectAirfield() {
+		if (unit.getProduct() == UnitID.NONE) {
+			if (buttonsHovered == 1) {
+				unit.buyUnit(UnitID.PLANE, UnitID.LIGHT, unit.nation.cavalryCost / 2, 5400);
+			} else if (buttonsHovered == 2) {
+				unit.buyUnit(UnitID.PLANE, UnitID.MEDIUM, unit.nation.planeCost, 10800);
+			} else if (buttonsHovered == 3) {
+				unit.buyUnit(UnitID.PLANE, UnitID.HEAVY, unit.nation.planeCost / 2, 7200);
+			}
+		}
+	}
+
+	public void detectShip() {
+		if (passengers != 0) {
+			if (chanceToSelect) {
+				for (int i = 0; i < unit.nation.unitSize(); i++) {
+					if (unit.nation.getUnit(i).isSelected() && !unit.nation.getUnit(i).equals(unit)) {
+						unit.nation.getUnit(i).setBoarded(true);
+						unit.nation.getUnit(i).setSelected(false);
+						Main.world.selectedUnit = null;
+						if (passengers == 1) {
+							unit.setPassenger1(unit.nation.getUnit(i));
+							passengers = 0;
+							break;
+						} else if (passengers == 2) {
+							unit.setPassenger2(unit.nation.getUnit(i));
+							passengers = 0;
+							break;
+						}
+					}
+				}
+				shouldClose();
+				chanceToSelect = false;
+			}
+
+			if (Main.mouse.getMouseLeftDown() && !isMouseInsideDropDown())
+				chanceToSelect = true;
+		}
+	}
+
+	public void drawIndustry(Render r, String light, String medium, String heavy, int lightCost, int medCost,
+			int heavyCost) {
+		if (unit.getProduct() != UnitID.NONE) {
+			int minutes = 0, seconds = 0;
+			String product = "";
+			if (unit.getProductWeight() == UnitID.LIGHT) {
+				product += light;
+			} else if (unit.getProductWeight() == UnitID.MEDIUM) {
+				product += medium;
+			} else if (unit.getProductWeight() == UnitID.HEAVY) {
+				product += heavy;
+			}
+			if ((int) unit.getStart() > 0) {
+				minutes = (int) unit.getStart() / 3600;
+				seconds = ((int) unit.getStart() / 60) - minutes * 60;
+				product += " " + minutes + "m," + seconds + "s";
+			}
+			r.drawRect((int) position.getX(), (int) position.getY() + 30, 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
+			r.drawString(product, (int) position.getX() + 91, (int) position.getY() + 40, 16, r.font16,
+					255 << 16 | 255 << 8 | 255);
+		} else {
+			if (unit.nation.getCoinAmount() >= lightCost) {
+				drawOption(light + " (" + lightCost + ")", 1, 0.5f, r);
+			} else {
+				drawOption(light + " (" + lightCost + ")", 1, 0.7f, r);
+			}
+			if (unit.nation.getCoinAmount() >= medCost) {
+				drawOption(medium + " (" + medCost + ")", 2, 0.5f, r);
+			} else {
+				drawOption(medium + " (" + medCost + ")", 2, 0.7f, r);
+			}
+			if (unit.nation.getCoinAmount() >= heavyCost) {
+				drawOption(heavy + " (" + heavyCost + ")", 3, 0.5f, r);
+			} else {
+				drawOption(heavy + " (" + heavyCost + ")", 3, 0.7f, r);
+			}
+		}
 	}
 }

@@ -31,8 +31,8 @@ public abstract class Projectile extends Unit {
 	// shellMove(): moves the shell, when its reached its destination, it detonates.
 	public void shellMove() {
 		velocity = new Vector(0, 0);
-		if (position.getDist(target) > 1) {
-			velocity = position.getTargetVector(target).normalize().scalar(getSpeed());
+		if (position.getDist(getTarget()) > 1) {
+			velocity = position.getTargetVector(getTarget()).normalize().scalar(getSpeed());
 		} else {
 			hit();
 		}

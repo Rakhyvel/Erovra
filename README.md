@@ -1,4 +1,13 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.3
+- Only one unit can now be selected at a time
+- Buildings cannot be built on top of one another anymore
+- Drop down logic is now way better
+- Added health bar in drop down
+- Factories/airfields/ports now show what is being built
+- Drop downs now show what the player can afford
+- Artillery is now avaiable to be purchased and controlled
+
 ### Erovra 1.0.2
 - Fixed teleportation bug mentioned in 1.0.1
 - Rigorized mouse input logic

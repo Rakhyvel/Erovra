@@ -16,38 +16,37 @@ public class Factory extends Unit {
 		speed = 0;
 		id = UnitID.FACTORY;
 		defense = 3;
-		if (((nation.factoryCost - 15) / 10 & 3) == 0) {
-			setProduct(UnitID.ARTILLERY);
-		} else {
-			setProduct(UnitID.CAVALRY);
-		}
 	}
 
 	public void tick(double t) {
-		if (engaged) spotted = true;
+		if (engaged)
+			spotted = true;
 		engaged = false;
 		detectHit();
-		start--;
+		setStart(getStart() - 1);
 		if (!nation.isAIControlled()) {
 			clickToDropDown();
 		}
 
-		if (start < 0) {
+		if (getStart() < 0) {
 			addProduct();
-			if (nation.isAIControlled()) decideNewProduct();
+			if (nation.isAIControlled())
+				decideNewProduct();
 		}
 	}
 
 	public void addProduct() {
-		if (productWeight != null && productWeight != UnitID.NONE) {
+		if (getProductWeight() != null && getProductWeight() != UnitID.NONE) {
 			if (getProduct() == UnitID.CAVALRY) {
-				nation.addUnit(new Cavalry(position, nation, productWeight));
+				nation.addUnit(new Cavalry(position, nation, getProductWeight()));
 				nation.landSupremacy++;
 			} else if (getProduct() == UnitID.ARTILLERY) {
-				nation.addUnit(new Artillery(position, nation, productWeight));
+				nation.addUnit(new Artillery(position, nation, getProductWeight()));
 				nation.landSupremacy++;
 			}
-			productWeight = UnitID.NONE;
+			setProductWeight(UnitID.NONE);
+			if (!nation.isAIControlled())
+				setProduct(UnitID.NONE);
 		}
 	}
 
@@ -60,18 +59,20 @@ public class Factory extends Unit {
 			// Medium artillery
 		} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.cavalryCost, 10800)) {
 			// Medium cavalry
-		} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.artilleryCost/2, 10800)) {
-			// Anti Air artillery
-		} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.cavalryCost/2, 10800)) {
+		} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.cavalryCost / 2, 7200)) {
 			// Light Cavalry
+		} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.artilleryCost / 4, 3600)) {
+			// Anti Air artillery
 		}
 	}
 
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
-			if (start > 1) {
+		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) {
+			if (getProductWeight() != UnitID.NONE && getStart() > 1) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.factory, nation.color);
 			if (hit > 1 || isSelected()) {

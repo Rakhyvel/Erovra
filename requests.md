@@ -1,21 +1,5 @@
-- ~~Create a changelog file~~
-- Should be able to only select one unit at a time
-- Can build cities on top of one another
-- Drop down isn't hidden by pause
-- Factories/ports/airfields don't show what is built
-- Airfields waiting bar is stupid when first creating airfield
-- Dropdown box's height isn't calculated properly for units other than ship
-- Should be able to build artillery
-- Bombers flew sideways
-- Can select units when doing drop down
-- Fighters don't pursue targets, too shy
-- Attackers don't show their targets
-- Attackers can shoot buildings
+- Add kerning
+- Eclipse comment code
 - Add settings
-- Drop down should show health number
-- Target should show
+- Infantry target should show
 - Arrow that shows where cities will be built
-- Doesn't show what one can afford
-- No kerning
-- Artillery should be able to be aimed
-- Bombers should be able to be selected

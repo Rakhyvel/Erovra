@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import main.Main;
 import main.StateID;
+import main.UnitID;
 import objects.projectiles.Projectile;
 import objects.units.Airfield;
 import objects.units.City;
@@ -16,7 +17,7 @@ import utility.Point;
 public class Nation {
 
 	public int color;
-	public int coins = 9;
+	public int coins = 35;
 	boolean ai = true;
 
 	// Units
@@ -122,7 +123,7 @@ public class Nation {
 	public boolean buyCity(Point position) {
 		if (coins >= cityCost) {
 			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-			if (Map.getArray(cityPoint) > 0.5f) {
+			if (Map.getArray(cityPoint) > 0.5f && checkProximity(position)) {
 				coins -= cityCost;
 				cityCost += 7;
 				addUnit(new City(cityPoint, this, Main.ticks));
@@ -136,7 +137,7 @@ public class Nation {
 	// then checks to see if the land is able to have a factory
 	public void buyFactory(Point position) {
 		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost) {
+		if (Map.getArray(factoryPoint) > 0.5f && coins >= factoryCost && checkProximity(position)) {
 			coins -= factoryCost;
 			factoryCost += 10;
 			addUnit(new Factory(factoryPoint, this));
@@ -148,7 +149,7 @@ public class Nation {
 	public void buyPort(Point position) {
 		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(portPoint);
-		if (land < 0.5f && land > 0 && coins >= portCost) {
+		if (land < 0.5f && land > 0 && coins >= portCost && checkProximity(position)) {
 			coins -= portCost;
 			portCost += 10;
 			addUnit(new Port(portPoint, this));
@@ -158,7 +159,7 @@ public class Nation {
 	public void buyAirfield(Point position) {
 		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		float land = Map.getArray(airfieldPoint);
-		if (land > 0.5f && coins >= airfieldCost) {
+		if (land > 0.5f && coins >= airfieldCost && checkProximity(position)) {
 			coins -= airfieldCost;
 			airfieldCost += 10;
 			addUnit(new Airfield(airfieldPoint, this));
@@ -183,5 +184,33 @@ public class Nation {
 
 	public boolean isAIControlled() {
 		return ai;
+	}
+	private boolean checkProximity(Point position) {
+		int smallestDistance = 32;
+		for (int i = 0; i < unitSize(); i++) {
+			Unit tempUnit = getUnit(i);
+			if (tempUnit.getID() == UnitID.CITY || tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.FACTORY
+					|| tempUnit.getID() == UnitID.AIRFIELD) {
+				Point tempPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+						((int) (position.getY() / 64)) * 64 + 32);
+				int tempDist = (int) tempUnit.getPosition().getCabDist(tempPoint);
+				if (tempDist < smallestDistance) {
+					smallestDistance = tempDist;
+				}
+			}
+		}
+		for (int i = 0; i < enemyNation.unitSize(); i++) {
+			Unit tempUnit = enemyNation.getUnit(i);
+			if (tempUnit.getID() == UnitID.CITY || tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.FACTORY
+					|| tempUnit.getID() == UnitID.AIRFIELD) {
+				Point tempPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+						((int) (position.getY() / 64)) * 64 + 32);
+				int tempDist = (int) tempUnit.getPosition().getCabDist(tempPoint);
+				if (tempDist < smallestDistance) {
+					smallestDistance = tempDist;
+				}
+			}
+		}
+		return smallestDistance >= 32;
 	}
 }

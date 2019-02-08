@@ -36,7 +36,7 @@ public class Cavalry extends Unit {
 			} else {
 				clickToMove();
 			}
-			engaged = autoAim(cal);
+			engaged = autoAim(cal) | engaged;
 			detectHit();
 			targetMove();
 		}
@@ -44,13 +44,13 @@ public class Cavalry extends Unit {
 
 	public void render(Render r) {
 		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
-			float direction = position.subVec(facing).getRadian();
+			float direction = position.subVec(getFacing()).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 			
-			if (weight == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), direction);
-			if (weight == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, direction);
-			if (weight == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), direction);
-			if (hit > 1 || isSelected()) {
+			if (getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color), direction);
+			if (getWeight() == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, direction);
+			if (getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color), direction);
+			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}

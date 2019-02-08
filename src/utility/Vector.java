@@ -40,8 +40,12 @@ public class Vector {
 	}
 
 	public float getRadian() {
-		if (y == 0) {
-			return 0;
+		if(y == 0) {
+			if(x == 0)
+				return 0;
+			if (x > 0)
+				return (float)Math.PI/2;
+			return -(float)Math.PI/2;
 		}
 		return (float) (Math.atan(x / y));
 	}

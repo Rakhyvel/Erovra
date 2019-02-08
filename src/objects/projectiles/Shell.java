@@ -12,13 +12,13 @@ public class Shell extends Projectile {
 		speed = 2f;
 		attack = 0;
 		this.velocity = velocity.normalize().scalar(getSpeed());
-		this.target = target;
+		this.setTarget(target);
 		id = UnitID.SHELL;
 	}
 
 	public void tick(double t) {
 		shellMove();
-		if (position.getDist(target) < 1024) {
+		if (position.getDist(getTarget()) < 1024) {
 			attack = 2;
 		}
 	}

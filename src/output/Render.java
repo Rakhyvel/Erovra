@@ -12,6 +12,7 @@ import main.Main;
 import main.SpriteSheet;
 import main.StateID;
 import main.World;
+import objects.gui.Font;
 import terrain.Map;
 
 public class Render extends Canvas {
@@ -74,8 +75,8 @@ public class Render extends Canvas {
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
 
 	// Fonts
-	public SpriteSheet font32 = new SpriteSheet("/res/fonts/font32.png", 512);
-	public SpriteSheet font16 = new SpriteSheet("/res/fonts/font16.png", 256);
+	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512),32);
+	public Font font16 = new Font(new SpriteSheet("/res/fonts/font16.png", 256),16);
 
 	public Render(int x, int y, World world) {
 		width = x;
@@ -249,6 +250,51 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	public void drawLetter(int x, int y, float w, int[] image, int color) {
+		int h = (int) (image.length / w);
+		int x1, y1, id, r, g, b, newColor, newColor2;
+		float screen, alpha;
+		for (int i = 0; i < image.length; i++) {
+			alpha = (image[i] >> 24 & 255) / 255.0f;
+			if (alpha > 0.9f) {
+				// Finding position on game pixel array
+				x1 = (int) ((i % w) + x);
+				y1 = (int) (i / w);
+				id = (int) ((y1 + y) * (width + 1) + x1);
+				if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+					// Finding and splitting starting colors
+					screen = (image[i] & 255) / 255.0f;
+					r = ((color >> 16) & 255);
+					g = ((color >> 8) & 255);
+					b = (color & 255);
+
+					// Setting new colors
+					if (screen <= 0.5f) {
+						screen *= 2;
+						r = (int) (r * screen);
+						g = (int) (g * screen);
+						b = (int) (b * screen);
+					} else {
+						r = (int) (255 - 2 * (255 - r) * (1 - screen));
+						g = (int) (255 - 2 * (255 - g) * (1 - screen));
+						b = (int) (255 - 2 * (255 - b) * (1 - screen));
+					}
+
+					// Recombining colors
+					newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+
+					// Finding alpha
+					r = ((pixels[id] >> 16) & 255);
+					g = ((pixels[id] >> 8) & 255);
+					b = (pixels[id] & 255);
+					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+
+					// Finally adding colors to pixel array
+					pixels[id] = (int) (newColor + (newColor2));
+				}
+			}
+		}
+	}
 
 	// drawImageScreen(...): draws an image, applies overlay blending and
 	// rotates
@@ -333,10 +379,10 @@ public class Render extends Canvas {
 		return image;
 	}
 
-	public void drawString(String label, int x, int y, int size, SpriteSheet font, int color) {
+	public void drawString(String label, int x, int y, int size, Font font, int color) {
 		int carriage = 0;
 		int letter;
-		int length = label.length() * 10;
+		int length = font.getStringWidth(label);
 		int fix = 0;
 		if (size == 16) {
 			fix = 9;
@@ -346,9 +392,8 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = (int) label.charAt(i);
 			if (letter != 13) {
-				drawImageScreen(x + (i * ((size / 16) * 9)) - length / 2 + fix, (y) + carriage, size, font.getSubset(letter % 16, letter / 16, size), color);
-			} else {
-				carriage += (size / 16) * 9;
+				drawLetter(x + carriage - length / 2 + fix, y-5, size, font.getLetter(letter), color);
+				carriage += font.getKern(letter)+3;
 			}
 		}
 	}

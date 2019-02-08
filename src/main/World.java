@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import objects.Nation;
 import objects.gui.DropDown;
 import objects.gui.Menu;
+import objects.units.Unit;
 import output.Render;
 
 public class World {
@@ -15,20 +16,23 @@ public class World {
 	 * The world class is used to contain all objects within the game. This includes
 	 * units, menus, etc. The world calls all objects' tick and render methods
 	 */
-
 	Nation friendly;
 	Nation hostile;
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 	boolean pauseClicked = false;
+	public Unit selectedUnit = null;
 	DropDown dropDown = new DropDown();
 
 	// tick(double t): Calls the tick method for each object in the game, takes
 	// t as the time in millis since last tick
 	public void tick(double t) {
 		if (Main.gameState == StateID.ONGOING) {
-			for (int i2 = 0; i2 < friendly.unitSize(); i2++) {
+			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {				
 				friendly.getUnit(i2).tick(t);
+			}
+			if(selectedUnit != null) {
+				selectedUnit.setHit(3);
 			}
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
 				friendly.getProjectile(i2).tick(t);
@@ -47,9 +51,6 @@ public class World {
 				hostile.getCoin(i2).tick(t);
 			}
 		}
-		for (int i = 0; i < menuArray.size(); i++) {
-			menuArray.get(i).tick();
-		}
 		if (Main.keyboard.esc.isPressed()) {
 			if (!pauseClicked) {
 				pauseClicked = true;
@@ -67,6 +68,9 @@ public class World {
 		}
 		if (Main.keyboard.plus.isPressed()) {
 			Main.zoomIn();
+		}
+		for (int i = 0; i < menuArray.size(); i++) {
+			menuArray.get(i).tick();
 		}
 	}
 

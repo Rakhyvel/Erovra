@@ -1,18 +1,19 @@
 package main;
 
-import input.Keyboard;
-import input.Mouse;
-
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
+import input.Keyboard;
+import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
 import objects.units.City;
+import objects.units.Factory;
+import objects.units.Plane;
 import output.Render;
 import terrain.Map;
 import utility.Point;

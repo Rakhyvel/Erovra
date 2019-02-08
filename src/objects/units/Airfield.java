@@ -21,22 +21,23 @@ public class Airfield extends Unit {
 		if (engaged) spotted = true;
 		engaged = false;
 		detectHit();
-		start--;
+		setStart(getStart() - 1);
 		if (!nation.isAIControlled()) {
 			clickToDropDown();
 		}
 
-		if (start < 0) {
+		if (getStart() < 0) {
 			addProduct();
 			if (nation.isAIControlled()) decideNewProduct();
 		}
 	}
 
 	public void addProduct() {
-		if (productWeight != UnitID.NONE && productWeight != null) {
-			nation.addUnit(new Plane(position, nation, productWeight));
-			if (productWeight == UnitID.LIGHT) nation.airSupremacy++;
-			productWeight = UnitID.NONE;
+		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
+			nation.addUnit(new Plane(position, nation, getProductWeight()));
+			if (getProductWeight() == UnitID.LIGHT) nation.airSupremacy++;
+			setProductWeight(UnitID.NONE);
+			if(!nation.isAIControlled())setProduct(UnitID.NONE);
 		}
 	}
 
@@ -54,9 +55,9 @@ public class Airfield extends Unit {
 
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
-			if (productWeight != UnitID.NONE) {
+			if (getProductWeight() != UnitID.NONE && getStart() > 1) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - start) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.airfield, nation.color);
 			if (hit > 1) {
