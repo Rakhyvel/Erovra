@@ -2,11 +2,18 @@ package objects.gui;
 
 import main.SpriteSheet;
 
+/**
+ * Contains the spritesheet and size of a font
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class Font {
+	
 	SpriteSheet charset;
-	int size;
+	private int size;
 	private static int[] kern16 = {
-			0,0,4,4,4,1,7,5,7,0,0,6,5,0,6,5,
+			0,0,4,4,4,1,7,16,7,0,0,6,5,0,6,5,
 			7,6,5,4,5,7,7,4,5,4,6,6,0,0,0,0,
 			8,3,5,9,7,12,9,2,4,4,5,8,2,4,2,6,
 			7,5,7,7,8,7,7,7,7,7,2,2,8,8,8,7,
@@ -17,24 +24,44 @@ public class Font {
 
 	public Font(SpriteSheet charset, int size) {
 		this.charset = charset;
-		this.size = size;
+		this.setSize(size);
 	}
 
+	/**
+	 * @param letter  The ascii code of the letter to be returned
+	 * @return  The image of the letter specified
+	 */
 	public int[] getLetter(int letter) {
-		return charset.getSubset(letter % 16, letter / 16, size);
+		return charset.getSubset(letter % 16, letter / 16, getSize());
 	}
 
+	/**
+	 * @param index  The ascii code of the letter to be returned
+	 * @return  The width of the letter
+	 */
 	public int getKern(int index) {
-		if (size == 32)
-			return 32;
-		return kern16[index];
+		if (getSize() == 32)
+			return kern16[index]*2+4;
+		return kern16[index]+1;
 	}
 	
+	/**
+	 * @param label  The string to be measured
+	 * @return  How long the string would be if drawn
+	 */
 	public int getStringWidth(String label) {
 		int length = 0;
 		for(int i = 0; i < label.length(); i++) {
-			length+=getKern(label.charAt(i))+3;
+			length+=getKern(label.charAt(i));
 		}
-		return length+16;
+		return length;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
 	}
 }

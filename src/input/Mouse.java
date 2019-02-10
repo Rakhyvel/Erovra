@@ -6,8 +6,13 @@ import java.awt.event.MouseEvent;
 
 import main.Main;
 
+/**
+ * Gets mouse input from the user. Handles mouse presses and the position of the mouse.
+ * 
+ * @author Joey
+ *
+ */
 public class Mouse extends MouseAdapter {
-	// The mouse class gets mouse input from the user. It handles mouse presses and the position of the mouse
 	private boolean mouseLeftDown = false;
 	private boolean mouseRightDown = false;
 
@@ -29,18 +34,30 @@ public class Mouse extends MouseAdapter {
 		}
 	}
 
+	/**
+	 * @return  The x coordinate of the position of the mouse relative to the top-left corner of the screen.
+	 */
 	public int getX() {
 		return (int) MouseInfo.getPointerInfo().getLocation().getX() - Main.getFrameX();
 	}
 
+	/**
+	 * @return  The y coordinate of the position of the mouse relative to the top-left corner of the screen
+	 */
 	public int getY() {
 		return (int) MouseInfo.getPointerInfo().getLocation().getY() - Main.getFrameY();
 	}
 
+	/**
+	 * @return  Whether the left mouse button (MouseEvent.BUTTON1) is pressed
+	 */
 	public boolean getMouseLeftDown() {
 		return mouseLeftDown;
 	}
 
+	/**
+	 * @return  Whether the right mouse button (MouseEvent.BUTTON3) is pressed
+	 */
 	public boolean getMouseRightDown() {
 		return mouseRightDown;
 	}

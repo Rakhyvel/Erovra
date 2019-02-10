@@ -4,15 +4,19 @@ import output.Render;
 import utility.Point;
 
 public class Coin {
-	Point position;
-	Nation nation;
-	double speed = 1;
+	private Point position;
+	private Nation nation;
+	private double speed = 1;
 
 	public Coin(Point position, Nation nation) {
 		this.position = position;
 		this.nation = nation;
 	}
 
+	/**
+	 * Handles the logic for the coins 60 times a second
+	 * @param t  Time since last tick, in millis
+	 */
 	public void tick(double t) {
 		if(speed < 6)
 			speed*=1.1;
@@ -23,9 +27,13 @@ public class Coin {
 		}
 	}
 
+	/**
+	 * Draws the coin
+	 * @param r  Instance of the canvas
+	 */
 	public void render(Render r) {
 		if (nation.name.contains("Sweden")) {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.coin, 255<<16|255<<8);
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.coin, 250<<16|250<<8);
 		}
 	}
 

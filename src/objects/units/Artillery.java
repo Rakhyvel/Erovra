@@ -4,9 +4,17 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles the logic and rendering for artillery units
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ *
+ */
 public class Artillery extends Unit {
 
 	public Artillery(Point position, Nation nation, UnitID weight) {
@@ -66,5 +74,13 @@ public class Artillery extends Unit {
 						direction);
 			}
 		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {		
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
 	}
 }

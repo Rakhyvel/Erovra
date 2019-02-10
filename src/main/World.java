@@ -1,7 +1,5 @@
 package main;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Nation;
@@ -10,28 +8,35 @@ import objects.gui.Menu;
 import objects.units.Unit;
 import output.Render;
 
+/**
+ * The world class is used to contain all objects within the game. This includes
+ * units, menus, etc. The world calls all objects' tick and render methods
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class World {
 
-	/*
-	 * The world class is used to contain all objects within the game. This includes
-	 * units, menus, etc. The world calls all objects' tick and render methods
-	 */
-	Nation friendly;
-	Nation hostile;
+	private Nation friendly;
+	private Nation hostile;
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 	boolean pauseClicked = false;
 	public Unit selectedUnit = null;
-	DropDown dropDown = new DropDown();
+	private DropDown dropDown = new DropDown();
 
-	// tick(double t): Calls the tick method for each object in the game, takes
-	// t as the time in millis since last tick
+	/**
+	 * Calls the tick method for each object in the game
+	 * 
+	 * @param t
+	 *            The time in millis since last tick
+	 */
 	public void tick(double t) {
 		if (Main.gameState == StateID.ONGOING) {
-			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {				
+			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
 				friendly.getUnit(i2).tick(t);
 			}
-			if(selectedUnit != null) {
+			if (selectedUnit != null) {
 				selectedUnit.setHit(3);
 			}
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
@@ -74,17 +79,19 @@ public class World {
 		}
 	}
 
-	// render(Render r): Calls for each object in the game to draw, takes in the
-	// custom Render object, r.
+	/**
+	 * Calls for each object in the game to draw
+	 * 
+	 * @param r
+	 *            Render object used to draw to the canvas
+	 */
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() != UnitID.PLANE)
-					friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() != UnitID.PLANE)
-					hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
@@ -95,12 +102,10 @@ public class World {
 			}
 
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() == UnitID.PLANE)
-					friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() == UnitID.PLANE) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() == UnitID.PLANE)
-					hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() == UnitID.PLANE) hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
@@ -109,29 +114,45 @@ public class World {
 			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
 				hostile.getCoin(i2).render(r);
 			}
-			r.drawImageScreen(960, 12, 16, r.coin, 255 << 16 | 255 << 8);
 		}
 		for (int i = 0; i < menuArray.size(); i++) {
 			menuArray.get(i).render(r);
 		}
 	}
 
-	// drawCoins(Graphics g): Draws the amount of coins
-	public void drawCoins(Graphics g) {
-		g.setColor(new Color(0, 0, 0));
-		g.drawString(String.valueOf(friendly.getCoinAmount()), 973, 17);
-		g.setColor(new Color(255, 255, 255));
-		g.drawString(String.valueOf(friendly.getCoinAmount()), 972, 16);
+	/**
+	 * Draws the amount of coins
+	 * 
+	 * @param g
+	 *            Graphics object
+	 */
+	public void drawCoins(Render r) {
+		r.drawString((char)7+""+String.valueOf(friendly.getCoinAmount()),973,10,r.font16,250<<16|250<<8|250);
 	}
 
+	/**
+	 * Sets the friendly nation
+	 * 
+	 * @param nation
+	 *            The nation to be set to friendly
+	 */
 	public void setFriendly(Nation nation) {
 		friendly = nation;
 	}
 
+	/**
+	 * The hostile nation
+	 * 
+	 * @param nation
+	 *            The nation to be set to hostile
+	 */
 	public void setHostile(Nation nation) {
 		hostile = nation;
 	}
 
+	/**
+	 * @return  The DropDown object
+	 */
 	public DropDown getDropDown() {
 		return dropDown;
 	}

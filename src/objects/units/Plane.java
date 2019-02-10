@@ -3,16 +3,22 @@ package objects.units;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import objects.projectiles.Bomb;
 import objects.projectiles.Bullet;
 import output.Render;
 import utility.Point;
 import utility.Trig;
-
+/**
+ * Handles the logic and rendering for planes
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ */
 public class Plane extends Unit {
 
-	Point patrolPoint;
-	boolean bombsAway = false;
+	private Point patrolPoint;
+	private boolean bombsAway = false;
 
 	public Plane(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -26,7 +32,6 @@ public class Plane extends Unit {
 		} else {
 			speed = 0.3f;
 			defense = 3f;
-			acquireTarget();
 		}
 		id = UnitID.PLANE;
 	}
@@ -71,6 +76,9 @@ public class Plane extends Unit {
 		}
 	}
 
+	/**
+	 * Moves the plane based on its position's and its patrol point
+	 */
 	void patrol() {
 		// If you're not dead on target, turn, or if you're too close, turn
 		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99) a += 0.035 * getSpeed();
@@ -80,6 +88,9 @@ public class Plane extends Unit {
 
 	}
 
+	/**
+	 * Decides what the plane should aim at
+	 */
 	void planeAim() {
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
@@ -90,7 +101,7 @@ public class Plane extends Unit {
 			// If am fighter, and enemy is plane, target
 			// If am not fighter, and enemy is not plane, target
 			// Do not target if anything else
-			if (((tempUnit.id == UnitID.PLANE) == (getWeight() == UnitID.LIGHT)) && (tempUnit.id != UnitID.CITY && tempUnit.id != UnitID.FACTORY && tempUnit.id != UnitID.PORT && tempUnit.id != UnitID.AIRFIELD)) {
+			if (((tempUnit.id == UnitID.PLANE) == (getWeight() == UnitID.LIGHT)) && (tempUnit.id != UnitID.CITY && tempUnit.id != UnitID.FACTORY && tempUnit.id != UnitID.PORT && tempUnit.id != UnitID.AIRFIELD) && !tempUnit.isBoarded()) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempUnit.id == UnitID.SHIP) tempDist /= 2;
@@ -119,6 +130,9 @@ public class Plane extends Unit {
 		}
 	}
 
+	/**
+	 * Decides what building bombers should target
+	 */
 	void acquireTarget() {
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
@@ -160,6 +174,14 @@ public class Plane extends Unit {
 		if (hit > 1 && getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 40, r.fighterHit, r.lighten(nation.color), direction);
 		if (hit > 1 && getWeight() == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 48, r.attackerHit, nation.color, direction);
 		if (hit > 1 && getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 71, r.bomberHit, r.darken(nation.color), direction);
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {		
 	}
 
 }

@@ -1,4 +1,10 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.4
+- Added kerning to improve text
+- Created javadoc
+- Reworked how dropdowns function, should improve performance slightly but also produce more readable code
+- Added Industry class to derive factories, ports, and airfields from. Again to improve performance.
+
 ### Erovra 1.0.3
 - Only one unit can now be selected at a time
 - Buildings cannot be built on top of one another anymore
@@ -9,7 +15,7 @@
 - Artillery is now avaiable to be purchased and controlled
 
 ### Erovra 1.0.2
-- Fixed teleportation bug mentioned in 1.0.1
+- Fixed teleportation bug
 - Rigorized mouse input logic
 - Added landing craft drop down
 - Fixed ship teleportation bug
@@ -18,7 +24,6 @@
 ### Erovra 1.0.1
 - Infantry drop down added
 - Factory, airfield, and port drop down added
-- * Weird bug that happens when units are engaged and then moved, teleport to target location *
 
 ### Erovra 1.0.0
 - Infantry units may now be moved using the mouse

@@ -4,12 +4,19 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles the logic and rendering for City units
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ */
 public class City extends Unit {
 
-	boolean spotted = false;
+	private boolean spotted = false;
 
 	public City(Point position, Nation nation, int founded) {
 		super(position, nation, UnitID.NONE);
@@ -42,6 +49,14 @@ public class City extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}
 		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
 	}
 
 }

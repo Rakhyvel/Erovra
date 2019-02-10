@@ -4,12 +4,21 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
-public class Airfield extends Unit {
+/**
+ * Handles the airfield logic and rendering, decides what planes should be made
+ * when unit's nation is AI controlled.
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ *
+ */
+public class Airfield extends Industry {
 
-	boolean spotted = false;
+	private boolean spotted = false;
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -33,15 +42,21 @@ public class Airfield extends Unit {
 		}
 	}
 
+	/**
+	 * Adds whatever product is decided to the game
+	 */
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			nation.addUnit(new Plane(position, nation, getProductWeight()));
 			if (getProductWeight() == UnitID.LIGHT) nation.airSupremacy++;
 			setProductWeight(UnitID.NONE);
-			if(!nation.isAIControlled())setProduct(UnitID.NONE);
+			if (!nation.isAIControlled()) setProduct(UnitID.NONE);
 		}
 	}
 
+	/**
+	 * Decides what product to manufacture. Only used for AI
+	 */
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
 			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 5400);
@@ -66,6 +81,24 @@ public class Airfield extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}
 		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+		if (getProduct() == UnitID.NONE) {
+			if (d.buttonsHovered == 1) {
+				buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2, 5400);
+			} else if (d.buttonsHovered == 2) {
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
+			} else if (d.buttonsHovered == 3) {
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
+			}
+		}
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
+		d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2, nation.getPlaneCost(), nation.getPlaneCost() / 2, this);
 	}
 
 }

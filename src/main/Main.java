@@ -1,13 +1,13 @@
 package main;
 
+import input.Keyboard;
+import input.Mouse;
+
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
-import java.util.Random;
 
 import javax.swing.JFrame;
 
-import input.Keyboard;
-import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -17,10 +17,16 @@ import terrain.Map;
 import utility.Point;
 import utility.Trig;
 
+/**
+ * Starts the game, contains some constants and global objects
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class Main {
 
 	// Game Loop
-	public static boolean running = true;
+	private static boolean running = true;
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
@@ -29,23 +35,25 @@ public class Main {
 	// Window
 	public static final int width = 1024;
 	public static final int height = 512;
-	static JFrame frame = new JFrame();
+	private static JFrame frame = new JFrame();
 
 	// Objects
-	Random rand = new Random();
-	static Map map = new Map();
+	private static Map map = new Map();
 	public static World world = new World();
-	Render render = new Render(1024, 512, world);
+	private Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.3";
+	public static String version = "Erovra 1.0.4";
 
-	// main(String args[]: Contains the game loop, is the first method called
-	// when
-	// running
+	/**
+	 * Sets up the window, initializes the world object, and runs the game loop
+	 * 
+	 * @param args
+	 *            ??
+	 */
 	public static void main(String args[]) {
 		Main m = new Main();
 		m.window();
@@ -59,7 +67,7 @@ public class Main {
 		double frameTime;
 		double currentFrameTime = System.currentTimeMillis();
 
-		while (running) {
+		while (isRunning()) {
 			frameTime = System.currentTimeMillis() - currentTime;
 			currentTime = System.currentTimeMillis();
 
@@ -88,7 +96,9 @@ public class Main {
 		System.exit(0);
 	}
 
-	// init(): Adds the menus to the game
+	/**
+	 * Initializes objects before the game loop starts
+	 */
 	void init() {
 		new Trig();
 		world.menuArray.add(new GameMenu());
@@ -97,7 +107,9 @@ public class Main {
 		Main.setState(StateID.MENU);
 	}
 
-	// window(): Sets up the window for the game
+	/**
+	 * Sets up the game's window
+	 */
 	void window() {
 		frame.setSize(width + 7, height + 29);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,7 +120,10 @@ public class Main {
 		frame.add(render);
 	}
 
-	// startNewMatch(): Sets the state of the game to ongoing, creates two teams, and generates a new map. 
+	/**
+	 * Sets the state of the game to ongoin, creates two teams, and generates a
+	 * new map
+	 */
 	public static void startNewMatch() {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
@@ -120,14 +135,15 @@ public class Main {
 		russia.setEnemyNation(sweden);
 
 		do {
-			//Generate a new map
+			// Generate a new map
 			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
-			
+
 			// Clear all objects in each nation
 			sweden.purgeAll();
 			russia.purgeAll();
-			
-			// Start at the top left corner and try to find a suitable place for a city
+
+			// Start at the top left corner and try to find a suitable place for
+			// a city
 			for (int i = 0; i < 84; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
@@ -137,8 +153,9 @@ public class Main {
 					break;
 				}
 			}
-			
-			// Start at the bottom right corner and try to find a suitable place for a city
+
+			// Start at the bottom right corner and try to find a suitable place
+			// for a city
 			for (int i = 0; i < 84; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
@@ -152,6 +169,9 @@ public class Main {
 		while (sweden.unitSize() + russia.unitSize() < 2);
 	}
 
+	/**
+	 * @param id  The game state to be changed.
+	 */
 	public static void setState(StateID id) {
 		Main.gameState = id;
 	}
@@ -178,5 +198,13 @@ public class Main {
 		} else {
 			zoom = 1;
 		}
+	}
+
+	public static boolean isRunning() {
+		return running;
+	}
+
+	public static void endGame() {
+		running = false;
 	}
 }

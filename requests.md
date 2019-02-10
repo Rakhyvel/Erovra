@@ -1,5 +1,2 @@
-- Add kerning
-- Eclipse comment code
-- Add settings
 - Infantry target should show
 - Arrow that shows where cities will be built

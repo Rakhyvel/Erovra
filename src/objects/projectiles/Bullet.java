@@ -6,12 +6,19 @@ import output.Render;
 import utility.Point;
 import utility.Vector;
 
+/**
+ * Handles the logic and rendering for bullets
+ * 
+ * @author Rakhyvel
+ * @see Projectile
+ *
+ */
 public class Bullet extends Projectile {
 
 	public Bullet(Point position, Nation nation, Vector velocity, float cal) {
 		super(position, nation);
 		speed = 4f;
-		attack = cal;
+		setAttack(cal);
 		this.velocity = velocity.normalize().scalar(getSpeed());
 		id = UnitID.BULLET;
 	}

@@ -7,12 +7,18 @@ import terrain.Map;
 import utility.Point;
 import utility.Vector;
 
+/**
+ * Handles the logic and rendering for torpedos in game
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class Torpedo extends Projectile {
 
 	public Torpedo(Point position, Nation nation, Vector velocity) {
 		super(position, nation);
 		speed = 2f;
-		attack = 2;
+		setAttack(2);
 		this.velocity = (velocity.normalize().scalar(getSpeed()));
 		id = UnitID.TORPEDO;
 	}

@@ -4,9 +4,16 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles the logic and rendering for infantry
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ */
 public class Infantry extends Unit {
 
 	public Infantry(Point position, Nation nation) {
@@ -41,6 +48,43 @@ public class Infantry extends Unit {
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
+		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+		if (d.buttonsHovered == 1) {
+			nation.buyCity(getPosition());
+		} else if (d.buttonsHovered == 2) {
+			nation.buyFactory(getPosition());
+		} else if (d.buttonsHovered == 3) {
+			nation.buyPort(getPosition());
+		} else if (d.buttonsHovered == 4) {
+			nation.buyAirfield(getPosition());
+		}
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
+		if (nation.getCoinAmount() >= nation.getCityCost()) {
+			d.drawOption("City (" + nation.getCityCost() + ")", 1, 0.5f, r);
+		} else {
+			d.drawOption("City (" + nation.getCityCost() + ")", 1, 0.7f, r);
+		}
+		if (nation.getCoinAmount() >= nation.getFactoryCost()) {
+			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 2, 0.5f, r);
+		} else {
+			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 2, 0.7f, r);
+		}
+		if (nation.getCoinAmount() >= nation.getPortCost()) {
+			d.drawOption("Port (" + nation.getPortCost() + ")", 3, 0.5f, r);
+		} else {
+			d.drawOption("Port (" + nation.getPortCost() + ")", 3, 0.7f, r);
+		}
+		if (nation.getCoinAmount() >= nation.getAirfieldCost()) {
+			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0.5f, r);
+		} else {
+			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0.7f, r);
 		}
 	}
 }

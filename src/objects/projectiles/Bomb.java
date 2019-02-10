@@ -6,14 +6,22 @@ import objects.Nation;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles logic and rendering for the bomb object
+ * 
+ * @author Rakhyvel
+ * 
+ * @see Projectile
+ *
+ */
 public class Bomb extends Projectile {
 
-	int fall = 600;
+	private int fall = 600;
 
 	public Bomb(Point position, Nation nation) {
 		super(position, nation);
 		speed = 0;
-		attack = 0;
+		setAttack(0);
 		this.velocity = velocity.normalize().scalar(getSpeed());
 		id = UnitID.BOMB;
 	}
@@ -22,7 +30,7 @@ public class Bomb extends Projectile {
 	public void tick(double t) {
 		fall--;
 		if (fall < 1) {
-			attack = 30;
+			setAttack(30);
 		}
 		if (fall < 0) {
 			hit();

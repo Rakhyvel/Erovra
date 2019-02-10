@@ -4,12 +4,19 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
-public class Port extends Unit {
+/**
+ * Handles the logic and rendering for ports
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ */
+public class Port extends Industry {
 
-	boolean spotted = false;
+	private boolean spotted = false;
 
 	public Port(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -37,15 +44,21 @@ public class Port extends Unit {
 		}
 	}
 
+	/**
+	 * Adds the manufactured product into the game
+	 */
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			nation.addUnit(new Ship(position, nation, getProductWeight()));
 			if (getProductWeight() != UnitID.LIGHT) nation.seaSupremacy++;
 			setProductWeight(UnitID.NONE);
-			if(!nation.isAIControlled())setProduct(UnitID.NONE);
+			if (!nation.isAIControlled()) setProduct(UnitID.NONE);
 		}
 	}
 
+	/**
+	 * If the nation is AI controlled, decides what ship to build
+	 */
 	public void decideNewProduct() {
 		if (nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
 			if (nation.coins >= (nation.getShipCost() / 4)) {
@@ -84,6 +97,24 @@ public class Port extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}
 		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+		if (getProduct() == UnitID.NONE) {
+			if (d.buttonsHovered == 1) {
+				buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4, 3600);
+			} else if (d.buttonsHovered == 2) {
+				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
+			} else if (d.buttonsHovered == 3) {
+				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800);
+			}
+		}
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
+		d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4, nation.getShipCost(), nation.getShipCost() * 2, this);
 	}
 
 }

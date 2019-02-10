@@ -5,25 +5,37 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * The spritesheet class is used to hold many smaller images inside of one
+ * larger one. For example, fonts are large image files that contain smaller
+ * character images
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class SpriteSheet {
-	// The spritesheet class is used to hold many smaller images inside of one
-	// larger one. For example, fonts are large image files that contain smaller
-	// character images
 
-	// pixels contains the color information of the image, sorted row after row
-	int[] pixels;
-	int WIDTH;
+	private int[] pixels;
+	private int WIDTH;
 
 	public SpriteSheet(String path, int width) {
 		pixels = loadImageArray(path);
 		WIDTH = width;
 	}
 
-	public int[] loadImageArray(String path) {
+	/**
+	 * Loads an image for the spritesheet
+	 * 
+	 * @param path
+	 *            The path to the image
+	 * @return The loaded image
+	 */
+	private int[] loadImageArray(String path) {
 		BufferedImage img = null;
 		try {
 			img = ImageIO.read(this.getClass().getResourceAsStream(path));
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		if (img == null) {
@@ -32,7 +44,17 @@ public class SpriteSheet {
 		return img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
 	}
 
-	// getSubset(x,y,width): Returns a square from the spritesheet
+	/**
+	 * Returns a square subimage from the spritesheet
+	 * 
+	 * @param x
+	 *            The x coordinate of the subimage
+	 * @param y
+	 *            The y coordinate of the subimage
+	 * @param width
+	 *            The width (and height) of the subimage
+	 * @return The subimage
+	 */
 	public int[] getSubset(int x, int y, int width) {
 		int[] temp = new int[width * width];
 		int m = ((y * width) * WIDTH) + (x * width);

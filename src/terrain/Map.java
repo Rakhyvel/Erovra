@@ -16,8 +16,12 @@ public class Map {
 	public static Point[] points = new Point[7];
 	Image image = new Image();
 
-	// generateMap(int seed): Uses simplex noise and linear interpolation to
-	// render the terrain for the game.
+	/**
+	 * Uses simplex noise and linear interpolation to render the terrain for the game
+	 * 
+	 * @param seed  Random seed to be used for the generation
+	 * @param id  Which type of generation to be done
+	 */
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
 		if (id == MapID.ISLANDS) {
@@ -130,19 +134,29 @@ public class Map {
 	}
 
 	// getArray(...): returns the float value at a given coordinate
+	/**
+	 * @param x  coordiate on the map
+	 * @param y  coordiate on the map
+	 * @return  The float value of the given position on the terrain
+	 */
 	public static float getArray(int x, int y) {
 		return mountain[x][y];
 	}
 
-	// getArray(...): returns the float value at a given coordinate
+	/**
+	 * @param p  Point on the map
+	 * @return  The float value of the given position on the terrain
+	 */
 	public static float getArray(Point p) {
 		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
 			return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
-	// getColor(flaot value): returns the color of the terrain at a certain
-	// value
+	/**
+	 * @param value  The float value from 0f-1f
+	 * @return  A color based on the depth, 0 being a deep blue, 0.5f being coast, and 1 being green plains.
+	 */
 	int getColor(float value) {
 		int blue = 0;
 		int green = 0;

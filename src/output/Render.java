@@ -1,7 +1,6 @@
 package output;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -17,7 +16,6 @@ import terrain.Map;
 
 public class Render extends Canvas {
 
-	// tf does serialVersion even do lmao
 	private static final long serialVersionUID = 1L;
 	int width;
 	int height;
@@ -75,8 +73,8 @@ public class Render extends Canvas {
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
 
 	// Fonts
-	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512),32);
-	public Font font16 = new Font(new SpriteSheet("/res/fonts/font16.png", 256),16);
+	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
+	public Font font16 = new Font(new SpriteSheet("/res/fonts/font16.png", 256), 16);
 
 	public Render(int x, int y, World world) {
 		width = x;
@@ -90,6 +88,9 @@ public class Render extends Canvas {
 		zoom = 1;
 	}
 
+	/**
+	 * Calls all objects to render to pixels int array, draws pixel array to screen.
+	 */
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
@@ -113,23 +114,18 @@ public class Render extends Canvas {
 			System.arraycopy(menu, 0, pixels, 0, 1025 * 513);
 		}
 		world.render(this);
+		drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
+		drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250 << 8 | 250);
+		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
 
 		g.drawImage(img, 0, 0, null);
-		if (Main.gameState == StateID.ONGOING) world.drawCoins(g);
-		g.setColor(new Color(0, 0, 0));
-		g.drawString(String.valueOf(Main.version), 5, 17);
-		g.setColor(new Color(255, 255, 255));
-		g.drawString(String.valueOf(Main.version), 4, 16);
-		g.setColor(new Color(0, 0, 0));
-		g.drawString(String.valueOf("FPS: " + Main.fps), 5, 33);
-		g.setColor(new Color(255, 255, 255));
-		g.drawString(String.valueOf("FPS: " + Main.fps), 4, 32);
-		// //////////////////////////////////////
 		g.dispose();
 		bs.show();
 	}
 
-	// drawLongLat(): Draws the longitude and latitude lines on the map
+	/**
+	 * Draws the longitude and latitude lines on the map
+	 */
 	void drawLongLat() {
 		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
@@ -157,7 +153,15 @@ public class Render extends Canvas {
 		}
 	}
 
-	// drawRect(...): draws a rectangle
+	/**
+	 * Draws a rectangle
+	 * 
+	 * @param x  The x coordinate of the top left corner of the rectangle
+	 * @param y  The y coordinate of the top left corner of the rectangle
+	 * @param w  The width of the rectangle
+	 * @param h  The height of the rectangle
+	 * @param color  The color of the rectangle
+	 */
 	public void drawRect(int x, int y, int w, int h, int color) {
 		for (int i = 0; i < w * h; i++) {
 			int x1 = i % w + x;
@@ -169,6 +173,16 @@ public class Render extends Canvas {
 		}
 	}
 
+	/**
+	 * Draws a rectangle, with opacity
+	 * 
+	 * @param x  The x coordinate of the top left corner of the rectangle
+	 * @param y  The y coordinate of the top left corner of the rectangle
+	 * @param w  The width of the rectangle
+	 * @param h  The height of the rectangle
+	 * @param color  The color of the rectangle
+	 * @param alpha  The opacity of the rectangle
+	 */
 	public void drawRect(int x, int y, int w, int h, int color, float alpha) {
 		for (int i = 0; i < w * h; i++) {
 			int x1 = i % w + x;
@@ -186,7 +200,14 @@ public class Render extends Canvas {
 		}
 	}
 
-	// drawImage(...): draws an image
+	/**
+	 * Draws an image
+	 * 
+	 * @param x  The x coordinate of the top left corner of the image
+	 * @param y  The y coordinate of the top right corner of the image
+	 * @param w  The width of the image
+	 * @param image  The image
+	 */
 	public void drawImage(int x, int y, int w, int[] image) {
 		for (int i = 0; i < image.length; i++) {
 			int color = image[i];
@@ -204,7 +225,15 @@ public class Render extends Canvas {
 		}
 	}
 
-	// drawImageScreen(...): draws an image, applies overlay blending
+	/**
+	 * Draws an image with overlay color blending
+	 * 
+	 * @param x  The x coordinate of the top left corner of the image
+	 * @param y  The y coordinate of the top right corner of the image
+	 * @param w  The width of the image
+	 * @param image  The image
+	 * @param color  The color to be blended
+	 */
 	public void drawImageScreen(int x, int y, float w, int[] image, int color) {
 		int h = (int) (image.length / w);
 		int x1, y1, id, r, g, b, newColor, newColor2;
@@ -250,8 +279,17 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	
+	/**
+	 * Draws a letter, used for string printing
+	 * 
+	 * @param x  The x coordinate of the top left corner of the letter
+	 * @param y  The y coordinate of the top right corner of the letter
+	 * @param w  The width of the image
+	 * @param image  The image
+	 * @param color  The color to be blended
+	 */
 	public void drawLetter(int x, int y, float w, int[] image, int color) {
-		int h = (int) (image.length / w);
 		int x1, y1, id, r, g, b, newColor, newColor2;
 		float screen, alpha;
 		for (int i = 0; i < image.length; i++) {
@@ -296,9 +334,16 @@ public class Render extends Canvas {
 		}
 	}
 
-	// drawImageScreen(...): draws an image, applies overlay blending and
-	// rotates
-	// image
+	/**
+	 * Draws an image with overlay color blending and rotation
+	 * 
+	 * @param x  The x coordinate of the top left corner of the image
+	 * @param y  The y coordinate of the top right corner of the image
+	 * @param w  The width of the image
+	 * @param image  The image
+	 * @param color  The color to be blended
+	 * @param rotate  Rotation in radians of the image
+	 */
 	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate) {
 		int h = image.length / w;
 		for (int i = 0; i < image.length; i++) {
@@ -331,19 +376,29 @@ public class Render extends Canvas {
 		}
 	}
 
-	// lighten(int color): returns a lighter color given a 24 bit int color
+	/**
+	 * Returns a lighter color
+	 * 
+	 * @param color  The original color
+	 * @return  A color 50% lighter
+	 */
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r <<= 2;
-		g <<= 2;
-		b <<= 2;
+		r <<= 1;
+		g <<= 1;
+		b <<= 1;
 		if (r > 255) r = 255;
 		if (g > 255) g = 255;
 		if (b > 255) b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
-	// lighten(int color): returns a darker color given a 24 bit int color
+	/**
+	 * Returns a darker color
+	 * 
+	 * @param color  The original color
+	 * @return  A new color, 50% darker
+	 */
 	public int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		r >>= 1;
@@ -355,6 +410,12 @@ public class Render extends Canvas {
 		return r << 16 | g << 8 | b;
 	}
 
+	/**
+	 * Desaturates a given color
+	 * 
+	 * @param color  Original color
+	 * @return  A less saturated color
+	 */
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		int a = r + g + b >> 2;
@@ -364,6 +425,12 @@ public class Render extends Canvas {
 		return r << 16 | g << 8 | b;
 	}
 
+	/**
+	 * Takes an image and makes it darker and more desaturated
+	 * 
+	 * @param image  Original image
+	 * @return  Darker and desaturated image
+	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
 			image[i] = darken(desaturate(pixels[i]));
@@ -371,30 +438,38 @@ public class Render extends Canvas {
 		return image;
 	}
 
+	/**
+	 * @return  An gray image
+	 */
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 128 << 16 | 125 << 8 | 122;
+			image[i] = 199 << 16 | 190 << 8 | 185;
 		}
 		return image;
 	}
 
-	public void drawString(String label, int x, int y, int size, Font font, int color) {
+	/**
+	 * Draws a string
+	 * 
+	 * @param label  String to be drawn
+	 * @param x  coordinate value of the middle of the string
+	 * @param y  coordinate value of the string
+	 * @param font  Font to be used
+	 * @param color  Color of the string
+	 */
+	public void drawString(String label, int x, int y, Font font, int color) {
 		int carriage = 0;
 		int letter;
-		int length = font.getStringWidth(label);
-		int fix = 0;
-		if (size == 16) {
-			fix = 9;
-		} else if (size == 32) {
-			fix = -18;
-		}
+		int length = font.getStringWidth(label) - 1;
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
-			if (letter != 13) {
-				drawLetter(x + carriage - length / 2 + fix, y-5, size, font.getLetter(letter), color);
-				carriage += font.getKern(letter)+3;
+			if (letter == 7) {
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), 250 << 16 | 250 << 8);
+			} else {
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color);
 			}
+			carriage += font.getKern(letter);
 		}
 	}
 }

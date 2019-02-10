@@ -4,12 +4,19 @@ import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.DropDown;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles the logic and rendering for cavalry units
+ * 
+ * @author Rakhyvel
+ * @see Unit
+ */
 public class Cavalry extends Unit {
 
-	float cal;
+	private float cal;
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -56,5 +63,13 @@ public class Cavalry extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
 			}
 		}
+	}
+
+	@Override
+	public void dropDownDecide(DropDown d) {
+	}
+
+	@Override
+	public void dropDownRender(Render r, DropDown d) {
 	}
 }

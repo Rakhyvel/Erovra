@@ -5,12 +5,18 @@ import objects.Nation;
 import output.Render;
 import utility.Point;
 
+/**
+ * Handles the logic and rendering for shell objects in game
+ * 
+ * @author Rakhyvel
+ *
+ */
 public class Shell extends Projectile {
 
 	public Shell(Point position, Nation nation, Point target) {
 		super(position, nation);
 		speed = 2f;
-		attack = 0;
+		setAttack(0);
 		this.velocity = velocity.normalize().scalar(getSpeed());
 		this.setTarget(target);
 		id = UnitID.SHELL;
@@ -20,7 +26,7 @@ public class Shell extends Projectile {
 	public void tick(double t) {
 		shellMove();
 		if (position.getDist(getTarget()) < 1024) {
-			attack = 2;
+			setAttack(2);
 		}
 	}
 

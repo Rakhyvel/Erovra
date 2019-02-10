@@ -3,11 +3,15 @@ package input;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * The keyboard class gets keyboard input from the user. It stores these key
+ * inputs in key objects that return whether or not they are being pressed
+ * 
+ * @author Rakhyvel
+ */
 public class Keyboard extends KeyAdapter {
 
-	// The keyboard class gets keyboard input from the user. It stores these key
-	// inputs in key objects that return whether or not they are being pressed
-	String letter = "";
+	private String letter = "";
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -34,20 +38,33 @@ public class Keyboard extends KeyAdapter {
 		}
 	}
 
-	// This is where keys are created and instantiated
 	public Key esc = new Key();
 	public Key plus = new Key();
 	public Key minus = new Key();
 
+	/**
+	 * Holds information pertaining to whether or not the key is pressed or released.
+	 * 
+	 * @author Rakhyvel
+	 *
+	 */
 	public class Key {
 
 		private boolean pressed = false;
 
+		/**
+		 * @return  Whether the key is pressed or not.
+		 */
 		public boolean isPressed() {
 			return pressed;
 		}
 
-		public void setPressed(boolean pressed) {
+		/**
+		 * Sets whether the key is pressed. Should only be accessed by Keyboard object
+		 * 
+		 * @param pressed  Whether or not the key is pressed.
+		 */
+		private void setPressed(boolean pressed) {
 			this.pressed = pressed;
 		}
 	}
