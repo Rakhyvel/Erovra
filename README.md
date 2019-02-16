@@ -1,4 +1,12 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1,0.5
+Tweaked AI a bit so that it builds more cities and prioritizes sea supremacy
+Fixed time display for industries
+Fixed buggy landing craft UI
+Capitals now produce infantry every 10 seconds, cities do not
+Tweaked cost scaling to even things out
+Finally got rid of floating units!
+
 ### Erovra 1.0.4
 - Added kerning to improve text
 - Created javadoc
