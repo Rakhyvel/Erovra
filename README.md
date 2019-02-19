@@ -1,4 +1,8 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.6
+- Fixed infantry spawning
+- AI team now only builds ports where it makes sense
+
 ### Erovra 1.0.5
 - Tweaked AI a bit so that it builds more cities and prioritizes sea supremacy
 - Fixed time display for industries

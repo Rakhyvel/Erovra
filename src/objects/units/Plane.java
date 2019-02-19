@@ -24,14 +24,14 @@ public class Plane extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .9f;
-			defense = .0001f;
+			defense = 1f;
 			patrolPoint = nation.enemyNation.capital.getPosition().addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .6f;
-			defense = .0002f;
+			defense = 2f;
 		} else {
 			speed = 0.3f;
-			defense = .0003f;
+			defense = 3f;
 			acquireTarget();
 		}
 		id = UnitID.PLANE;

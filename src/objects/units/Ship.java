@@ -69,9 +69,15 @@ public class Ship extends Unit {
 					}
 					nation.unitArray.remove(this);
 				}
+				
 				if (nation.isAIControlled()) {
-					if (getPassenger2() != null) {
+					if (getPassenger1() != null) {
 						position = position.addVector(velocity);
+						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+							nation.unitArray.remove(getPassenger1());
+							nation.unitArray.remove(getPassenger2());
+							nation.unitArray.remove(this);
+						}
 					} else {
 						loadPassengers();
 					}
@@ -79,12 +85,6 @@ public class Ship extends Unit {
 					clickToMove();
 					targetMove();
 					clickToDropDown();
-				}
-				if (health < 0) {
-					nation.unitArray.remove(getPassenger1());
-					nation.unitArray.remove(getPassenger2());
-				}
-				if(!nation.isAIControlled()){
 					if (passengers != 0) {
 						if (chanceToSelect) {
 							for (int i = 0; i < nation.unitSize(); i++) {
@@ -112,6 +112,10 @@ public class Ship extends Unit {
 							chanceToSelect = true;
 						}
 					}
+				}
+				if (health < 0) {
+					nation.unitArray.remove(getPassenger1());
+					nation.unitArray.remove(getPassenger2());
 				}
 			}
 		}

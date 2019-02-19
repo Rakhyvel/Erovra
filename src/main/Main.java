@@ -31,8 +31,8 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RIVER;
-	private static double dt = 50/3.0;
+	public static MapID mapID = MapID.ISLANDS;
+	private static double dt = 50 / 3.0;
 
 	// Window
 	public static final int width = 1024;
@@ -48,13 +48,12 @@ public class Main {
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.5";
+	public static String version = "Erovra 1.0.6";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
 	 * 
-	 * @param args
-	 *            ??
+	 * @param args No idea what these do
 	 */
 	public static void main(String args[]) {
 		Main m = new Main();
@@ -78,7 +77,8 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				ticks++;
+				if (gameState == StateID.ONGOING)
+					ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -122,15 +122,15 @@ public class Main {
 	}
 
 	/**
-	 * Sets the state of the game to ongoin, creates two teams, and generates a
-	 * new map
+	 * Sets the state of the game to ongoin, creates two teams, and generates a new
+	 * map
 	 */
 	public static void startNewMatch() {
 		ticks = 0;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Sweden");
-		sweden.setAIControlled(false);
+//		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -167,15 +167,13 @@ public class Main {
 					break;
 				}
 			}
-		}
-		while (sweden.unitSize() + russia.unitSize() < 2);
+		} while (sweden.unitSize() + russia.unitSize() < 2);
 		sweden.addUnit(new Infantry(sweden.getUnit(0).getPosition(), sweden));
 		russia.addUnit(new Infantry(russia.getUnit(0).getPosition(), russia));
 	}
 
 	/**
-	 * @param id
-	 *            The game state to be changed.
+	 * @param id The game state to be changed.
 	 */
 	public static void setState(StateID id) {
 		Main.gameState = id;
@@ -212,12 +210,14 @@ public class Main {
 	public static void endGame() {
 		running = false;
 	}
-	public static void speedUp(){
-		dt/=2;
-		System.out.println(50/3/dt);
+
+	public static void speedUp() {
+		dt /= 2;
+		System.out.println((50 / 3.0) / dt);
 	}
-	public static void slowDown(){
-		dt*=2;
-		System.out.println(50/3/dt);
+
+	public static void slowDown() {
+		dt *= 2;
+		System.out.println((50 / 3.0) / dt);
 	}
 }

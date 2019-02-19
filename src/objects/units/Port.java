@@ -28,7 +28,8 @@ public class Port extends Industry {
 
 	@Override
 	public void tick(double t) {
-		if (engaged) spotted = true;
+		if (engaged)
+			spotted = true;
 		disengage();
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
 			detectHit();
@@ -39,7 +40,8 @@ public class Port extends Industry {
 
 			if (getStart() < 0) {
 				addProduct();
-				if (nation.isAIControlled()) decideNewProduct();
+				if (nation.isAIControlled())
+					decideNewProduct();
 			}
 		}
 	}
@@ -50,9 +52,11 @@ public class Port extends Industry {
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			nation.addUnit(new Ship(position, nation, getProductWeight()));
-			if (getProductWeight() != UnitID.LIGHT) nation.seaSupremacy++;
+			if (getProductWeight() != UnitID.LIGHT)
+				nation.seaSupremacy++;
 			setProductWeight(UnitID.NONE);
-			if (!nation.isAIControlled()) setProduct(UnitID.NONE);
+			if (!nation.isAIControlled())
+				setProduct(UnitID.NONE);
 		}
 	}
 
@@ -60,7 +64,7 @@ public class Port extends Industry {
 	 * If the nation is AI controlled, decides what ship to build
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
+		if (nation.enemyNation.seaSupremacy <= nation.seaSupremacy && nation.seaSupremacy > 0) {
 			if (nation.coins >= (nation.getShipCost() / 4)) {
 				int smallestDistance = 524288;
 				int unitCount = 0;
@@ -78,19 +82,23 @@ public class Port extends Industry {
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost()*10, 10800);
-			} else {
-				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800);
+				if(buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800)) {
+					
+				} else {
+					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
+		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) {
 			if (getProductWeight() != UnitID.NONE && getStart() > 1) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, r.darken(nation.color));
 			if (hit > 1) {
@@ -114,10 +122,11 @@ public class Port extends Industry {
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
-		if(getProduct() != UnitID.NONE){
+		if (getProduct() != UnitID.NONE) {
 			d.setDropDownHeight(60);
 		}
-		d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4, nation.getShipCost(), nation.getShipCost() * 2, this);
+		d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4, nation.getShipCost(),
+				nation.getShipCost() * 2, this);
 	}
 
 }
