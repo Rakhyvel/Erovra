@@ -335,4 +335,9 @@ public class Nation {
 	public int getPlaneCost() {
 		return planeCost;
 	}
+	
+	public void setLandSupremacy(int i){
+		if(landSupremacy+i >= 0)
+			landSupremacy+=i;
+	}
 }

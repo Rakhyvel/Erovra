@@ -23,7 +23,6 @@ public class City extends Unit {
 		speed = 0;
 		id = UnitID.CITY;
 		defense = 4;
-		nation.landSupremacy++;
 	}
 
 	@Override
@@ -34,8 +33,9 @@ public class City extends Unit {
 		if ((Main.ticks - born) % 320 == 0) {
 			nation.addCoin(position);
 		}
-		if(Main.ticks % 6000 == 0 && capital){
+		if(Main.ticks % 6000 + 6000*nation.landSupremacy == 0 && capital){
 			nation.addUnit(new Infantry(position,nation));
+			nation.setLandSupremacy(1);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class City extends Unit {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (capital) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
-				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * (Main.ticks%6000) / 6000), 2, nation.color);
+				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * (Main.ticks%(6000+ 6000*nation.landSupremacy)) / (6000+ 6000*nation.landSupremacy)), 2, nation.color);
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.capital, nation.color);
 			} else {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.city, nation.color);

@@ -290,10 +290,11 @@ public abstract class Unit {
 	 * city, port, or factory. Only builds max 2 airfields and 3 factories
 	 */
 	public void settle() {
-		nation.buyAirfield(position);
-		nation.buyPort(position);
-		nation.buyFactory(position);
 		nation.buyCity(position);
+		nation.buyPort(position);
+		nation.buyAirfield(position);
+		if(nation.getFactoryCost() < 60)
+			nation.buyFactory(position);
 	}
 
 	/**
@@ -368,11 +369,11 @@ public abstract class Unit {
 					} else if (id == UnitID.AIRFIELD) {
 						if (nation.getAirfieldCost() > 20) nation.setAirfieldCost(nation.getAirfieldCost() / 2);
 					} else if (id == UnitID.INFANTRY) {
-						nation.landSupremacy--;
+						nation.setLandSupremacy(-1);
 					} else if (id == UnitID.CAVALRY) {
-						nation.landSupremacy--;
+						nation.setLandSupremacy(-1);
 					} else if (id == UnitID.ARTILLERY) {
-						nation.landSupremacy--;
+						nation.setLandSupremacy(-1);
 					}
 					nation.unitArray.remove(this);
 				}
