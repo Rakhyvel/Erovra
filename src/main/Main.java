@@ -127,10 +127,11 @@ public class Main {
 	 */
 	public static void startNewMatch() {
 		ticks = 0;
+		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
-		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Sweden");
-//		sweden.setAIControlled(false);
+		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Russia");
+		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);

@@ -362,6 +362,8 @@ public abstract class Unit {
 						System.out.println(Main.ticks / 3600 + " minutes!");
 						nation.defeat();
 					}
+					if(selected || Main.world.selectedUnit.equals(this))
+						Main.world.selectedUnit = null;
 					health = 100;
 					if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT)
 						nation.airSupremacy--;

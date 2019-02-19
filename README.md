@@ -2,6 +2,7 @@
 ### Erovra 1.0.6
 - Fixed infantry spawning
 - AI team now only builds ports where it makes sense
+- Fixed unit selection bug that trapped user
 
 ### Erovra 1.0.5
 - Tweaked AI a bit so that it builds more cities and prioritizes sea supremacy

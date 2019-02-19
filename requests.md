@@ -1,2 +1,5 @@
+- Only one unit should be allowed to be selected!
+- Right click to deselect
+- Dropdown height takes a sec to fully calculate its height
 - Infantry target should show
 - Arrow that shows where cities will be built
