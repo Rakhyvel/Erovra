@@ -98,6 +98,9 @@ public class Airfield extends Industry {
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
+		if(getProduct() != UnitID.NONE){
+			d.setDropDownHeight(60);
+		}
 		d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2, nation.getPlaneCost(), nation.getPlaneCost() / 2, this);
 	}
 

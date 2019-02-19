@@ -60,9 +60,11 @@ public class Ship extends Unit {
 					if (getPassenger1() != null) {
 						getPassenger1().position = position;
 						getPassenger1().setBoarded(false);
+						getPassenger1().setTarget(position.addPoint(new Point(.1,0)));
 						if (getPassenger2() != null) {
 							getPassenger2().position = position;
 							getPassenger2().setBoarded(false);
+							getPassenger2().setTarget(position.addPoint(new Point(.1,0)));
 						}
 					}
 					nation.unitArray.remove(this);
@@ -82,32 +84,33 @@ public class Ship extends Unit {
 					nation.unitArray.remove(getPassenger1());
 					nation.unitArray.remove(getPassenger2());
 				}
-				if (passengers != 0) {
-					if (chanceToSelect) {
-						for (int i = 0; i < nation.unitSize(); i++) {
-							if (nation.getUnit(i).isSelected() && !nation.getUnit(i).equals(this)) {
-								nation.getUnit(i).setBoarded(true);
-								nation.getUnit(i).setSelected(false);
-								Main.world.selectedUnit = null;
-								if (passengers == 1 && getPassenger1()==null) {
-									setPassenger1(nation.getUnit(i));
-									passengers = 0;
-									break;
-								} else if (passengers == 2 && getPassenger1()==null) {
-									setPassenger2(nation.getUnit(i));
-									passengers = 0;
-									break;
+				if(!nation.isAIControlled()){
+					if (passengers != 0) {
+						if (chanceToSelect) {
+							for (int i = 0; i < nation.unitSize(); i++) {
+								if (nation.getUnit(i).isSelected() && !nation.getUnit(i).equals(this)) {
+									nation.getUnit(i).setBoarded(true);
+									nation.getUnit(i).setSelected(false);
+									Main.world.selectedUnit = null;
+									if (passengers == 1 && getPassenger1() == null) {
+										setPassenger1(nation.getUnit(i));
+										break;
+									} else if (passengers == 2 && getPassenger2() == null) {
+										setPassenger2(nation.getUnit(i));
+										break;
+									}
 								}
 							}
+							passengers = 0;
+							chanceToSelect = false;
+							Main.world.getDropDown().shouldClose();
 						}
-						chanceToSelect = false;
-						Main.world.getDropDown().shouldClose();
-					}
-					if (!Main.world.getDropDown().isMouseInsideDropDown() && Main.mouse.getMouseLeftDown()) {
-						clicked = true;
-					} else if (clicked) {
-						clicked = false;
-						chanceToSelect = true;
+						if (!Main.world.getDropDown().isMouseInsideDropDown() && Main.mouse.getMouseLeftDown()) {
+							clicked = true;
+						} else if (clicked) {
+							clicked = false;
+							chanceToSelect = true;
+						}
 					}
 				}
 			}
@@ -131,7 +134,7 @@ public class Ship extends Unit {
 			Unit tempUnit = nation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.isBoarded()) {
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				secondUnit = firstUnit;
 				firstUnit = tempUnit;
@@ -139,11 +142,13 @@ public class Ship extends Unit {
 			}
 		}
 		if (firstUnit != null && unitCount > 2) {
-			firstUnit.setBoarded(true);
 			setPassenger1(firstUnit);
+			getPassenger1().setBoarded(true);
+			getPassenger1().disengage();
 			if (secondUnit != null) {
-				secondUnit.setBoarded(true);
 				setPassenger2(secondUnit);
+				getPassenger2().setBoarded(true);
+				getPassenger2().disengage();
 			}
 		}
 	}

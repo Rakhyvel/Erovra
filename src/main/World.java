@@ -22,6 +22,8 @@ public class World {
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 	boolean pauseClicked = false;
+	boolean speedClicked = false;
+	boolean slowClicked = false;
 	public Unit selectedUnit = null;
 	private DropDown dropDown = new DropDown();
 
@@ -73,6 +75,22 @@ public class World {
 		}
 		if (Main.keyboard.plus.isPressed()) {
 			Main.zoomIn();
+		}
+		if (Main.keyboard.period.isPressed()) {
+			if (!speedClicked) {
+				speedClicked = true;
+				Main.speedUp();
+			}
+		} else {
+			speedClicked = false;
+		}
+		if (Main.keyboard.comma.isPressed()) {
+			if (!slowClicked) {
+				slowClicked = true;
+				Main.slowDown();
+			}
+		} else {
+			slowClicked = false;
 		}
 		for (int i = 0; i < menuArray.size(); i++) {
 			menuArray.get(i).tick();
@@ -127,7 +145,7 @@ public class World {
 	 *            Graphics object
 	 */
 	public void drawCoins(Render r) {
-		r.drawString((char)7+""+String.valueOf(friendly.getCoinAmount()),973,10,r.font16,250<<16|250<<8|250);
+		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 973, 10, r.font16, 250 << 16 | 250 << 8 | 250);
 	}
 
 	/**
@@ -151,7 +169,7 @@ public class World {
 	}
 
 	/**
-	 * @return  The DropDown object
+	 * @return The DropDown object
 	 */
 	public DropDown getDropDown() {
 		return dropDown;

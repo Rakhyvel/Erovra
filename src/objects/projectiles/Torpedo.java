@@ -25,6 +25,9 @@ public class Torpedo extends Projectile {
 
 	@Override
 	public void tick(double t) {
+		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+			hit();
+		}
 		bulletMove();
 		if (Map.getArray(position) > 0.5f) hit();
 

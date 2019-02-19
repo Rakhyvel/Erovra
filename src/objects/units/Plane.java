@@ -24,14 +24,15 @@ public class Plane extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .9f;
-			defense = 1f;
+			defense = .0001f;
 			patrolPoint = nation.enemyNation.capital.getPosition().addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .6f;
-			defense = 2f;
+			defense = .0002f;
 		} else {
 			speed = 0.3f;
-			defense = 3f;
+			defense = .0003f;
+			acquireTarget();
 		}
 		id = UnitID.PLANE;
 	}
@@ -47,6 +48,7 @@ public class Plane extends Unit {
 				nation.coins += 10;
 			}
 			aaAim();
+			acquireTarget();
 			if (bombsAway) {
 				if (position.getDist(getTarget()) < 1) {
 					nation.coins += 1.5 * health;
@@ -101,7 +103,7 @@ public class Plane extends Unit {
 			// If am fighter, and enemy is plane, target
 			// If am not fighter, and enemy is not plane, target
 			// Do not target if anything else
-			if (((tempUnit.id == UnitID.PLANE) == (getWeight() == UnitID.LIGHT)) && (tempUnit.id != UnitID.CITY && tempUnit.id != UnitID.FACTORY && tempUnit.id != UnitID.PORT && tempUnit.id != UnitID.AIRFIELD) && !tempUnit.isBoarded()) {
+			if (((tempUnit.id == UnitID.PLANE) == (getWeight() == UnitID.LIGHT)) && (tempUnit.id != UnitID.CITY && tempUnit.id != UnitID.FACTORY && tempUnit.id != UnitID.PORT && tempUnit.id != UnitID.AIRFIELD) && !tempUnit.isBoarded() && tempUnit.getID() != UnitID.NONE) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempUnit.id == UnitID.SHIP) tempDist /= 2;
@@ -151,7 +153,7 @@ public class Plane extends Unit {
 		}
 		if (smallestUnit != null) {
 			smallestUnit.engage();
-			setTarget((smallestPoint.addPoint(new Point(rand.nextInt(10) - 5, rand.nextInt(10) - 5))));
+			setTarget(smallestPoint);
 		} else {
 			setTarget(smallestPoint);
 		}

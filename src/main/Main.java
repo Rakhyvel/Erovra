@@ -12,6 +12,7 @@ import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
 import objects.units.City;
+import objects.units.Infantry;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -30,7 +31,8 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.ISLANDS;
+	private static double dt = 50/3.0;
 
 	// Window
 	public static final int width = 1024;
@@ -46,7 +48,7 @@ public class Main {
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.4";
+	public static String version = "Erovra 1.0.5";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -59,7 +61,6 @@ public class Main {
 		m.window();
 		m.init();
 
-		double dt = 50 / 3.0;
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
 		double t = 0;
@@ -77,7 +78,7 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if (gameState == StateID.ONGOING) ticks++;
+				ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -125,9 +126,10 @@ public class Main {
 	 * new map
 	 */
 	public static void startNewMatch() {
+		ticks = 0;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
-		Nation russia = new Nation(220 << 16 | 50 << 8 | 0, "Russia");
+		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Russia");
 		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
@@ -147,9 +149,9 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
-				if (Map.getArray(x, y) > 0.5f) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
-					sweden.setCaptial(1);
+					sweden.setCaptial(0);
 					break;
 				}
 			}
@@ -159,18 +161,21 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
-				if (Map.getArray(x, y) > 0.5f) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
-					russia.setCaptial(1);
+					russia.setCaptial(0);
 					break;
 				}
 			}
 		}
 		while (sweden.unitSize() + russia.unitSize() < 2);
+		sweden.addUnit(new Infantry(sweden.getUnit(0).getPosition(), sweden));
+		russia.addUnit(new Infantry(russia.getUnit(0).getPosition(), russia));
 	}
 
 	/**
-	 * @param id  The game state to be changed.
+	 * @param id
+	 *            The game state to be changed.
 	 */
 	public static void setState(StateID id) {
 		Main.gameState = id;
@@ -206,5 +211,13 @@ public class Main {
 
 	public static void endGame() {
 		running = false;
+	}
+	public static void speedUp(){
+		dt/=2;
+		System.out.println(50/3/dt);
+	}
+	public static void slowDown(){
+		dt*=2;
+		System.out.println(50/3/dt);
 	}
 }

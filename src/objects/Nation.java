@@ -17,7 +17,7 @@ import utility.Point;
 public class Nation {
 
 	public int color;
-	public int coins = 9;
+	public int coins = 40;
 	boolean ai = true;
 
 	// Units
@@ -27,7 +27,7 @@ public class Nation {
 	private final int planeCost = 20;
 
 	// Structures
-	private int cityCost = 10;
+	private int cityCost = 15;
 	private int portCost = 20;
 	private int factoryCost = 15;
 	private int airfieldCost = 20;
@@ -188,7 +188,7 @@ public class Nation {
 					((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(cityPoint) > 0.5f && checkProximity(position)) {
 				coins -= getCityCost();
-				setCityCost(getCityCost() + 7);
+				setCityCost(getCityCost() * 2);
 				addUnit(new City(cityPoint, this, Main.ticks));
 				return true;
 			}
@@ -207,7 +207,7 @@ public class Nation {
 				((int) (position.getY() / 64)) * 64 + 32);
 		if (Map.getArray(factoryPoint) > 0.5f && getCoinAmount() >= getFactoryCost() && checkProximity(position)) {
 			coins -= getFactoryCost();
-			setFactoryCost(getFactoryCost() + 10);
+			setFactoryCost(getFactoryCost() * 2);
 			addUnit(new Factory(factoryPoint, this));
 		}
 	}
@@ -223,7 +223,7 @@ public class Nation {
 		float land = Map.getArray(portPoint);
 		if (land < 0.5f && land > 0 && getCoinAmount() >= getPortCost() && checkProximity(position)) {
 			coins -= getPortCost();
-			setPortCost(getPortCost() + 10);
+			setPortCost(getPortCost() * 2);
 			addUnit(new Port(portPoint, this));
 		}
 	}
@@ -234,7 +234,7 @@ public class Nation {
 		float land = Map.getArray(airfieldPoint);
 		if (land > 0.5f && getCoinAmount() >= getAirfieldCost() && checkProximity(position)) {
 			coins -= getAirfieldCost();
-			setAirfieldCost(getAirfieldCost() + 10);
+			setAirfieldCost(getAirfieldCost() * 2);
 			addUnit(new Airfield(airfieldPoint, this));
 		}
 	}

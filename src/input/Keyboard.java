@@ -36,11 +36,19 @@ public class Keyboard extends KeyAdapter {
 		if (keyCode == KeyEvent.VK_MINUS) {
 			minus.setPressed(pressed);
 		}
+		if (keyCode == KeyEvent.VK_PERIOD) {
+			period.setPressed(pressed);
+		}
+		if (keyCode == KeyEvent.VK_COMMA) {
+			comma.setPressed(pressed);
+		}
 	}
 
 	public Key esc = new Key();
 	public Key plus = new Key();
 	public Key minus = new Key();
+	public Key period = new Key();
+	public Key comma = new Key();
 
 	/**
 	 * Holds information pertaining to whether or not the key is pressed or released.

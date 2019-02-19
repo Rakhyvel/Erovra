@@ -70,9 +70,8 @@ public class Map {
 				}
 			} else if (id == MapID.MOUNTAIN) {
 				float r = rand.nextFloat();
-				mountain[x * 128][y * 128] = (r) - .2f;
+				mountain[x * 128][y * 128] = (r*r) + .5f;
 			} else {
-
 			}
 		}
 

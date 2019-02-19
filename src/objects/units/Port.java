@@ -60,7 +60,7 @@ public class Port extends Industry {
 	 * If the nation is AI controlled, decides what ship to build
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.seaSupremacy >= nation.seaSupremacy) {
+		if (nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
 			if (nation.coins >= (nation.getShipCost() / 4)) {
 				int smallestDistance = 524288;
 				int unitCount = 0;
@@ -78,7 +78,7 @@ public class Port extends Industry {
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
+				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost()*10, 10800);
 			} else {
 				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800);
 			}
@@ -114,6 +114,9 @@ public class Port extends Industry {
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
+		if(getProduct() != UnitID.NONE){
+			d.setDropDownHeight(60);
+		}
 		d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4, nation.getShipCost(), nation.getShipCost() * 2, this);
 	}
 

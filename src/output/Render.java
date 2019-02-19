@@ -71,6 +71,7 @@ public class Render extends Canvas {
 
 	// Misc
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
+	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -114,8 +115,8 @@ public class Render extends Canvas {
 			System.arraycopy(menu, 0, pixels, 0, 1025 * 513);
 		}
 		world.render(this);
-		drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
-		drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250 << 8 | 250);
+//		drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
+//		drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250 << 8 | 250);
 		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
 
 		g.drawImage(img, 0, 0, null);
@@ -444,7 +445,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 199 << 16 | 190 << 8 | 185;
+			image[i] = 10 << 16 | 10 << 8 | 15;
 		}
 		return image;
 	}

@@ -28,6 +28,8 @@ public class Point {
 		return (x-p2.x)*(x-p2.x)+(y-p2.y)*(y-p2.y);
 	}
 	public Vector getTargetVector(Point p) {
+		if(getDist(p) == 0)
+			return new Vector(0,0);
 		return new Vector(p.x-x,p.y-y);
 	}
 	public Vector subVec(Point p) {

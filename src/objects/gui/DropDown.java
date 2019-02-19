@@ -37,7 +37,6 @@ public class DropDown extends Menu {
 		}
 		if (shown) {
 			unit.setHit(3);
-			setDropDownHeight();
 			if (isMouseInsideDropDown()) {
 				buttonsHovered = getButtonsHovered();
 				if (Main.mouse.getMouseLeftDown()) {
@@ -115,10 +114,10 @@ public class DropDown extends Menu {
 			position.setX(0);
 		}
 		if (p.getY() > 0) {
-			if (p.getY() < 512 - dropDownHeight + 30) {
+			if (p.getY() < 512 - getDropDownHeight() + 30) {
 				position.setY(p.getY());
 			} else {
-				position.setY(512 - dropDownHeight + 30);
+				position.setY(512 - getDropDownHeight() + 30);
 			}
 		} else {
 			position.setY(0);
@@ -153,6 +152,10 @@ public class DropDown extends Menu {
 			dropDownHeight = 60;
 		}
 	}
+	
+	public void setDropDownHeight(int height){
+		dropDownHeight = height;
+	}
 
 	/**
 	 * Hides the drop down
@@ -182,7 +185,7 @@ public class DropDown extends Menu {
 	 * @return Whether or not the mouse is within the drop down's bounds
 	 */
 	public boolean isMouseInsideDropDown() {
-		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 170 && Main.mouse.getY() > getPosition().getY() && Main.mouse.getY() < getPosition().getY() + dropDownHeight;
+		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 170 && Main.mouse.getY() > getPosition().getY() && Main.mouse.getY() < getPosition().getY() + getDropDownHeight();
 	}
 
 	/**
@@ -190,7 +193,7 @@ public class DropDown extends Menu {
 	 */
 	public int getButtonsHovered() {
 		if (Main.mouse.getY() < getPosition().getY() + 30) return 0;
-		if (Main.mouse.getY() > getPosition().getY() + dropDownHeight) {
+		if (Main.mouse.getY() > getPosition().getY() + getDropDownHeight()) {
 			return 0;
 		}
 		return (int) (Main.mouse.getY() - getPosition().getY() + 5) / 30 - 1;
@@ -229,9 +232,9 @@ public class DropDown extends Menu {
 				minutes = indsutry.getStart() / 3600;
 				seconds = (indsutry.getStart() / 60) - minutes * 60;
 				if (minutes >= 1) {
-					product += minutes + "m,";
+					product += " " + minutes + "m,";
 				}
-				product += seconds + "s";
+				product += " " + seconds + "s";
 			}
 			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
 			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16, 250 << 16 | 250 << 8 | 250);
@@ -256,5 +259,9 @@ public class DropDown extends Menu {
 
 	public Point getPosition() {
 		return position;
+	}
+
+	public int getDropDownHeight() {
+		return dropDownHeight;
 	}
 }

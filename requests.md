@@ -1,6 +1,5 @@
-- AI should make at max 3 factories and 3 airfields, rest should be cities
-- Figure out why mouse doesn't work on the lab computers
-- Capital should produce infantry
 - Fix time display for industry
+~~- Correct dropdown height~~
+
 - Infantry target should show
 - Arrow that shows where cities will be built
