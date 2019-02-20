@@ -4,6 +4,7 @@
 - Fixed dropdown height issues
 - Prettified errormessages
 - Added error messages for buildings
+- AI team's landing craft are much smarter now, target more than capital
 
 ### Erovra 1.0.6
 - Fixed infantry spawning

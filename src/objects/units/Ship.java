@@ -27,9 +27,22 @@ public class Ship extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			defense = .3f;
+			defense = 1f;
 			if (nation.isAIControlled()) {
-				setTarget(nation.enemyNation.capital.position.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96)));
+				Point smallestPoint = new Point(-1, -1);
+				double smallestDist = 2*(1024*512);
+				for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+					Unit tempUnit = nation.enemyNation.getUnit(i);
+					Point tempPoint = tempUnit.getPosition();
+					double tempDist = tempPoint.getDist(position);
+					if ((tempUnit.getID() == UnitID.FACTORY || tempUnit.getID() == UnitID.CITY|| tempUnit.getID() == UnitID.PORT|| tempUnit.getID() == UnitID.AIRFIELD)) {
+						if(smallestDist > tempDist) {
+							smallestPoint = tempPoint;
+							smallestDist = tempDist;
+						}
+					}
+				}
+				setTarget(smallestPoint);
 				velocity = position.subVec(getTarget()).normalize().scalar(speed);
 			}
 		} else if (weight == UnitID.MEDIUM) {
@@ -37,7 +50,7 @@ public class Ship extends Unit {
 			defense = 2;
 		} else {
 			speed = .05f;
-			defense = 3;
+			defense = 6;
 		}
 		id = UnitID.SHIP;
 	}
@@ -47,7 +60,11 @@ public class Ship extends Unit {
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
 			detectHit();
 			if (getWeight() != UnitID.LIGHT) {
-				engaged = torpedoAim() || aaAim();
+				if(getWeight() == UnitID.HEAVY) {
+					engaged = torpedoAim() || aaAim() || autoArtilleryAim(64);
+				} else {
+					engaged = torpedoAim() || aaAim();
+				}
 				if (nation.isAIControlled()) {
 					wander();
 				} else {
