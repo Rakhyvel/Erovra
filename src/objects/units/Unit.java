@@ -565,10 +565,12 @@ public abstract class Unit {
 	 */
 	void clickToMove() {
 		if (Main.world.selectedUnit == null) {
+			if(boundingBox(Main.mouse.getX(),Main.mouse.getY()))
+				hit=3;
 			// If there is no a unit currently selected
 			if (Main.mouse.getMouseLeftDown() && !Main.world.getDropDown().getShown()) {
 				// If mouse is down AND the dropdown isn't displayed
-				if (isSelected() || position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY())) < 512) {
+				if (isSelected() || boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
 					// If unit is already selected OR the unit is not selected,
 					// and the mouse is
 					// near
@@ -595,6 +597,10 @@ public abstract class Unit {
 				setFacing(getTarget());
 				Main.world.nullifySelected();
 			}
+			if(Main.mouse.getMouseRightDown()) {
+				selected = false;
+				Main.world.nullifySelected();
+			}
 		} else {
 			leftClicked = false;
 		}
@@ -613,6 +619,11 @@ public abstract class Unit {
 			Main.world.getDropDown().show(this);
 			rightClicked = false;
 		}
+	}
+	
+	boolean boundingBox(double x, double y) {
+		a = position.subVec(getFacing()).getRadian();
+		return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<32 && Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
 	}
 
 	/**

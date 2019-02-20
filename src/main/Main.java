@@ -11,7 +11,6 @@ import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
 import objects.units.City;
-import objects.units.DeathMarker;
 import objects.units.Infantry;
 import output.Render;
 import terrain.Map;
@@ -31,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.PLAINS;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -131,7 +130,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Russia");
-//		sweden.setAIControlled(false);
+		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);

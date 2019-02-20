@@ -2,7 +2,7 @@
 - (5) Error messages
 - ~~(5) Dropdown height takes a sec to fully calculate its height~~
 - ~~(5) Fix mouse on lab computers~~
-- (4) Cruiser artillery
+- ~~(4) Cruiser artillery~~
 - (3) Artillery zones
 - (3) Right click to deselect
 - (3) Decomission

@@ -453,7 +453,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 10 << 16 | 10 << 8 | 15;
+			image[i] = 27 << 16 | 30 << 8 | 40;
 		}
 		return image;
 	}
