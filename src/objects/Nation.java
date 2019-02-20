@@ -186,12 +186,18 @@ public class Nation {
 		if (coins >= getCityCost()) {
 			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
-			if (Map.getArray(cityPoint) > 0.5f && checkProximity(position)) {
-				coins -= getCityCost();
-				setCityCost(getCityCost() * 2);
-				addUnit(new City(cityPoint, this, Main.ticks));
-				return true;
+			if (Map.getArray(cityPoint) > 0.5f) {
+				if(checkProximity(position)) {
+					coins -= getCityCost();
+					setCityCost(getCityCost() * 2);
+					addUnit(new City(cityPoint, this, Main.ticks));
+					return true;
+				}
+			} else if(!isAIControlled()){
+				Main.world.errorMessage.showErrorMessage("Cannot build a city on a water tile!");
 			}
+		} else if(!isAIControlled()){
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 		return false;
 	}
@@ -203,12 +209,20 @@ public class Nation {
 	 * @param position  The position of the infantry unit buying
 	 */
 	public void buyFactory(Point position) {
-		Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
-				((int) (position.getY() / 64)) * 64 + 32);
-		if (Map.getArray(factoryPoint) > 0.5f && getCoinAmount() >= getFactoryCost() && checkProximity(position)) {
-			coins -= getFactoryCost();
-			setFactoryCost(getFactoryCost() * 2);
-			addUnit(new Factory(factoryPoint, this));
+		if(coins >= factoryCost) {
+			Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+					((int) (position.getY() / 64)) * 64 + 32);
+			if (Map.getArray(factoryPoint) > 0.5f) {
+				if(checkProximity(position)) {
+					coins -= getFactoryCost();
+					setFactoryCost(getFactoryCost() * 2);
+					addUnit(new Factory(factoryPoint, this));
+				}
+			} else if(!isAIControlled()){
+				Main.world.errorMessage.showErrorMessage("Cannot build a factory on a water tile!");
+			}
+		} else if(!isAIControlled()){
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
 
@@ -219,23 +233,39 @@ public class Nation {
 	 * @param position  The position of the infantry unit buying
 	 */
 	public void buyPort(Point position) {
-		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-		float land = Map.getArray(portPoint);
-		if (land < 0.5f && land > 0 && getCoinAmount() >= getPortCost() && checkProximity(position)) {
-			coins -= getPortCost();
-			setPortCost(getPortCost() * 2);
-			addUnit(new Port(portPoint, this));
+		if(coins >= portCost) {
+			Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+			float land = Map.getArray(portPoint);
+			if (land < 0.5f && land > 0) {
+				if(checkProximity(position)) {
+					coins -= getPortCost();
+					setPortCost(getPortCost() * 2);
+					addUnit(new Port(portPoint, this));
+				}
+			} else if(!isAIControlled()){
+				Main.world.errorMessage.showErrorMessage("Cannot build a port on a land tile!");
+			}
+		} else if(!isAIControlled()){
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
 
 	public void buyAirfield(Point position) {
-		Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
-				((int) (position.getY() / 64)) * 64 + 32);
-		float land = Map.getArray(airfieldPoint);
-		if (land > 0.5f && getCoinAmount() >= getAirfieldCost() && checkProximity(position)) {
-			coins -= getAirfieldCost();
-			setAirfieldCost(getAirfieldCost() * 2);
-			addUnit(new Airfield(airfieldPoint, this));
+		if(coins >= airfieldCost) {
+			Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+					((int) (position.getY() / 64)) * 64 + 32);
+			float land = Map.getArray(airfieldPoint);
+			if (land > 0.5f) {
+				if(checkProximity(position)) {
+					coins -= getAirfieldCost();
+					setAirfieldCost(getAirfieldCost() * 2);
+					addUnit(new Airfield(airfieldPoint, this));
+				}
+			} else if(!isAIControlled()){
+				Main.world.errorMessage.showErrorMessage("Cannot build a airfield on a water tile!");
+			}
+		} else if(!isAIControlled()){
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
 
@@ -284,6 +314,9 @@ public class Nation {
 					smallestDistance = tempDist;
 				}
 			}
+		}
+		if(!isAIControlled() && smallestDistance < 32) {
+			Main.world.errorMessage.showErrorMessage("Cannot build a building here!");
 		}
 		return smallestDistance >= 32;
 	}

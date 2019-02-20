@@ -134,8 +134,8 @@ public class DropDown extends Menu {
 		this.unit = unit;
 		unit.setHit(3);
 		shown = true;
-		setPosition(unit.getPosition());
 		setDropDownHeight();
+		setPosition(unit.getPosition());
 	}
 
 	/**
@@ -192,11 +192,11 @@ public class DropDown extends Menu {
 	 * @return The button the mouse is hovering over
 	 */
 	public int getButtonsHovered() {
-		if (Main.mouse.getY() < getPosition().getY() + 30) return 0;
+		if (Main.mouse.getY() < getPosition().getY() - 30) return 0;
 		if (Main.mouse.getY() > getPosition().getY() + getDropDownHeight()) {
 			return 0;
 		}
-		return (int) (Main.mouse.getY() - getPosition().getY() + 5) / 30 - 1;
+		return (int) (Main.mouse.getY() - getPosition().getY() + 30) / 30 - 1;
 	}
 
 	/**

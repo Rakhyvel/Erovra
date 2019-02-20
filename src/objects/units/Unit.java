@@ -533,7 +533,7 @@ public abstract class Unit {
 			// If there is no a unit currently selected
 			if (Main.mouse.getMouseLeftDown() && !Main.world.getDropDown().getShown()) {
 				// If mouse is down AND the dropdown isn't displayed
-				if (isSelected() || position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY() - 15)) < 512) {
+				if (isSelected() || position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY())) < 512) {
 					// If unit is already selected OR the unit is not selected,
 					// and the mouse is
 					// near
@@ -544,7 +544,6 @@ public abstract class Unit {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
-					System.out.println(Main.world.selectedUnit);
 					Main.world.selectedUnit = this;
 				}
 				leftClicked = false;
@@ -557,7 +556,7 @@ public abstract class Unit {
 				leftClicked = true;
 			} else if (leftClicked) {
 				getTarget().setX(Main.mouse.getX());
-				getTarget().setY(Main.mouse.getY() - 15);
+				getTarget().setY(Main.mouse.getY());
 				setFacing(getTarget());
 				Main.world.nullifySelected();
 			}

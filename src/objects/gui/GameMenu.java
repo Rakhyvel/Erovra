@@ -52,12 +52,12 @@ public class GameMenu extends Menu {
 	 * @return  The button the mouse is hovering over
 	 */
 	private int getButtonsHovered() {
-		if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 208 && Main.mouse.getY() < 344) {
-			if (Main.mouse.getY() < 248) {
+		if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 188 && Main.mouse.getY() < 324) {
+			if (Main.mouse.getY() < 228) {
 				return 1;
-			} else if (Main.mouse.getY() >= 256 && Main.mouse.getY() < 296) {
+			} else if (Main.mouse.getY() >= 236 && Main.mouse.getY() < 276) {
 				return 2;
-			} else if (Main.mouse.getY() > 304) {
+			} else if (Main.mouse.getY() > 284) {
 				return 3;
 			} else {
 				return 0;

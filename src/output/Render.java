@@ -105,7 +105,8 @@ public class Render extends Canvas {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
-		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
+				|| Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
@@ -117,7 +118,8 @@ public class Render extends Canvas {
 		world.render(this);
 //		drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
 //		drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250 << 8 | 250);
-		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
+		if (Main.gameState == StateID.ONGOING)
+			world.drawCoins(this);
 
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
@@ -157,11 +159,11 @@ public class Render extends Canvas {
 	/**
 	 * Draws a rectangle
 	 * 
-	 * @param x  The x coordinate of the top left corner of the rectangle
-	 * @param y  The y coordinate of the top left corner of the rectangle
-	 * @param w  The width of the rectangle
-	 * @param h  The height of the rectangle
-	 * @param color  The color of the rectangle
+	 * @param x     The x coordinate of the top left corner of the rectangle
+	 * @param y     The y coordinate of the top left corner of the rectangle
+	 * @param w     The width of the rectangle
+	 * @param h     The height of the rectangle
+	 * @param color The color of the rectangle
 	 */
 	public void drawRect(int x, int y, int w, int h, int color) {
 		for (int i = 0; i < w * h; i++) {
@@ -177,12 +179,12 @@ public class Render extends Canvas {
 	/**
 	 * Draws a rectangle, with opacity
 	 * 
-	 * @param x  The x coordinate of the top left corner of the rectangle
-	 * @param y  The y coordinate of the top left corner of the rectangle
-	 * @param w  The width of the rectangle
-	 * @param h  The height of the rectangle
-	 * @param color  The color of the rectangle
-	 * @param alpha  The opacity of the rectangle
+	 * @param x     The x coordinate of the top left corner of the rectangle
+	 * @param y     The y coordinate of the top left corner of the rectangle
+	 * @param w     The width of the rectangle
+	 * @param h     The height of the rectangle
+	 * @param color The color of the rectangle
+	 * @param alpha The opacity of the rectangle
 	 */
 	public void drawRect(int x, int y, int w, int h, int color, float alpha) {
 		for (int i = 0; i < w * h; i++) {
@@ -204,10 +206,10 @@ public class Render extends Canvas {
 	/**
 	 * Draws an image
 	 * 
-	 * @param x  The x coordinate of the top left corner of the image
-	 * @param y  The y coordinate of the top right corner of the image
-	 * @param w  The width of the image
-	 * @param image  The image
+	 * @param x     The x coordinate of the top left corner of the image
+	 * @param y     The y coordinate of the top right corner of the image
+	 * @param w     The width of the image
+	 * @param image The image
 	 */
 	public void drawImage(int x, int y, int w, int[] image) {
 		for (int i = 0; i < image.length; i++) {
@@ -229,11 +231,11 @@ public class Render extends Canvas {
 	/**
 	 * Draws an image with overlay color blending
 	 * 
-	 * @param x  The x coordinate of the top left corner of the image
-	 * @param y  The y coordinate of the top right corner of the image
-	 * @param w  The width of the image
-	 * @param image  The image
-	 * @param color  The color to be blended
+	 * @param x     The x coordinate of the top left corner of the image
+	 * @param y     The y coordinate of the top right corner of the image
+	 * @param w     The width of the image
+	 * @param image The image
+	 * @param color The color to be blended
 	 */
 	public void drawImageScreen(int x, int y, float w, int[] image, int color) {
 		int h = (int) (image.length / w);
@@ -280,57 +282,55 @@ public class Render extends Canvas {
 			}
 		}
 	}
-	
+
 	/**
 	 * Draws a letter, used for string printing
 	 * 
-	 * @param x  The x coordinate of the top left corner of the letter
-	 * @param y  The y coordinate of the top right corner of the letter
-	 * @param w  The width of the image
-	 * @param image  The image
-	 * @param color  The color to be blended
+	 * @param x     The x coordinate of the top left corner of the letter
+	 * @param y     The y coordinate of the top right corner of the letter
+	 * @param w     The width of the image
+	 * @param image The image
+	 * @param color The color to be blended
 	 */
-	public void drawLetter(int x, int y, float w, int[] image, int color) {
+	public void drawLetter(int x, int y, float w, int[] image, int color, float opacity) {
 		int x1, y1, id, r, g, b, newColor, newColor2;
 		float screen, alpha;
 		for (int i = 0; i < image.length; i++) {
-			alpha = (image[i] >> 24 & 255) / 255.0f;
-			if (alpha > 0.9f) {
-				// Finding position on game pixel array
-				x1 = (int) ((i % w) + x);
-				y1 = (int) (i / w);
-				id = (y1 + y) * (width + 1) + x1;
-				if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
-					// Finding and splitting starting colors
-					screen = (image[i] & 255) / 255.0f;
-					r = ((color >> 16) & 255);
-					g = ((color >> 8) & 255);
-					b = (color & 255);
+			alpha = ((image[i] >> 24 & 255) / 255.0f) * opacity;
+			// Finding position on game pixel array
+			x1 = (int) ((i % w) + x);
+			y1 = (int) (i / w);
+			id = (y1 + y) * (width + 1) + x1;
+			if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+				// Finding and splitting starting colors
+				screen = (image[i] & 255) / 255.0f;
+				r = ((color >> 16) & 255);
+				g = ((color >> 8) & 255);
+				b = (color & 255);
 
-					// Setting new colors
-					if (screen <= 0.5f) {
-						screen *= 2;
-						r = (int) (r * screen);
-						g = (int) (g * screen);
-						b = (int) (b * screen);
-					} else {
-						r = (int) (255 - 2 * (255 - r) * (1 - screen));
-						g = (int) (255 - 2 * (255 - g) * (1 - screen));
-						b = (int) (255 - 2 * (255 - b) * (1 - screen));
-					}
-
-					// Recombining colors
-					newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-
-					// Finding alpha
-					r = ((pixels[id] >> 16) & 255);
-					g = ((pixels[id] >> 8) & 255);
-					b = (pixels[id] & 255);
-					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-
-					// Finally adding colors to pixel array
-					pixels[id] = newColor + (newColor2);
+				// Setting new colors
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
 				}
+
+				// Recombining colors
+				newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+
+				// Finding alpha
+				r = ((pixels[id] >> 16) & 255);
+				g = ((pixels[id] >> 8) & 255);
+				b = (pixels[id] & 255);
+				newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+
+				// Finally adding colors to pixel array
+				pixels[id] = newColor + (newColor2);
 			}
 		}
 	}
@@ -338,12 +338,12 @@ public class Render extends Canvas {
 	/**
 	 * Draws an image with overlay color blending and rotation
 	 * 
-	 * @param x  The x coordinate of the top left corner of the image
-	 * @param y  The y coordinate of the top right corner of the image
-	 * @param w  The width of the image
+	 * @param x      The x coordinate of the top left corner of the image
+	 * @param y      The y coordinate of the top right corner of the image
+	 * @param w      The width of the image
 	 * @param image  The image
 	 * @param color  The color to be blended
-	 * @param rotate  Rotation in radians of the image
+	 * @param rotate Rotation in radians of the image
 	 */
 	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate) {
 		int h = image.length / w;
@@ -368,10 +368,12 @@ public class Render extends Canvas {
 				int newColor = r << 16 | g << 8 | b;
 				float alpha = (image[i] >> 24 & 255) / 255.0f;
 				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					pixels[(int) (x2) + (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) (x2)
+							+ (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 					x2 += 0.5;
 					y2 += 0.5;
-					pixels[(int) (x2) + (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+					pixels[(int) (x2)
+							+ (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
 				}
 			}
 		}
@@ -380,42 +382,48 @@ public class Render extends Canvas {
 	/**
 	 * Returns a lighter color
 	 * 
-	 * @param color  The original color
-	 * @return  A color 50% lighter
+	 * @param color The original color
+	 * @return A color 50% lighter
 	 */
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		r <<= 1;
 		g <<= 1;
 		b <<= 1;
-		if (r > 255) r = 255;
-		if (g > 255) g = 255;
-		if (b > 255) b = 255;
+		if (r > 255)
+			r = 255;
+		if (g > 255)
+			g = 255;
+		if (b > 255)
+			b = 255;
 		return r << 16 | g << 8 | b;
 	}
 
 	/**
 	 * Returns a darker color
 	 * 
-	 * @param color  The original color
-	 * @return  A new color, 50% darker
+	 * @param color The original color
+	 * @return A new color, 50% darker
 	 */
 	public int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		r >>= 1;
 		g >>= 1;
 		b >>= 1;
-		if (r < 0) r = 0;
-		if (g < 0) g = 0;
-		if (b < 0) b = 0;
+		if (r < 0)
+			r = 0;
+		if (g < 0)
+			g = 0;
+		if (b < 0)
+			b = 0;
 		return r << 16 | g << 8 | b;
 	}
 
 	/**
 	 * Desaturates a given color
 	 * 
-	 * @param color  Original color
-	 * @return  A less saturated color
+	 * @param color Original color
+	 * @return A less saturated color
 	 */
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
@@ -429,8 +437,8 @@ public class Render extends Canvas {
 	/**
 	 * Takes an image and makes it darker and more desaturated
 	 * 
-	 * @param image  Original image
-	 * @return  Darker and desaturated image
+	 * @param image Original image
+	 * @return Darker and desaturated image
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
@@ -440,7 +448,7 @@ public class Render extends Canvas {
 	}
 
 	/**
-	 * @return  An gray image
+	 * @return An gray image
 	 */
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
@@ -453,11 +461,11 @@ public class Render extends Canvas {
 	/**
 	 * Draws a string
 	 * 
-	 * @param label  String to be drawn
-	 * @param x  coordinate value of the middle of the string
-	 * @param y  coordinate value of the string
+	 * @param label String to be drawn
+	 * @param x     coordinate value of the middle of the string
+	 * @param y     coordinate value of the string
 	 * @param font  Font to be used
-	 * @param color  Color of the string
+	 * @param color Color of the string
 	 */
 	public void drawString(String label, int x, int y, Font font, int color) {
 		int carriage = 0;
@@ -466,9 +474,26 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), 250 << 16 | 250 << 8);
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter),
+						250 << 16 | 250 << 8, 1);
 			} else {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color);
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color, 1);
+			}
+			carriage += font.getKern(letter);
+		}
+	}
+
+	public void drawString(String label, int x, int y, Font font, int color, float opacity) {
+		int carriage = 0;
+		int letter;
+		int length = font.getStringWidth(label) - 1;
+		for (int i = 0; i < label.length(); i++) {
+			letter = label.charAt(i);
+			if (letter == 7) {
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter),
+						250 << 16 | 250 << 8, opacity);
+			} else {
+				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color, opacity);
 			}
 			carriage += font.getKern(letter);
 		}

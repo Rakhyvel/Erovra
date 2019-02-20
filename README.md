@@ -1,4 +1,10 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.7 
+- Fixed mouse input being slightly off
+- Fixed dropdown height issues
+- Prettified errormessages
+- Added error messages for buildings
+
 ### Erovra 1.0.6
 - Fixed infantry spawning
 - AI team now only builds ports where it makes sense

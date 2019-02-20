@@ -38,14 +38,14 @@ public class Mouse extends MouseAdapter {
 	 * @return  The x coordinate of the position of the mouse relative to the top-left corner of the screen.
 	 */
 	public int getX() {
-		return (int) MouseInfo.getPointerInfo().getLocation().getX() - Main.getFrameX();
+		return (int) MouseInfo.getPointerInfo().getLocation().getX() - Main.getFrameX()-3;
 	}
 
 	/**
 	 * @return  The y coordinate of the position of the mouse relative to the top-left corner of the screen
 	 */
 	public int getY() {
-		return (int) MouseInfo.getPointerInfo().getLocation().getY() - Main.getFrameY();
+		return (int) MouseInfo.getPointerInfo().getLocation().getY() - Main.getFrameY()-37;
 	}
 
 	/**

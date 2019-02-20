@@ -49,12 +49,12 @@ public class MainMenu extends Menu {
 	 * Gets the button that the user is hovering over with the mouse
 	 */
 	private void getButtonsHovered() {
-		if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 208 && Main.mouse.getY() < 344) {
-			if (Main.mouse.getY() < 248) {
+		if (Main.mouse.getX() >= 402 && Main.mouse.getX() < 622 && Main.mouse.getY() > 188 && Main.mouse.getY() < 324) {
+			if (Main.mouse.getY() < 228) {
 				buttonsHovered = 1;
-			} else if (Main.mouse.getY() >= 256 && Main.mouse.getY() < 296) {
+			} else if (Main.mouse.getY() >= 236 && Main.mouse.getY() < 276) {
 				buttonsHovered = 2;
-			} else if (Main.mouse.getY() > 304) {
+			} else if (Main.mouse.getY() > 284) {
 				buttonsHovered = 3;
 			} else {
 				buttonsHovered = 0;
