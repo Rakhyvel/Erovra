@@ -26,6 +26,7 @@ public class World {
 	boolean speedClicked = false;
 	boolean slowClicked = false;
 	public Unit selectedUnit = null;
+	public Unit highlightedUnit = null;
 	private DropDown dropDown = new DropDown();
 	public ErrorMessage errorMessage = new ErrorMessage();
 	private boolean nullifySelected = false;
@@ -41,8 +42,9 @@ public class World {
 	 *            The time in millis since last tick
 	 */
 	public void tick(double t) {
+		highlightedUnit = null;
 		if (Main.gameState == StateID.ONGOING) {
-			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
+			for (int i2 = 0; i2 < friendly.unitSize(); i2++) {
 				friendly.getUnit(i2).tick(t);
 			}
 			if (selectedUnit != null) {

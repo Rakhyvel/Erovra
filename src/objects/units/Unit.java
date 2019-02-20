@@ -565,8 +565,10 @@ public abstract class Unit {
 	 */
 	void clickToMove() {
 		if (Main.world.selectedUnit == null) {
-			if(boundingBox(Main.mouse.getX(),Main.mouse.getY()))
+			if(boundingBox(Main.mouse.getX(),Main.mouse.getY()) && Main.world.highlightedUnit == null) {
+				Main.world.highlightedUnit = this;
 				hit=3;
+			}
 			// If there is no a unit currently selected
 			if (Main.mouse.getMouseLeftDown() && !Main.world.getDropDown().getShown()) {
 				// If mouse is down AND the dropdown isn't displayed
@@ -612,7 +614,7 @@ public abstract class Unit {
 	 */
 	void clickToDropDown() {
 		if (Main.mouse.getMouseRightDown()) {
-			if (position.getDist(new Point(Main.mouse.getX(), Main.mouse.getY())) < 512) {
+			if (boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
 				rightClicked = true;
 			}
 		} else if (rightClicked) {
@@ -623,7 +625,23 @@ public abstract class Unit {
 	
 	boolean boundingBox(double x, double y) {
 		a = position.subVec(getFacing()).getRadian();
-		return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<32 && Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
+		if(getID() == UnitID.INFANTRY || getID() == UnitID.ARTILLERY || getID() == UnitID.CAVALRY) {
+			return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<8 && 
+					Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
+		} else if(getID() == UnitID.SHIP) {
+			if(getWeight() == UnitID.LIGHT) {
+				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<16 && 
+						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<13.5;
+			} else if(getWeight() == UnitID.MEDIUM) {
+				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<22.5 && 
+						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<13.5;
+			} else {
+				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<30.5 && 
+						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<8;
+			}
+		}
+		return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<16 && 
+				Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
 	}
 
 	/**

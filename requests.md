@@ -1,10 +1,11 @@
 - ~~(5) Only one unit should be allowed to be selected!~~
-- (5) Error messages
+- ~~(5) Error messages~~
 - ~~(5) Dropdown height takes a sec to fully calculate its height~~
 - ~~(5) Fix mouse on lab computers~~
 - ~~(4) Cruiser artillery~~
+- (4) Target arrows/indicators
 - (3) Artillery zones
-- (3) Right click to deselect
+- ~~(3) Right click to deselect~~
 - (3) Decomission
 - (2) Squad functions
 - (2) Control aircraft

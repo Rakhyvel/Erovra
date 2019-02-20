@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -111,7 +111,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 29);
+		frame.setSize(width + 7, height + 41);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -129,8 +129,8 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
-		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Russia");
-		sweden.setAIControlled(false);
+		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Sweden");
+//		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
