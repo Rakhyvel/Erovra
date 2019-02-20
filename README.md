@@ -3,6 +3,8 @@
 - Fixed infantry spawning
 - AI team now only builds ports where it makes sense
 - Fixed unit selection bug that trapped user
+- Only one unit can be selected at a time now (For real this time)
+- Added error messages
 
 ### Erovra 1.0.5
 - Tweaked AI a bit so that it builds more cities and prioritizes sea supremacy

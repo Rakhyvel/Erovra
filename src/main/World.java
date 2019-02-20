@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.ErrorMessage;
 import objects.gui.Menu;
 import objects.units.Unit;
 import output.Render;
@@ -26,6 +27,12 @@ public class World {
 	boolean slowClicked = false;
 	public Unit selectedUnit = null;
 	private DropDown dropDown = new DropDown();
+	public ErrorMessage errorMessage = new ErrorMessage();
+	private boolean nullifySelected = false;
+	
+	public World(){
+		menuArray.add(errorMessage);
+	}
 
 	/**
 	 * Calls the tick method for each object in the game
@@ -94,6 +101,10 @@ public class World {
 		}
 		for (int i = 0; i < menuArray.size(); i++) {
 			menuArray.get(i).tick();
+		}
+		if(nullifySelected){
+			selectedUnit = null;
+			nullifySelected = false;
 		}
 	}
 
@@ -173,5 +184,9 @@ public class World {
 	 */
 	public DropDown getDropDown() {
 		return dropDown;
+	}
+	
+	public void nullifySelected(){
+		nullifySelected = true;
 	}
 }

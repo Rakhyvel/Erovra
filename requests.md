@@ -1,5 +1,8 @@
-- Only one unit should be allowed to be selected!
-- Right click to deselect
-- Dropdown height takes a sec to fully calculate its height
-- Infantry target should show
-- Arrow that shows where cities will be built
+- ~~(5) Only one unit should be allowed to be selected!~~
+- (5) Error messages
+- (5) Dropdown height takes a sec to fully calculate its height
+- (4) Cruiser artillery
+- (3) Right click to deselect
+- (3) Decomission
+- (2) Squad functions
+- (2) Control aircraft
