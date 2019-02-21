@@ -61,12 +61,13 @@ public class Artillery extends Unit {
 				direction += 3.14f;
 
 			if (isSelected()) {
-				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color);
-				r.drawImageScreen(Main.mouse.getX(), Main.mouse.getY(), 16, r.flag, nation.color);
-			}else if(this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-				r.drawLine(getPosition(),new Point(getTarget().getX(),getTarget().getY()),nation.color);
+				r.drawImageScreen((int)getTarget().getX(), (int)getTarget().getY(), 16, r.flag, nation.color);
+				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
+						220 << 16 | 220 << 8 | 220);
 			}
-			
+
 			if (getWeight() == UnitID.LIGHT) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery,
 						r.lighten(nation.color), direction);
