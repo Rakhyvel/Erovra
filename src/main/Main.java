@@ -49,7 +49,7 @@ public class Main {
 	public static float zoom = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.7";
+	public static String version = "Erovra 1.0.8";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop

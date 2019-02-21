@@ -579,12 +579,15 @@ public abstract class Unit {
 					// Set leftClicked to true
 					leftClicked = true;
 				}
-			} else if (leftClicked) {
+			} else if (leftClicked && boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
 					Main.world.selectedUnit = this;
 				}
+				leftClicked = false;
+			} else {
+				selected = false;
 				leftClicked = false;
 			}
 		} else if (Main.world.selectedUnit.equals(this)) {

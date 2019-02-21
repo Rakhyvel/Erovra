@@ -116,6 +116,10 @@ public class Port extends Industry {
 				buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
 			} else if (d.buttonsHovered == 3) {
 				buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800);
+			} else if (d.buttonsHovered == 4) {
+				nation.unitArray.remove(this);
+				d.shouldClose();
+				nation.coins+=10;
 			}
 		}
 	}

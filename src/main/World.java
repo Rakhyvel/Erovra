@@ -8,6 +8,7 @@ import objects.gui.ErrorMessage;
 import objects.gui.Menu;
 import objects.units.Unit;
 import output.Render;
+import utility.Point;
 
 /**
  * The world class is used to contain all objects within the game. This includes
@@ -30,6 +31,7 @@ public class World {
 	private DropDown dropDown = new DropDown();
 	public ErrorMessage errorMessage = new ErrorMessage();
 	private boolean nullifySelected = false;
+	Point mouseStartPoint = new Point(-1,-1);
 	
 	public World(){
 		menuArray.add(errorMessage);

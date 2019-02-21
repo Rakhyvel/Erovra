@@ -13,6 +13,7 @@ import main.StateID;
 import main.World;
 import objects.gui.Font;
 import terrain.Map;
+import utility.Point;
 
 public class Render extends Canvas {
 
@@ -501,5 +502,10 @@ public class Render extends Canvas {
 			}
 			carriage += font.getKern(letter);
 		}
+	}
+	
+	public void drawLine(Point p1, Point p2, int color) {
+		double slope = (p1.getY()-p2.getY())/(p1.getX()-p2.getX());
+		
 	}
 }

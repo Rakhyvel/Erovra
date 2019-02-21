@@ -58,27 +58,26 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRect((int) getPosition().getX(), (int) getPosition().getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-			r.drawString(String.valueOf(unit.getID()) + " (" + (int) unit.getHealth() + "/10)", (int) getPosition().getX() + 85, (int) getPosition().getY() + 10, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawString(String.valueOf(unit.getID()) + " (" + (int) unit.getHealth() + "/10)",
+					(int) getPosition().getX() + 85, (int) getPosition().getY() + 10, r.font16,
+					250 << 16 | 250 << 8 | 250);
 
 			unit.dropDownRender(r, this);
 
 			r.drawRect((int) getPosition().getX() + 5, (int) getPosition().getY() + 23, 156, 6, 0);
-			r.drawRect((int) getPosition().getX() + 7, (int) getPosition().getY() + 25, (int) (15.2 * unit.getHealth()), 2, unit.nation.color);
+			r.drawRect((int) getPosition().getX() + 7, (int) getPosition().getY() + 25, (int) (15.2 * unit.getHealth()),
+					2, unit.nation.color);
 		}
 	}
 
 	/**
 	 * Draws buttons on the dropdown menu
 	 * 
-	 * @param label
-	 *            The text to go inside the button
-	 * @param buttonID
-	 *            The ID of the button
-	 * @param shade
-	 *            The opacity of the button (0.5f == normal, 0.7f ==
-	 *            unavailable)
-	 * @param r
-	 *            The render object
+	 * @param label    The text to go inside the button
+	 * @param buttonID The ID of the button
+	 * @param shade    The opacity of the button (0.5f == normal, 0.7f ==
+	 *                 unavailable)
+	 * @param r        The render object
 	 */
 	public void drawOption(String label, int buttonID, float shade, Render r) {
 		int x = (int) getPosition().getX();
@@ -97,11 +96,10 @@ public class DropDown extends Menu {
 	}
 
 	/**
-	 * Sets the position of the drop down. If the position will cause the drop
-	 * down to draw off-screen, the position is capped
+	 * Sets the position of the drop down. If the position will cause the drop down
+	 * to draw off-screen, the position is capped
 	 * 
-	 * @param p
-	 *            The position of the unit
+	 * @param p The position of the unit
 	 */
 	public void setPosition(Point p) {
 		if (p.getX() > 0) {
@@ -127,8 +125,7 @@ public class DropDown extends Menu {
 	/**
 	 * Shows the drop down
 	 * 
-	 * @param unit
-	 *            The unit the drop down belongs to
+	 * @param unit The unit the drop down belongs to
 	 */
 	public void show(Unit unit) {
 		this.unit = unit;
@@ -144,16 +141,18 @@ public class DropDown extends Menu {
 	private void setDropDownHeight() {
 		if (unit.getID() == UnitID.INFANTRY) {
 			dropDownHeight = 30 * 6;
-		} else if (unit.getID() == UnitID.FACTORY || unit.getID() == UnitID.PORT || unit.getID() == UnitID.CITY || unit.getID() == UnitID.AIRFIELD) {
+		} else if (unit.getID() == UnitID.PORT || unit.getID() == UnitID.CITY || unit.getID() == UnitID.AIRFIELD) {
 			dropDownHeight = 30 * 6;
+		} else if (unit.getID() == UnitID.FACTORY) {
+			dropDownHeight = 30 * 7;
 		} else if (unit.getID() == UnitID.SHIP) {
 			dropDownHeight = 30 * 4;
 		} else {
 			dropDownHeight = 60;
 		}
 	}
-	
-	public void setDropDownHeight(int height){
+
+	public void setDropDownHeight(int height) {
 		dropDownHeight = height;
 	}
 
@@ -185,14 +184,17 @@ public class DropDown extends Menu {
 	 * @return Whether or not the mouse is within the drop down's bounds
 	 */
 	public boolean isMouseInsideDropDown() {
-		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 170 && Main.mouse.getY() > getPosition().getY() && Main.mouse.getY() < getPosition().getY() + getDropDownHeight();
+		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 170
+				&& Main.mouse.getY() > getPosition().getY()
+				&& Main.mouse.getY() < getPosition().getY() + getDropDownHeight();
 	}
 
 	/**
 	 * @return The button the mouse is hovering over
 	 */
 	public int getButtonsHovered() {
-		if (Main.mouse.getY() < getPosition().getY() - 30) return 0;
+		if (Main.mouse.getY() < getPosition().getY() - 30)
+			return 0;
 		if (Main.mouse.getY() > getPosition().getY() + getDropDownHeight()) {
 			return 0;
 		}
@@ -202,22 +204,16 @@ public class DropDown extends Menu {
 	/**
 	 * Draw's buttons for factories, ports, and airfields
 	 * 
-	 * @param r
-	 *            Render object
-	 * @param light
-	 *            The text to display for the light unit option
-	 * @param medium
-	 *            The text to display for the medium unit option
-	 * @param heavy
-	 *            The text to display for the heavy unit option
-	 * @param lightCost
-	 *            The cost of a light unit
-	 * @param medCost
-	 *            The cost of a medium unit
-	 * @param heavyCost
-	 *            The cost of a heavy unit
+	 * @param r         Render object
+	 * @param light     The text to display for the light unit option
+	 * @param medium    The text to display for the medium unit option
+	 * @param heavy     The text to display for the heavy unit option
+	 * @param lightCost The cost of a light unit
+	 * @param medCost   The cost of a medium unit
+	 * @param heavyCost The cost of a heavy unit
 	 */
-	public void drawIndustry(Render r, String light, String medium, String heavy, int lightCost, int medCost, int heavyCost, Industry indsutry) {
+	public void drawIndustry(Render r, String light, String medium, String heavy, int lightCost, int medCost,
+			int heavyCost, Industry indsutry) {
 		if (indsutry.getProduct() != UnitID.NONE) {
 			int minutes = 0, seconds = 0;
 			String product = " ";
@@ -236,8 +232,10 @@ public class DropDown extends Menu {
 				}
 				product += " " + seconds + "s";
 			}
-			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
-			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30, 64 << 16 | 64 << 8 | 64,
+					0.5f);
+			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
+					250 << 16 | 250 << 8 | 250);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
 				drawOption(light + " (" + lightCost + ")", 1, 0.5f, r);
@@ -253,6 +251,9 @@ public class DropDown extends Menu {
 				drawOption(heavy + " (" + heavyCost + ")", 3, 0.5f, r);
 			} else {
 				drawOption(heavy + " (" + heavyCost + ")", 3, 0.7f, r);
+			}
+			if (!light.contains("Light tank") && !light.contains("Anti air")) {
+				drawOption("Decommision (-10)", 4, .5f, r);
 			}
 		}
 	}

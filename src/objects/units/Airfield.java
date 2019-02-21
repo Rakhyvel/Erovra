@@ -92,6 +92,10 @@ public class Airfield extends Industry {
 				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
 			} else if (d.buttonsHovered == 3) {
 				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
+			} else if (d.buttonsHovered == 4) {
+				nation.unitArray.remove(this);
+				d.shouldClose();
+				nation.coins+=10;
 			}
 		}
 	}

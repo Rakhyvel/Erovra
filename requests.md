@@ -1,4 +1,6 @@
 - (4) Target arrows/indicators
 - (3) Decomission
 - (2) Squad functions
-- (2) Control aircraft
+	- Double click to select all types
+	- Drag to box-select
+	- Companies
