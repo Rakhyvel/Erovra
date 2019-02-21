@@ -1,15 +1,17 @@
 package main;
 
+import input.Keyboard;
+import input.Mouse;
+
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import input.Keyboard;
-import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
+import objects.units.Artillery;
 import objects.units.City;
 import objects.units.Infantry;
 import output.Render;
@@ -111,7 +113,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 41);
+		frame.setSize(width + 7, height + 24);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -130,7 +132,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
 		Nation russia = new Nation(220 << 16 | 32 << 8 | 0, "Sweden");
-//		sweden.setAIControlled(false);
+		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -170,6 +172,7 @@ public class Main {
 		} while (sweden.unitSize() + russia.unitSize() < 2);
 		sweden.addUnit(new Infantry(sweden.getUnit(0).getPosition(), sweden));
 		russia.addUnit(new Infantry(russia.getUnit(0).getPosition(), russia));
+		sweden.addUnit(new Artillery(sweden.getUnit(0).getPosition(),sweden, UnitID.HEAVY));
 	}
 
 	/**

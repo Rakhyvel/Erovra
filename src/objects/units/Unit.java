@@ -540,7 +540,7 @@ public abstract class Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.position;
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && tempDist > smallestDistance / 8 && tempUnit.id != UnitID.PLANE
+			if (tempDist < smallestDistance && tempUnit.id != UnitID.PLANE
 					&& !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
@@ -551,7 +551,7 @@ public abstract class Unit {
 			smallestUnit.engage();
 			setFacing(smallestPoint);
 			engaged = true;
-			if (Main.ticks % 300 == 0) {
+			if (Main.ticks % 120 == 0) {
 				nation.addProjectile(new Shell(position, nation, smallestPoint));
 			}
 			return true;

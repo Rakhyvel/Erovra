@@ -1,5 +1,4 @@
 - (4) Target arrows/indicators
-- (3) Artillery zones
 - (3) Decomission
 - (2) Squad functions
 - (2) Control aircraft

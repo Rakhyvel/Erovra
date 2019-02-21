@@ -35,6 +35,8 @@ public class Render extends Canvas {
 	public int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
 	public int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
 	public int[] hitSprite = image.loadImage("/res/ground/hit.png", 36, 20);
+	public int[] medArtRange = image.loadImage("/res/ground/medArtRange.png", 128, 128);
+	public int[] heavyArtRange = image.loadImage("/res/ground/heavyArtRange.png", 256, 256);
 
 	// Water Units
 	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
@@ -218,13 +220,15 @@ public class Render extends Canvas {
 			int x1 = i % w + x;
 			int y1 = i / w;
 			int id = (y1 + y) * (width + 1) + x1;
-			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-			int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-			r = ((pixels[id] >> 16) & 255);
-			g = ((pixels[id] >> 8) & 255);
-			b = (pixels[id] & 255);
-			int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-			pixels[id] = newColor + (newColor2);
+			if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+				int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				r = ((pixels[id] >> 16) & 255);
+				g = ((pixels[id] >> 8) & 255);
+				b = (pixels[id] & 255);
+				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+				pixels[id] = newColor + (newColor2);
+			}
 		}
 	}
 

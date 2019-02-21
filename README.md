@@ -6,6 +6,7 @@
 - Added error messages for buildings
 - AI team's landing craft are much smarter now, target more than capital
 - Added bounding box collision detection to units moved by mouse, to make it absolutely accurate and far less annoying (fingers crossed)
+- Added artillery range
 
 ### Erovra 1.0.6
 - Fixed infantry spawning

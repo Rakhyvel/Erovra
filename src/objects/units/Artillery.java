@@ -45,7 +45,7 @@ public class Artillery extends Unit {
 			} else if (getWeight() == UnitID.MEDIUM) {
 				engaged = autoArtilleryAim(64) | engaged;
 			} else {
-				engaged = autoArtilleryAim(32) | engaged;
+				engaged = autoArtilleryAim(128) | engaged;
 			}
 			detectHit();
 			targetMove();
@@ -59,16 +59,21 @@ public class Artillery extends Unit {
 			float direction = position.subVec(getTarget()).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;
-
-			if (getWeight() == UnitID.LIGHT)
+			
+			if (getWeight() == UnitID.LIGHT){
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery,
 						r.lighten(nation.color), direction);
-			if (getWeight() == UnitID.MEDIUM)
+			} else if (getWeight() == UnitID.MEDIUM) {
+				if(isSelected())
+					r.drawImage((int) position.getX()-64, (int) position.getY()-64, 128, r.medArtRange);
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color,
 						direction);
-			if (getWeight() == UnitID.HEAVY)
+			} else if (getWeight() == UnitID.HEAVY){
+				if(isSelected())
+					r.drawImage((int) position.getX()-128, (int) position.getY()-128, 256, r.heavyArtRange);
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.darken(nation.color),
 						direction);
+			}
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color,
 						direction);
