@@ -1,6 +1,7 @@
 # Erovra- From Swedish "To conquer"
 ### Erovra 1.0.8
 - Added decommision to arifields and ports. Would add it to factories, but it looked weird.
+- Added target arrow to infantry, artillery, cavalry, and ships
 
 ### Erovra 1.0.7 
 - Fixed mouse input being slightly off

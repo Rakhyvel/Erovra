@@ -503,9 +503,55 @@ public class Render extends Canvas {
 			carriage += font.getKern(letter);
 		}
 	}
-	
+
 	public void drawLine(Point p1, Point p2, int color) {
-		double slope = (p1.getY()-p2.getY())/(p1.getX()-p2.getX());
-		
+		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
+		if(p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0) {
+			if (slope < 1 && slope > -1) {
+				if (p2.getX() > p1.getX()) {
+					for (double i = p1.getX(); i < p2.getX(); i++) {
+						int id = (int) (slope * (i - p1.getX()) + p1.getY()) * (width + 1) + (int) i;
+						pixels[id-2050] = 0;
+						pixels[id-1025] = 0;
+						pixels[id] = color;
+						pixels[id+1025] = color;
+						pixels[id+2050] = 0;
+						pixels[id+3075] = 0;
+					}
+				} else {
+					for (double i = p1.getX(); i > p2.getX(); i--) {
+						int id = (int) (slope * (i - p1.getX()) + p1.getY()) * (width + 1) + (int) i;
+						pixels[id-3075] = 0;
+						pixels[id-2050] = 0;
+						pixels[id-1025] = color;
+						pixels[id] = color;
+						pixels[id+1025] = 0;
+						pixels[id+2050] = 0;
+					}
+				}
+			} else {
+				if (p2.getY() > p1.getY()) {
+					for (double y = p2.getY(); y > p1.getY(); y--) {
+						int id = (int) (y * (width + 1)) + (int) ((y - p2.getY()) / slope + p2.getX());
+						pixels[id-2] = 0;
+						pixels[id-1] = 0;
+						pixels[id] = color;
+						pixels[id+1] = color;
+						pixels[id+2] = 0;
+						pixels[id+3] = 0;
+					}
+				} else {
+					for (double y = p2.getY(); y < p1.getY(); y++) {
+						int id = (int) (y * (width + 1)) + (int) ((y - p2.getY()) / slope + p2.getX());
+						pixels[id-3] = 0;
+						pixels[id-2] = 0;
+						pixels[id-1] = color;
+						pixels[id] = color;
+						pixels[id+1] = 0;
+						pixels[id+2] = 0;
+					}
+				}
+			}
+		}
 	}
 }

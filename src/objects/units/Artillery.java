@@ -59,18 +59,25 @@ public class Artillery extends Unit {
 			float direction = position.subVec(getTarget()).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;
+
+			if (isSelected()) {
+				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color);
+				r.drawImageScreen(Main.mouse.getX(), Main.mouse.getY(), 16, r.flag, nation.color);
+			}else if(this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				r.drawLine(getPosition(),new Point(getTarget().getX(),getTarget().getY()),nation.color);
+			}
 			
-			if (getWeight() == UnitID.LIGHT){
+			if (getWeight() == UnitID.LIGHT) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery,
 						r.lighten(nation.color), direction);
 			} else if (getWeight() == UnitID.MEDIUM) {
-				if(isSelected())
-					r.drawImage((int) position.getX()-64, (int) position.getY()-64, 128, r.medArtRange);
+				if (isSelected())
+					r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, nation.color,
 						direction);
-			} else if (getWeight() == UnitID.HEAVY){
-				if(isSelected())
-					r.drawImage((int) position.getX()-128, (int) position.getY()-128, 256, r.heavyArtRange);
+			} else if (getWeight() == UnitID.HEAVY) {
+				if (isSelected())
+					r.drawImage((int) position.getX() - 128, (int) position.getY() - 128, 256, r.heavyArtRange);
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.artillery, r.darken(nation.color),
 						direction);
 			}
@@ -82,7 +89,7 @@ public class Artillery extends Unit {
 	}
 
 	@Override
-	public void dropDownDecide(DropDown d) {		
+	public void dropDownDecide(DropDown d) {
 	}
 
 	@Override

@@ -40,13 +40,20 @@ public class Infantry extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
+		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(getFacing()).getRadian();
-			if (velocity.getY() > 0) direction += 3.14f;
-
+			if (velocity.getY() > 0)
+				direction += 3.14f;
+			if (isSelected()) {
+				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color);
+			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color);
+			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color, direction);
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color,
+						direction);
 			}
 		}
 	}
