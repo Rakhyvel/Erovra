@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.PLAINS;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -47,6 +47,7 @@ public class Main {
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
 	public static float zoom = 1;
+	public static int difficulty = 3;
 
 	// GitHub
 	public static String version = "Erovra 1.0.9";

@@ -60,6 +60,11 @@ public abstract class Unit {
 		this.velocity = new Vector(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f);
 		setWeight(weight);
 		health = 10;
+		if (nation.name.contains("Russia")) {
+			health += Main.difficulty;
+		} else {
+			health -= Main.difficulty;
+		}
 		setTarget(position.addPoint(new Point(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f)));
 		setFacing(position);
 		born = Main.ticks;
@@ -70,6 +75,8 @@ public abstract class Unit {
 		this.nation = unit.nation;
 		this.velocity = new Vector(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f);
 		health = 10;
+		if (nation.name.contains("Russia"))
+			health += 10;
 		setTarget(position.addPoint(new Point(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f)));
 		setFacing(position);
 		born = Main.ticks;
@@ -325,7 +332,8 @@ public abstract class Unit {
 			}
 		} else {
 			if (getWeight() != UnitID.LIGHT) {
-				if (Map.getArray(getNextStep(target)) < 0.5f && Map.getArray(getNextStep(target)) != -1) {
+				if ((Map.getArray(getNextStep(target)) < 0.5f && Map.getArray(position) < 0.5f)
+						&& Map.getArray(getNextStep(target)) != -1) {
 					velocityMove();
 				} else {
 					if (nation.isAIControlled()) {
@@ -672,7 +680,7 @@ public abstract class Unit {
 		if (id == UnitID.SHIP) {
 			int r = (int) (speed * 75.0f);
 			a += rand.nextFloat() * speed - speed / 2;
-			setTarget(position.addPoint(new Point(r * Math.sin(a), r * Math.cos(a))));
+			setTarget(position.addPoint(new Point(rand.nextInt(128) - 64, rand.nextInt(128) - 64)));
 		} else {
 			setTarget(position.addPoint(new Point(rand.nextInt(128) - 64, rand.nextInt(128) - 64)));
 		}
@@ -720,21 +728,24 @@ public abstract class Unit {
 				velocityMove();
 			}
 		} else {
-			while (Map.getArray(getNextStep(target)) > .5
-					|| Map.getArray(getNextStep(target)) == -1 && a < cutoffPoint) {
+			while (Map.getArray(getNextStep(target)) > .5 || Map.getArray(getNextStep(target)) == -1 && a < cutoffPoint) {
 				r += 0.1;
 				p1 = new Point(r * Trig.sin(a), r * Trig.cos(a));
 				p2 = new Point(r * Trig.sin(a + 3.14f), r * Trig.cos(a + 3.14f));
 				if (Map.getArray(position.addPoint(p1)) < Map.getArray(position.addPoint(p2))
-						&& Map.getArray(position.addPoint(p1)) != -1 && Map.getArray(position.addPoint(p2)) != -1) {
+						&& Map.getArray(position.addPoint(p1)) > -1) {
 					setTarget(position.addPoint(p1));
+					break;
 				} else {
-					setTarget(position.addPoint(p2));
-					a += 3.14;
+					if (Map.getArray(position.addPoint(p2)) > -1) {
+						setTarget(position.addPoint(p2));
+						a += 3.14;
+						break;
+					}
 				}
 				a += 0.015f;
 			}
-			if (Map.getArray(getTarget()) < .5) {
+			if (Map.getArray(getTarget()) < .5 && Map.getArray(getTarget()) > -1) {
 				velocityMove();
 			}
 		}

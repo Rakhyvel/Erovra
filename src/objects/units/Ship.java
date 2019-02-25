@@ -179,7 +179,7 @@ public class Ship extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if (engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+		if (true||engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {
 			float direction = position.subVec(getTarget()).getRadian();
 			if (velocity.getY() > 0)
