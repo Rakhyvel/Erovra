@@ -36,6 +36,7 @@ public abstract class Unit {
 	protected boolean engaged = false;
 
 	protected int hit = 0;
+	protected int spotted = 0;
 	protected float defense;
 	protected float speed;
 	protected float health;
@@ -132,6 +133,7 @@ public abstract class Unit {
 	 */
 	public void engage() {
 		engaged = true;
+		spotted = (int) (60/speed);
 	}
 
 	/**
@@ -342,8 +344,11 @@ public abstract class Unit {
 	 * Moves the unit along its velocity vector
 	 */
 	void velocityMove() {
+		double realSpeed = speed;
+		if(hit > 0)
+			realSpeed/=2;
 		if (position.getDist(getTarget()) > 0.1) {
-			velocity = position.getTargetVector(getTarget()).normalize().scalar(speed);
+			velocity = position.getTargetVector(getTarget()).normalize().scalar(realSpeed);
 			position = position.addVector(velocity);
 		}
 	}
@@ -359,14 +364,14 @@ public abstract class Unit {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
 			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0
-					&& !((id != UnitID.PLANE) && (tempProjectile.getAttack() < 0.5f))
-					&& !(id != UnitID.SHIP && tempProjectile.id == UnitID.TORPEDO)
+					&& !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET))
+					&& !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO)
 					&& !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL)
 					&& !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT)
 							&& tempProjectile.getAttack() == 0.75f)) {
 				if (tempProjectile.id != UnitID.BOMB)
 					tempProjectile.hit();
-				hit = 8;
+				hit = 9;
 				health -= tempProjectile.getAttack() / defense;
 				if (health <= 0) {
 					if (capital) {
@@ -447,7 +452,7 @@ public abstract class Unit {
 					setTarget(position);
 			setFacing(smallestUnit.getPosition());
 			if ((Main.ticks - born) % 60 == 0) {
-				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), cal));
+				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), cal*(health/10), UnitID.BULLET));
 			}
 			return true;
 		}
@@ -480,7 +485,7 @@ public abstract class Unit {
 				nation.addProjectile(new Bullet(position, nation,
 						position.getTargetVector(
 								smallestPoint.addVector(smallestUnit.velocity.scalar(Math.sqrt(smallestDistance) / 4))),
-						.1f));
+						.1f, UnitID.AIRBULLET));
 			}
 			return true;
 		}

@@ -15,12 +15,12 @@ import utility.Vector;
  */
 public class Bullet extends Projectile {
 
-	public Bullet(Point position, Nation nation, Vector velocity, float cal) {
+	public Bullet(Point position, Nation nation, Vector velocity, float cal, UnitID id) {
 		super(position, nation);
 		speed = 4f;
 		setAttack(cal);
 		this.velocity = velocity.normalize().scalar(getSpeed());
-		id = UnitID.BULLET;
+		this.id = id;
 	}
 
 	@Override

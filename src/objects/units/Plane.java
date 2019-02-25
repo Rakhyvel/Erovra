@@ -119,12 +119,12 @@ public class Plane extends Unit {
 			patrolPoint = smallestPoint.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4));
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && smallestDistance < 73728) {
 				if ((Main.ticks - born) % 15 == 0 && getWeight() == UnitID.LIGHT) {
-					nation.addProjectile(new Bullet(position, nation, position.getTargetVector(patrolPoint), 0.49f));
+					nation.addProjectile(new Bullet(position, nation, position.getTargetVector(patrolPoint), .5f, UnitID.AIRBULLET));
 				} else if ((Main.ticks - born) % 60 == 0 && getWeight() == UnitID.MEDIUM) {
 					Point pointA = new Point(22 * Trig.sin(a + 0.1f), 22 * Trig.cos(a + 0.1f));
 					Point pointB = new Point(22 * Trig.sin(a - 0.1f), 22 * Trig.cos(a - 0.1f));
-					nation.addProjectile(new Bullet(position.addPoint(pointA), nation, position.getTargetVector(smallestPoint), .75f));
-					nation.addProjectile(new Bullet(position.addPoint(pointB), nation, position.getTargetVector(smallestPoint), .75f));
+					nation.addProjectile(new Bullet(position.addPoint(pointA), nation, position.getTargetVector(smallestPoint), 1f, UnitID.BULLET));
+					nation.addProjectile(new Bullet(position.addPoint(pointB), nation, position.getTargetVector(smallestPoint), 1f, UnitID.BULLET));
 				}
 			}
 		} else {

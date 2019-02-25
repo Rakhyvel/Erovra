@@ -392,9 +392,9 @@ public class Render extends Canvas {
 	 */
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r <<= 1;
-		g <<= 1;
-		b <<= 1;
+		r <<= 2;
+		g <<= 2;
+		b <<= 2;
 		if (r > 255)
 			r = 255;
 		if (g > 255)

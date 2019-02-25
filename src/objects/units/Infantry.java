@@ -32,7 +32,12 @@ public class Infantry extends Unit {
 				clickToMove();
 				clickToDropDown();
 			}
-			engaged = autoAim(1) | engaged;
+			engaged = autoAim(1);
+			if (engaged && spotted == 0) {
+				spotted = (int) (60/speed);
+			}
+			if (spotted > 0)
+				spotted--;
 			detectHit();
 			targetMove();
 		}
@@ -40,16 +45,17 @@ public class Infantry extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+		if ((spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(getFacing()).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;
 			if (isSelected()) {
-				r.drawImageScreen((int)getTarget().getX(), (int)getTarget().getY(), 16, r.flag, nation.color);
+				r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 16, r.flag, nation.color);
 				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220<<16|220<<8|220);
+				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
+						220 << 16 | 220 << 8 | 220);
 			}
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
 			if (hit > 1) {
