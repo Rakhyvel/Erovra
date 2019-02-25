@@ -421,7 +421,7 @@ public class Render extends Canvas {
 			g = 0;
 		if (b < 0)
 			b = 0;
-		return r << 16 | g << 8 | b;
+		return r << 16 | g << 8 | b+32;
 	}
 
 	/**
@@ -431,7 +431,7 @@ public class Render extends Canvas {
 	 * @return A less saturated color
 	 */
 	public int desaturate(int color) {
-		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255)-32;
 		int a = r + g + b >> 2;
 		r = (a + r) >> 1;
 		g = (a + g) >> 1;
@@ -447,7 +447,7 @@ public class Render extends Canvas {
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = darken(desaturate(pixels[i]));
+			image[i] = desaturate(darken(pixels[i]));
 		}
 		return image;
 	}

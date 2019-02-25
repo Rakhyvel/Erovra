@@ -133,7 +133,7 @@ public abstract class Unit {
 	 */
 	public void engage() {
 		engaged = true;
-		spotted = (int) (60/speed);
+		spotted = (int) (60 / speed);
 	}
 
 	/**
@@ -290,13 +290,13 @@ public abstract class Unit {
 	public void settle() {
 		nation.buyCity(position);
 		Point smallestPoint = new Point(-1, -1);
-		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
-				((int) (position.getY() / 64)) * 64 + 32);
+		Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
-			if ((tempUnit.getID() == UnitID.FACTORY || tempUnit.getID() == UnitID.CITY|| tempUnit.getID() == UnitID.PORT|| tempUnit.getID() == UnitID.AIRFIELD)) {
-				if(wetPath(portPoint,4)) {
+			if ((tempUnit.getID() == UnitID.FACTORY || tempUnit.getID() == UnitID.CITY
+					|| tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.AIRFIELD)) {
+				if (wetPath(portPoint, 4)) {
 					smallestPoint = tempPoint;
 				}
 			}
@@ -345,8 +345,8 @@ public abstract class Unit {
 	 */
 	void velocityMove() {
 		double realSpeed = speed;
-		if(hit > 0)
-			realSpeed/=2;
+		if (hit > 0)
+			realSpeed /= 2;
 		if (position.getDist(getTarget()) > 0.1) {
 			velocity = position.getTargetVector(getTarget()).normalize().scalar(realSpeed);
 			position = position.addVector(velocity);
@@ -389,17 +389,25 @@ public abstract class Unit {
 					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT)
 						nation.seaSupremacy--;
 					if (id == UnitID.CITY) {
-						if (nation.getCityCost() > 1)
-							nation.setCityCost(nation.getCityCost() - 21);
+						if (nation.getCityCost() >= 1)
+							nation.setCityCost(nation.getCityCost() / 2);
+						if (tempProjectile.getID() != UnitID.BOMB)
+							nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
 					} else if (id == UnitID.FACTORY) {
-						if (nation.getFactoryCost() > 15)
+						if (nation.getFactoryCost() >= 30)
 							nation.setFactoryCost(nation.getFactoryCost() / 2);
+						if (tempProjectile.getID() != UnitID.BOMB)
+							nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
 					} else if (id == UnitID.PORT) {
 						if (nation.getPortCost() > 20)
 							nation.setPortCost(nation.getPortCost() / 2);
+						if (tempProjectile.getID() != UnitID.BOMB)
+							nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
 					} else if (id == UnitID.AIRFIELD) {
 						if (nation.getAirfieldCost() > 20)
 							nation.setAirfieldCost(nation.getAirfieldCost() / 2);
+						if (tempProjectile.getID() != UnitID.BOMB)
+							nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
 					} else if (id == UnitID.INFANTRY) {
 						nation.setLandSupremacy(-1);
 					} else if (id == UnitID.CAVALRY) {
@@ -452,7 +460,8 @@ public abstract class Unit {
 					setTarget(position);
 			setFacing(smallestUnit.getPosition());
 			if ((Main.ticks - born) % 60 == 0) {
-				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), cal*(health/10), UnitID.BULLET));
+				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint),
+						cal * (health / 10), UnitID.BULLET));
 			}
 			return true;
 		}
@@ -545,8 +554,7 @@ public abstract class Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.position;
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && tempUnit.id != UnitID.PLANE
-					&& !tempUnit.isBoarded()) {
+			if (tempDist < smallestDistance && tempUnit.id != UnitID.PLANE && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				smallestPoint = tempPoint;
 				smallestUnit = tempUnit;
@@ -570,21 +578,21 @@ public abstract class Unit {
 	 */
 	void clickToMove() {
 		if (Main.world.selectedUnit == null) {
-			if(boundingBox(Main.mouse.getX(),Main.mouse.getY()) && Main.world.highlightedUnit == null) {
+			if (boundingBox(Main.mouse.getX(), Main.mouse.getY()) && Main.world.highlightedUnit == null) {
 				Main.world.highlightedUnit = this;
-				hit=3;
+				hit = 3;
 			}
 			// If there is no a unit currently selected
 			if (Main.mouse.getMouseLeftDown() && !Main.world.getDropDown().getShown()) {
 				// If mouse is down AND the dropdown isn't displayed
-				if (isSelected() || boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
+				if (isSelected() || boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					// If unit is already selected OR the unit is not selected,
 					// and the mouse is
 					// near
 					// Set leftClicked to true
 					leftClicked = true;
 				}
-			} else if (leftClicked && boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
+			} else if (leftClicked && boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
@@ -607,7 +615,7 @@ public abstract class Unit {
 				setFacing(getTarget());
 				Main.world.nullifySelected();
 			}
-			if(Main.mouse.getMouseRightDown()) {
+			if (Main.mouse.getMouseRightDown()) {
 				selected = false;
 				Main.world.nullifySelected();
 			}
@@ -622,7 +630,7 @@ public abstract class Unit {
 	 */
 	void clickToDropDown() {
 		if (Main.mouse.getMouseRightDown()) {
-			if (boundingBox(Main.mouse.getX(),Main.mouse.getY())) {
+			if (boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 				rightClicked = true;
 			}
 		} else if (rightClicked) {
@@ -630,26 +638,31 @@ public abstract class Unit {
 			rightClicked = false;
 		}
 	}
-	
+
 	boolean boundingBox(double x, double y) {
 		a = position.subVec(getFacing()).getRadian();
-		if(getID() == UnitID.INFANTRY || getID() == UnitID.ARTILLERY || getID() == UnitID.CAVALRY) {
-			return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<8 && 
-					Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
-		} else if(getID() == UnitID.SHIP) {
-			if(getWeight() == UnitID.LIGHT) {
-				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<16 && 
-						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<13.5;
-			} else if(getWeight() == UnitID.MEDIUM) {
-				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<22.5 && 
-						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<13.5;
+		if (getID() == UnitID.INFANTRY || getID() == UnitID.ARTILLERY || getID() == UnitID.CAVALRY) {
+			return Math.abs(Math.sin(a) * (position.getX() - x) + Math.cos(a) * (position.getY() - y)) < 8
+					&& Math.abs(Math.sin(a + Math.PI / 2) * (position.getX() - x)
+							+ Math.cos(a + Math.PI / 2) * (position.getY() - y)) < 16;
+		} else if (getID() == UnitID.SHIP) {
+			if (getWeight() == UnitID.LIGHT) {
+				return Math.abs(Math.sin(a) * (position.getX() - x) + Math.cos(a) * (position.getY() - y)) < 16
+						&& Math.abs(Math.sin(a + Math.PI / 2) * (position.getX() - x)
+								+ Math.cos(a + Math.PI / 2) * (position.getY() - y)) < 13.5;
+			} else if (getWeight() == UnitID.MEDIUM) {
+				return Math.abs(Math.sin(a) * (position.getX() - x) + Math.cos(a) * (position.getY() - y)) < 22.5
+						&& Math.abs(Math.sin(a + Math.PI / 2) * (position.getX() - x)
+								+ Math.cos(a + Math.PI / 2) * (position.getY() - y)) < 13.5;
 			} else {
-				return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<30.5 && 
-						Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<8;
+				return Math.abs(Math.sin(a) * (position.getX() - x) + Math.cos(a) * (position.getY() - y)) < 30.5
+						&& Math.abs(Math.sin(a + Math.PI / 2) * (position.getX() - x)
+								+ Math.cos(a + Math.PI / 2) * (position.getY() - y)) < 8;
 			}
 		}
-		return Math.abs(Math.sin(a)*(position.getX()-x) + Math.cos(a)*(position.getY()-y))<16 && 
-				Math.abs(Math.sin(a+Math.PI/2)*(position.getX()-x) + Math.cos(a+Math.PI/2)*(position.getY()-y))<16;
+		return Math.abs(Math.sin(a) * (position.getX() - x) + Math.cos(a) * (position.getY() - y)) < 16
+				&& Math.abs(Math.sin(a + Math.PI / 2) * (position.getX() - x)
+						+ Math.cos(a + Math.PI / 2) * (position.getY() - y)) < 16;
 	}
 
 	/**
