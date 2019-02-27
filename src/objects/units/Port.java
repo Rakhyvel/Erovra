@@ -64,7 +64,7 @@ public class Port extends Industry {
 	 * If the nation is AI controlled, decides what ship to build
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.seaSupremacy <= nation.seaSupremacy && nation.seaSupremacy > 0) {
+		if (nation.enemyNation.seaSupremacy < nation.seaSupremacy && nation.seaSupremacy > 0) {
 			if (nation.coins >= (nation.getShipCost() / 4)) {
 				int smallestDistance = 524288;
 				int unitCount = 0;

@@ -105,7 +105,7 @@ public class Render extends Canvas {
 		Graphics g = bs.getDrawGraphics();
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
-			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
+			System.arraycopy(Image.rescale(Map.mapData, 1025, Main.zoom), 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
 		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
@@ -133,9 +133,11 @@ public class Render extends Canvas {
 	 * Draws the longitude and latitude lines on the map
 	 */
 	void drawLongLat() {
+		int xCenter = (int) (512 * Main.zoom) - 512;
+		int yCenter = (int) (256 * Main.zoom) - 256;
 		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
-			int x = i % 17 * 64;
+			int x = (int) ((i % 17 * 64/Main.zoom));
 			int y = i / 17;
 			int id = y * (width + 1) + x;
 			if (x < 1025 && x > 0) {
@@ -148,7 +150,7 @@ public class Render extends Canvas {
 		// Longitude
 		for (int i = 0; i < 512 * 18; i++) {
 			int x = i % 1024;
-			int y = (i / 1024) * 64;
+			int y = (int) ((i / 1024) * 64/Main.zoom);
 			int id = y * (width + 1) + x;
 			if (id < 1024 * 512 && id > 0) {
 				int r = (int) (((pixels[id] >> 16) & 255) * .75);

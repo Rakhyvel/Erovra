@@ -27,11 +27,11 @@ public class Map {
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
 		if (id == MapID.CUSTOM) {
-			int[] customImage = image.loadImage("/res/denmark.png", 1024, 512);
+			int[] customImage = image.loadImage("/res/europe3.jpg", 1024, 512);
 			for (int i = 0; i < 1024 * 512; i++) {
 				int x = (i % 1024);
 				int y = (i / 1024);
-				mountain[x][y] = ((customImage[i] & 255) / 255.0f) + .49f;
+				mountain[x][y] = ((customImage[i] & 255) / 255.0f)+.499f;
 			}
 		} else {
 			if (id == MapID.ISLANDS) {

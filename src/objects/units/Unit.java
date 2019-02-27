@@ -321,7 +321,7 @@ public abstract class Unit {
 	public void targetMove() {
 		if (id != UnitID.SHIP) {
 			if ((Map.getArray(getNextStep(target)) > 0.5f && Map.getArray(position) > 0.5f)
-					&& (Map.getArray(getNextStep(target)) < 1f && Map.getArray(position) < 1)) {
+					&& (Map.getArray(getNextStep(target)) < 1f && Map.getArray(position) < 1f)) {
 				velocityMove();
 			} else {
 				if (nation.isAIControlled()) {
@@ -709,15 +709,16 @@ public abstract class Unit {
 		float r = 2;
 		float cutoffPoint = a + 6.28f;
 		if (id != UnitID.SHIP) {
-			while (Map.getArray(getNextStep(target)) < .5 || Map.getArray(getNextStep(target)) > 1 && a < cutoffPoint) {
-				r += 0.1;
+			while ((Map.getArray(getNextStep(target)) <= .5 || Map.getArray(getNextStep(target)) >= 1)
+					&& a < cutoffPoint) {
+				r += 0.2;
 				p1 = new Point(r * Trig.sin(a), r * Trig.cos(a));
 				p2 = new Point(r * Trig.sin(a + 3.14f), r * Trig.cos(a + 3.14f));
 				if (Map.getArray(position.addPoint(p1)) > Map.getArray(position.addPoint(p2))
 						&& Map.getArray(position.addPoint(p1)) < 1) {
 					setTarget(position.addPoint(p1));
 				} else {
-					if (Map.getArray(position.addPoint(p2)) < 1) {
+					if(Map.getArray(position.addPoint(p2)) < 1) {
 						setTarget(position.addPoint(p2));
 						a += 3.14;
 					}
@@ -728,7 +729,8 @@ public abstract class Unit {
 				velocityMove();
 			}
 		} else {
-			while (Map.getArray(getNextStep(target)) > .5 || Map.getArray(getNextStep(target)) == -1 && a < cutoffPoint) {
+			while (Map.getArray(getNextStep(target)) > .5
+					|| Map.getArray(getNextStep(target)) == -1 && a < cutoffPoint) {
 				r += 0.1;
 				p1 = new Point(r * Trig.sin(a), r * Trig.cos(a));
 				p2 = new Point(r * Trig.sin(a + 3.14f), r * Trig.cos(a + 3.14f));

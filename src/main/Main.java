@@ -46,11 +46,11 @@ public class Main {
 	private Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
-	public static float zoom = 1;
+	public static float zoom = .8f;
 	public static int difficulty = 1;
 
 	// GitHub
-	public static String version = "Erovra 1.0.9";
+	public static String version = "Erovra 1.0.10";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -114,7 +114,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 24);
+		frame.setSize(width + 7, height + 41);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
