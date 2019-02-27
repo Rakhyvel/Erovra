@@ -1,4 +1,13 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.10
+- Added custom maps
+
+### Erovra 1.0.9
+- Added difficulty factor
+- Units have less firepower the smaller they are
+- Fixed ship path finding
+- Units are slowed down if they are engaged
+
 ### Erovra 1.0.8
 - Added decommision to arifields and ports. Would add it to factories, but it looked weird.
 - Added target arrow to infantry, artillery, cavalry, and ships

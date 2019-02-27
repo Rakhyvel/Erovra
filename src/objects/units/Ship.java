@@ -73,7 +73,8 @@ public class Ship extends Unit {
 				}
 				targetMove();
 			} else {
-				engaged = aaAim();
+				if(getPassenger1() != null)
+					engaged = aaAim();
 				if (isLanded()) {
 					if (getPassenger1() != null) {
 						getPassenger1().position = position;
@@ -137,6 +138,11 @@ public class Ship extends Unit {
 					nation.unitArray.remove(getPassenger2());
 				}
 			}
+			if (engaged && spotted == 0) {
+				spotted = (int) (60/speed);
+			}
+			if (spotted > 0)
+				spotted--;
 		}
 	}
 
@@ -179,7 +185,7 @@ public class Ship extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if (true||engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+		if (spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {
 			float direction = position.subVec(getTarget()).getRadian();
 			if (velocity.getY() > 0)

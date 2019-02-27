@@ -303,7 +303,7 @@ public abstract class Unit {
 			Point tempPoint = tempUnit.getPosition();
 			if ((tempUnit.getID() == UnitID.FACTORY || tempUnit.getID() == UnitID.CITY
 					|| tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.AIRFIELD)) {
-				if (wetPath(portPoint, 4)) {
+				if (wetPath(portPoint, 1024)) {
 					smallestPoint = tempPoint;
 				}
 			}

@@ -47,6 +47,11 @@ public class Artillery extends Unit {
 			} else {
 				engaged = autoArtilleryAim(128) | engaged;
 			}
+			if (engaged && spotted == 0) {
+				spotted = (int) (60/speed);
+			}
+			if (spotted > 0)
+				spotted--;
 			detectHit();
 			targetMove();
 		}
@@ -54,7 +59,7 @@ public class Artillery extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if ((engaged || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+		if ((spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(getTarget()).getRadian();
 			if (velocity.getY() > 0)
