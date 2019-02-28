@@ -46,7 +46,7 @@ public class Main {
 	private Render render = new Render(1024, 512, world);
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
-	public static float zoom = .8f;
+	public static float zoom = 1f;
 	public static int difficulty = 1;
 
 	// GitHub
@@ -199,10 +199,10 @@ public class Main {
 	}
 
 	public static void zoomOut() {
-		if (zoom < 1) {
+		if (zoom < 2) {
 			zoom *= 1.01;
 		} else {
-			zoom = 1;
+			zoom = 2;
 		}
 	}
 

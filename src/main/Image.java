@@ -78,25 +78,19 @@ public class Image {
 	public static int[] rescale(int[] img, int width, float factor) {
 		// Set up the new variables
 		int[] img2 = new int[img.length];
-		int xCenter = (int) (512 * Main.zoom) - 512;
-		int yCenter = (int) (256 * Main.zoom) - 256;
-		float inverseNewWidth = Main.zoom / width;
-		int x, y, id, modulus = 0;
-
+		int xCenter = (int) (Main.mouse.getX() * Main.zoom) - 1024;
+		int yCenter = (int) (Main.mouse.getY() * Main.zoom) - 512;
+		int x, y, id;
 		// Walk through the new image
-		for (int i = 0; i < img2.length; i++, modulus++) {
-			// If the modulus is greater than the width, reset the modulus
-			// This acts just like the % symbol, but is faster as it doesn't
-			// require division
-			if (modulus >= width) modulus = 0;
+		for (int i = 0; i < 1025*513; i++) {
 
 			// Find the new coordinates
-			x = (int) (modulus * factor - xCenter);
-			y = (int) (i * inverseNewWidth - yCenter);
+			x = (int) (i%width * Main.zoom - xCenter);
+			y = (int) (i/width * Main.zoom - yCenter);
 
 			// If the new coordinates are on screen, print them
-			id = (y * width + x);
-			if (id >= 0 && id < img.length && x >= 0 && x < 1025) img2[i] = img[id];
+			id = (y * 2048 + x);
+			if (id >= 0 && id < img.length && x >= 0 && x < 2048) img2[i] = img[id];
 		}
 		return img2;
 	}

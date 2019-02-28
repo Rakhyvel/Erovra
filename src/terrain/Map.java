@@ -11,8 +11,8 @@ import utility.Point;
 public class Map {
 
 	Random rand = new Random();
-	public static float[][] mountain = new float[Main.width + 1][Main.height + 1];
-	public static int[] mapData = new int[513 * 1025];
+	public static float[][] mountain = new float[2048][2048];
+	public static int[] mapData = new int[2048*2048];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[7];
 	Image image = new Image();
@@ -27,10 +27,10 @@ public class Map {
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
 		if (id == MapID.CUSTOM) {
-			int[] customImage = image.loadImage("/res/europe3.jpg", 1024, 512);
-			for (int i = 0; i < 1024 * 512; i++) {
-				int x = (i % 1024);
-				int y = (i / 1024);
+			int[] customImage = image.loadImage("/res/australia.jpg", 2048, 2048);
+			for (int i = 0; i < 2048 * 2048 && i < customImage.length; i++) {
+				int x = (i % 2048);
+				int y = (i / 2048);
 				mountain[x][y] = ((customImage[i] & 255) / 255.0f)+.499f;
 			}
 		} else {
@@ -131,9 +131,9 @@ public class Map {
 			}
 		}
 		// colors the MapArray
-		for (int i = 0; i < 1025 * 513; i++) {
-			int x = i % 1025;
-			int y = i / 1025;
+		for (int i = 0; i < 2048*2048; i++) {
+			int x = i % 2048;
+			int y = i / 2048;
 			if (id == MapID.ISLANDS) {
 
 				mapData[i] = getColor(getArray(x, y));
