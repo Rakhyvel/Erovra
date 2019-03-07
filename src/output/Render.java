@@ -614,7 +614,11 @@ public class Render extends Canvas {
 					}
 				}
 			}
-			drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian());
+			if(p2.getY() < p1.getY()) {
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian());
+			} else {	
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian()+3.14f);
+			}
 		}
 	}
 }

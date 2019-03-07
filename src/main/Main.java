@@ -22,7 +22,6 @@ import utility.Trig;
  * Starts the game, contains some constants and global objects
  * 
  * @author Rakhyvel
- *
  */
 public class Main {
 
@@ -49,7 +48,7 @@ public class Main {
 	public static int difficulty = 0;
 
 	// GitHub
-	public static String version = "Erovra 1.0.12";
+	public static String version = "Erovra 1.0.13";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -113,7 +112,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 25);
+		frame.setSize(width + 7, height + 41);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -130,9 +129,9 @@ public class Main {
 		ticks = 0;
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
-		Nation sweden = new Nation(23 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(230 << 16 | 23 << 8 | 23, "Russia");
-		 sweden.setAIControlled(false);
+		Nation sweden = new Nation(25 << 16 | 128 << 8 | 230, "Sweden");
+		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Sweden");
+		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
