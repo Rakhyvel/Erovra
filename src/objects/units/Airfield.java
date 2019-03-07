@@ -61,7 +61,7 @@ public class Airfield extends Industry {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
 			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 5400);
 		} else {
-			if (nation.enemyNation.landSupremacy > nation.landSupremacy || nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
+			if (nation.enemyNation.landSupremacy > nation.landSupremacy && nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
 				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
 			} else {
 				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);

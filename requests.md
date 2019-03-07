@@ -1,6 +1,2 @@
-- (4) Target arrows/indicators
-- (3) Decomission
-- (2) Squad functions
-	- Double click to select all types
-	- Drag to box-select
-	- Companies
+- Make navies smarter
+- Squad functions

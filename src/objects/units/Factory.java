@@ -24,6 +24,9 @@ public class Factory extends Industry {
 		speed = 0;
 		id = UnitID.FACTORY;
 		defense = 3;
+		if(nation.getFactoryCost()==60 && nation.isAIControlled()){
+			cavalry = false;
+		}
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public class Factory extends Industry {
 					// Heavy artillery
 				} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost(), 10800)) {
 					// Medium artillery
-				} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 4, 3600)) {
+				} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2, 7200)) {
 					// Anti Air artillery
 				}
 			}

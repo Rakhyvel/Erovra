@@ -24,7 +24,7 @@ public class Nation {
 	private final int cavalryCost = 20;
 	private final int artilleryCost = 20;
 	private final int shipCost = 20;
-	private final int planeCost = 20;
+	private int planeCost = 20;
 
 	// Structures
 	private int cityCost = 15;
@@ -289,7 +289,7 @@ public class Nation {
 		return ai;
 	}
 
-	private boolean checkProximity(Point position) {
+	public boolean checkProximity(Point position) {
 		int smallestDistance = 32;
 		for (int i = 0; i < unitSize(); i++) {
 			Unit tempUnit = getUnit(i);
@@ -367,6 +367,9 @@ public class Nation {
 
 	public int getPlaneCost() {
 		return planeCost;
+	}
+	public void setPlaneCost(int planeCost) {
+		this.planeCost = planeCost;
 	}
 	
 	public void setLandSupremacy(int i){

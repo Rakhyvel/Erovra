@@ -47,7 +47,7 @@ public class Mouse extends MouseAdapter {
 	 * -35 for mac
 	 */
 	public int getY() {
-		return (int) MouseInfo.getPointerInfo().getLocation().getY() - Main.getFrameY()-35;
+		return (int) MouseInfo.getPointerInfo().getLocation().getY() - Main.getFrameY()-24;
 	}
 
 	/**

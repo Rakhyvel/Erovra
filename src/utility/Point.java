@@ -38,4 +38,9 @@ public class Point {
 	public double getCabDist(Point p2) {
 		return Math.abs(x-p2.x)+Math.abs(y-p2.y);
 	}
+	public Point multScalar(double scalar){
+		x = x*scalar;
+		y = y*scalar;
+		return this;
+	}
 }

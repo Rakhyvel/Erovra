@@ -44,8 +44,8 @@ public class Vector {
 			if(x == 0)
 				return 0;
 			if (x > 0)
-				return (float)Math.PI/2;
-			return -(float)Math.PI/2;
+				return -(float)Math.PI/2;
+			return (float)Math.PI/2;
 		}
 		return (float) (Math.atan(x / y));
 	}
@@ -61,5 +61,9 @@ public class Vector {
 	
 	public Vector subVec(Vector v) {
 		return new Vector(x-v.x, y-v.y);
+	}
+	
+	public double magnitude(){
+		return x * x + y * y;
 	}
 }

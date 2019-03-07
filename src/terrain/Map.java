@@ -1,6 +1,5 @@
 package terrain;
 
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import main.Image;
@@ -12,7 +11,7 @@ public class Map {
 
 	Random rand = new Random();
 	public static float[][] mountain = new float[2048][2048];
-	public static int[] mapData = new int[2048*2048];
+	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[7];
 	Image image = new Image();
@@ -21,17 +20,19 @@ public class Map {
 	 * Uses simplex noise and linear interpolation to render the terrain for the
 	 * game
 	 * 
-	 * @param seed Random seed to be used for the generation
-	 * @param id   Which type of generation to be done
+	 * @param seed
+	 *            Random seed to be used for the generation
+	 * @param id
+	 *            Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
 		if (id == MapID.CUSTOM) {
-			int[] customImage = image.loadImage("/res/australia.jpg", 2048, 2048);
-			for (int i = 0; i < 2048 * 2048 && i < customImage.length; i++) {
-				int x = (i % 2048);
-				int y = (i / 2048);
-				mountain[x][y] = ((customImage[i] & 255) / 255.0f)+.499f;
+			int[] customImage = image.loadImage("/res/island.jpg", 1024, 512);
+			for (int i = 0; i < 1024 * 512 && i < customImage.length; i++) {
+				int x = (i % 1024);
+				int y = (i / 1024);
+				mountain[x][y] = (customImage[i] & 255) / 555.0f + .49f;
 			}
 		} else {
 			if (id == MapID.ISLANDS) {
@@ -97,13 +98,12 @@ public class Map {
 					int x = i2 % s * 2 * p;
 					int y = i2 / s * 2 * p;
 
-					float m = (rand.nextFloat() - .5f) / (4 << i);
+					float m = (rand.nextFloat() - .5f) / (1 << i);
 					if (x + 2 * p < Main.width + 1) {
-						mountain[x + p][y] = ((mountain[x][y] + mountain[x + 2 * p][y]) / 2) + 2 * m;
+						mountain[x + p][y] = ((mountain[x][y] + mountain[x + 2 * p][y]) / 2) + m;
 					}
-					m = (rand.nextFloat() - .5f) / (4 << i);
 					if (y + 2 * p < Main.height + 1) {
-						mountain[x][y + p] = ((mountain[x][y] + mountain[x][y + 2 * p]) / 2) + 2 * m;
+						mountain[x][y + p] = ((mountain[x][y] + mountain[x][y + 2 * p]) / 2) + m;
 					}
 				}
 				// Interpolation for the rest
@@ -111,29 +111,23 @@ public class Map {
 					int x = i2 % s * 2 * p;
 					int y = i2 / s * 2 * p;
 					// m: a random
-					float m = 0;
+					float m = (rand.nextFloat() - .5f) / (2 << i);
 
 					if (x + 2 * p < Main.width + 1 && y + 2 * p < Main.height + 1) {
-						m = (rand.nextFloat() - .5f) / (4 << i);
-						mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f)
-								+ 2 * m;
+						mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
 
-						m = (rand.nextFloat() - .5f) / (4 << i);
-						mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f)
-								+ 2 * m;
+						mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
 
-						m = (rand.nextFloat() - .5f) / (4 << i);
-						mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p]
-								+ mountain[x][y + p] + mountain[x + p][y]) * .25f) + 4 * m;
+						mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p] + mountain[x][y + p] + mountain[x + p][y])*.25f) + m;
 					}
 				}
 
 			}
 		}
 		// colors the MapArray
-		for (int i = 0; i < 2048*2048; i++) {
-			int x = i % 2048;
-			int y = i / 2048;
+		for (int i = 0; i < 1025 * 513; i++) {
+			int x = i % 1025;
+			int y = i / 1025;
 			if (id == MapID.ISLANDS) {
 
 				mapData[i] = getColor(getArray(x, y));
@@ -145,8 +139,10 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	/**
-	 * @param x coordiate on the map
-	 * @param y coordiate on the map
+	 * @param x
+	 *            coordiate on the map
+	 * @param y
+	 *            coordiate on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
@@ -154,19 +150,20 @@ public class Map {
 	}
 
 	/**
-	 * @param p Point on the map
+	 * @param p
+	 *            Point on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
-			return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
 	/**
-	 * @param value The float value from 0f-1f
-	 * @return A color based on the depth, 0 being a deep blue, 0.5f being coast,
-	 *         and 1 being green plains.
+	 * @param value
+	 *            The float value from 0f-1f
+	 * @return A color based on the depth, 0 being a deep blue, 0.5f being
+	 *         coast, and 1 being green plains.
 	 */
 	int getColor(float value) {
 		int blue = 0;
@@ -178,26 +175,20 @@ public class Map {
 			green = (int) (500 * (value - .5f) + 200);
 			red = (int) (600 * (value - .5f) + 150);
 		} else if (value < 1) {
-			blue = (int) (-400 * (value - .5f) + 130);
+			blue = (int) (-500 * (value - .5f) + 150);
 			green = (int) (-200 * (value - .5f) + 200);
-			red = (int) (-600 * (value - .5f) + 200);
+			red = (int) (-500 * (value - .5f) + 200);
 		} else {
 			blue = (int) (value * value * value * 85);
 			green = (int) (value * value * value * 85);
 			red = (int) (value * value * value * 85);
 		}
-		if (blue < 0)
-			blue = 0;
-		if (green < 0)
-			green = 0;
-		if (red < 0)
-			red = 0;
-		if (blue > 255)
-			blue = 255;
-		if (green > 255)
-			green = 255;
-		if (red > 255)
-			red = 255;
+		if (blue < 0) blue = 0;
+		if (green < 0) green = 0;
+		if (red < 0) red = 0;
+		if (blue > 255) blue = 255;
+		if (green > 255) green = 255;
+		if (red > 255) red = 255;
 		return 255 << 24 | red << 16 | green << 8 | blue;
 	}
 }

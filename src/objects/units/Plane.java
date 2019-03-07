@@ -31,7 +31,7 @@ public class Plane extends Unit {
 			defense = 2f;
 		} else {
 			speed = 0.3f;
-			defense = 3f;
+			defense = 1f;
 			acquireTarget();
 		}
 		id = UnitID.PLANE;
@@ -123,8 +123,8 @@ public class Plane extends Unit {
 				} else if ((Main.ticks - born) % 60 == 0 && getWeight() == UnitID.MEDIUM) {
 					Point pointA = new Point(22 * Trig.sin(a + 0.1f), 22 * Trig.cos(a + 0.1f));
 					Point pointB = new Point(22 * Trig.sin(a - 0.1f), 22 * Trig.cos(a - 0.1f));
-					nation.addProjectile(new Bullet(position.addPoint(pointA), nation, position.getTargetVector(smallestPoint), 1f, UnitID.BULLET));
-					nation.addProjectile(new Bullet(position.addPoint(pointB), nation, position.getTargetVector(smallestPoint), 1f, UnitID.BULLET));
+					nation.addProjectile(new Bullet(position.addPoint(pointA), nation, position.getTargetVector(smallestPoint), 1f, UnitID.ANTIPERSONEL));
+					nation.addProjectile(new Bullet(position.addPoint(pointB), nation, position.getTargetVector(smallestPoint), 1f, UnitID.ANTIPERSONEL));
 				}
 			}
 		} else {
@@ -141,7 +141,7 @@ public class Plane extends Unit {
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
-			if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
+			if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.AIRFIELD)) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempDist < smallestDistance) {
@@ -167,15 +167,15 @@ public class Plane extends Unit {
 		if (Main.ticks % 4 < 2) {
 			if (getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.fighter1, r.lighten(nation.color), direction);
 			if (getWeight() == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 44, r.attacker1, nation.color, direction);
-			if (getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 67, r.bomber1, r.darken(nation.color), direction);
+			if (getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 68, r.bomber1, r.darken(nation.color), direction);
 		} else {
 			if (getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.fighter2, r.lighten(nation.color), direction);
 			if (getWeight() == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 44, r.attacker2, nation.color, direction);
-			if (getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 67, r.bomber2, r.darken(nation.color), direction);
+			if (getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 68, r.bomber2, r.darken(nation.color), direction);
 		}
 		if (hit > 1 && getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 40, r.fighterHit, r.lighten(nation.color), direction);
 		if (hit > 1 && getWeight() == UnitID.MEDIUM) r.drawImageScreen((int) position.getX(), (int) position.getY(), 48, r.attackerHit, nation.color, direction);
-		if (hit > 1 && getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 71, r.bomberHit, r.darken(nation.color), direction);
+		if (hit > 1 && getWeight() == UnitID.HEAVY) r.drawImageScreen((int) position.getX(), (int) position.getY(), 72, r.bomberHit, r.darken(nation.color), direction);
 	}
 
 	@Override

@@ -1,4 +1,12 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.12
+- Ships will now convoy their own landing craft
+- Updated colors to be prettier
+
+### Erovra 1.0.11
+- Fixed bomber sprites
+- Improved ports finally so that nations will send landing craft if they can (Seriously, watch out!)
+
 ### Erovra 1.0.10
 - Added custom maps
 

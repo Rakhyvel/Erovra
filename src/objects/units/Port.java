@@ -52,8 +52,10 @@ public class Port extends Industry {
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			nation.addUnit(new Ship(position, nation, getProductWeight()));
-			if (getProductWeight() != UnitID.LIGHT)
+			if (getProductWeight() == UnitID.MEDIUM)
 				nation.seaSupremacy++;
+			if (getProductWeight() == UnitID.HEAVY)
+				nation.seaSupremacy+=2;
 			setProductWeight(UnitID.NONE);
 			if (!nation.isAIControlled())
 				setProduct(UnitID.NONE);
@@ -64,28 +66,39 @@ public class Port extends Industry {
 	 * If the nation is AI controlled, decides what ship to build
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.seaSupremacy < nation.seaSupremacy && nation.seaSupremacy > 0) {
+		if (nation.seaSupremacy > nation.enemyNation.seaSupremacy) {
 			if (nation.coins >= (nation.getShipCost() / 4)) {
-				int smallestDistance = 524288;
+				int smallestDistance = 1310720;
 				int unitCount = 0;
 				for (int i = 0; i < nation.unitSize(); i++) {
 					Unit tempUnit = nation.getUnit(i);
 					Point tempPoint = tempUnit.getPosition();
 					int tempDist = (int) position.getDist(tempPoint);
-					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.engaged && !tempUnit.isBoarded()) {
+					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY)) && !tempUnit.isBoarded()) {
 						unitCount++;
 					}
 				}
-				if (unitCount > 3) {
+				smallestDistance = 1310720;
+				Point smallestPoint = new Point(-1, -1);
+				for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+					Unit tempUnit = nation.enemyNation.getUnit(i);
+					Point tempPoint = tempUnit.getPosition();
+					int tempDist = (int) position.getDist(tempPoint);
+					if ((tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE && tempUnit.getID() != UnitID.PORT)) {
+						if (wetLandingPath(tempPoint, 16) || tempDist < 16384 || tempUnit.capital) {
+							smallestPoint = tempPoint;
+						}
+					}
+				}
+				if (unitCount > 3 && smallestPoint.getX() != -1) {
 					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4, 3000);
 				}
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy || nation.enemyNation.airSupremacy >= nation.airSupremacy) {
 				if(buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800)) {
-					
 				} else {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 10800);
+					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 7200);
 				}
 			}
 		}
@@ -100,7 +113,7 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, r.darken(nation.color));
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, nation.color);
 			if (hit > 1) {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
 			}

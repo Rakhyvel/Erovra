@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
-import objects.units.Artillery;
 import objects.units.City;
 import objects.units.Infantry;
 import output.Render;
@@ -32,7 +31,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.CUSTOM;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -47,15 +46,16 @@ public class Main {
 	public static Mouse mouse = new Mouse();
 	public static Keyboard keyboard = new Keyboard();
 	public static float zoom = 1f;
-	public static int difficulty = 1;
+	public static int difficulty = 0;
 
 	// GitHub
-	public static String version = "Erovra 1.0.10";
+	public static String version = "Erovra 1.0.12";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
 	 * 
-	 * @param args No idea what these do
+	 * @param args
+	 *            No idea what these do
 	 */
 	public static void main(String args[]) {
 		Main m = new Main();
@@ -79,8 +79,7 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if (gameState == StateID.ONGOING)
-					ticks++;
+				if (gameState == StateID.ONGOING) ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -114,7 +113,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 41);
+		frame.setSize(width + 7, height + 25);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -124,16 +123,16 @@ public class Main {
 	}
 
 	/**
-	 * Sets the state of the game to ongoin, creates two teams, and generates a new
-	 * map
+	 * Sets the state of the game to ongoin, creates two teams, and generates a
+	 * new map
 	 */
 	public static void startNewMatch() {
 		ticks = 0;
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
-		Nation sweden = new Nation(0 << 16 | 128 << 8 | 220, "Sweden");
-		Nation russia = new Nation(220 << 16 | 48 << 8 | 0, "Russia");
-//		sweden.setAIControlled(false);
+		Nation sweden = new Nation(23 << 16 | 128 << 8 | 230, "Sweden");
+		Nation russia = new Nation(230 << 16 | 23 << 8 | 23, "Russia");
+		 sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -170,13 +169,15 @@ public class Main {
 					break;
 				}
 			}
-		} while (sweden.unitSize() + russia.unitSize() < 2);
+		}
+		while (sweden.unitSize() + russia.unitSize() < 2);
 		sweden.addUnit(new Infantry(sweden.getUnit(0).getPosition(), sweden));
 		russia.addUnit(new Infantry(russia.getUnit(0).getPosition(), russia));
 	}
 
 	/**
-	 * @param id The game state to be changed.
+	 * @param id
+	 *            The game state to be changed.
 	 */
 	public static void setState(StateID id) {
 		Main.gameState = id;

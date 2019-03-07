@@ -52,11 +52,11 @@ public class Render extends Canvas {
 	public int[] fighter2 = image.loadImage("/res/air/fighter1.png", 36, 35);
 	public int[] attacker1 = image.loadImage("/res/air/attack.png", 44, 33);
 	public int[] attacker2 = image.loadImage("/res/air/attack1.png", 44, 33);
-	public int[] bomber1 = image.loadImage("/res/air/bomber1.png", 67, 40);
-	public int[] bomber2 = image.loadImage("/res/air/bomber2.png", 67, 40);
+	public int[] bomber1 = image.loadImage("/res/air/bomber1.png", 68, 40);
+	public int[] bomber2 = image.loadImage("/res/air/bomber2.png", 68, 40);
 	public int[] fighterHit = image.loadImage("/res/air/fighterHit.png", 40, 39);
 	public int[] attackerHit = image.loadImage("/res/air/attackHit.png", 48, 37);
-	public int[] bomberHit = image.loadImage("/res/air/bomberHit.png", 71, 44);
+	public int[] bomberHit = image.loadImage("/res/air/bomberHit.png", 72, 44);
 
 	// Buildings
 	public int[] city = image.loadImage("/res/buildings/city.png", 32, 32);
@@ -75,6 +75,7 @@ public class Render extends Canvas {
 	// Misc
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
 	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
+	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -105,7 +106,7 @@ public class Render extends Canvas {
 		Graphics g = bs.getDrawGraphics();
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
-			System.arraycopy(Image.rescale(Map.mapData, 1025, Main.zoom), 0, pixels, 0, 1025 * 513);
+			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
 		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
@@ -133,8 +134,8 @@ public class Render extends Canvas {
 	 * Draws the longitude and latitude lines on the map
 	 */
 	void drawLongLat() {
-		int xCenter = (int) (512 * Main.zoom) - 512;
-		int yCenter = (int) (256 * Main.zoom) - 256;
+//		int xCenter = (int) (512 * Main.zoom) - 512;
+//		int yCenter = (int) (256 * Main.zoom) - 256;
 		// Latitude
 		for (int i = 0; i < 512 * 17; i++) {
 			int x = (int) ((i % 17 * 64/Main.zoom));
@@ -394,15 +395,16 @@ public class Render extends Canvas {
 	 */
 	public int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r <<= 2;
-		g <<= 2;
-		b <<= 2;
-		if (r > 255)
-			r = 255;
-		if (g > 255)
-			g = 255;
-		if (b > 255)
-			b = 255;
+		r = (int)(r * 0.5)+128;
+		g = (int)(g * 0.5)+128;
+		b = (int)(b * 0.5)+128;
+		if(b > r){
+			g+=40;
+			r-=25;
+		} else {
+			b-=30;
+			g+=30;
+		}
 		return r << 16 | g << 8 | b;
 	}
 
@@ -414,16 +416,15 @@ public class Render extends Canvas {
 	 */
 	public int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r >>= 1;
-		g >>= 1;
-		b >>= 1;
-		if (r < 0)
-			r = 0;
-		if (g < 0)
-			g = 0;
-		if (b < 0)
-			b = 0;
-		return r << 16 | g << 8 | b+32;
+		r = (r >> 1);
+		g = (g >> 1);
+		b = (b >> 1);
+		if(b > r){
+			g*=0.75;
+		} else {
+			b*=1.8;
+		}
+		return r << 16 | g << 8 | b;
 	}
 
 	/**
@@ -433,8 +434,8 @@ public class Render extends Canvas {
 	 * @return A less saturated color
 	 */
 	public int desaturate(int color) {
-		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255)-32;
-		int a = r + g + b >> 2;
+		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+		int a = (r + g + b)>>5;
 		r = (a + r) >> 1;
 		g = (a + g) >> 1;
 		b = (a + b) >> 1;
@@ -449,7 +450,7 @@ public class Render extends Canvas {
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = desaturate(darken(pixels[i]));
+			image[i] = desaturate(pixels[i]);
 		}
 		return image;
 	}
@@ -613,7 +614,7 @@ public class Render extends Canvas {
 					}
 				}
 			}
-			drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 16, flag, color);
+			drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian());
 		}
 	}
 }

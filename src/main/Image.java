@@ -78,8 +78,8 @@ public class Image {
 	public static int[] rescale(int[] img, int width, float factor) {
 		// Set up the new variables
 		int[] img2 = new int[img.length];
-		int xCenter = (int) (Main.mouse.getX() * Main.zoom) - 1024;
-		int yCenter = (int) (Main.mouse.getY() * Main.zoom) - 512;
+		int xCenter = (int) (512 * Main.zoom) - 512;
+		int yCenter = (int) (256 * Main.zoom) - 256;
 		int x, y, id;
 		// Walk through the new image
 		for (int i = 0; i < 1025*513; i++) {

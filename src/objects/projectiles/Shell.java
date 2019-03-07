@@ -25,8 +25,8 @@ public class Shell extends Projectile {
 	@Override
 	public void tick(double t) {
 		shellMove();
-		if (position.getDist(getTarget()) < 1024) {
-			setAttack(2);
+		if (position.getDist(getTarget()) < 1) {
+			setAttack(1.5f);
 		}
 	}
 
