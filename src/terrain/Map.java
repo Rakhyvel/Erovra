@@ -170,16 +170,12 @@ public class Map {
 		int green = 0;
 		int red = 0;
 
-		if (value < .495f) {
+		if (value < .5f) {
 			blue = (int) (455 * value+32);
 			green = (int) (760 * Math.pow(value,1.6));
-			red = (int) (1020 * value * value);
-		} else if (value < .5f) {
-			blue = 255;
-			green = 255;
-			red = 255;
-		}else if (value < 1) {
-			blue = (int) (800*(value-1)*(value-1));
+			red = (int) (850 * value * value);
+		} else if (value < 1) {
+			blue = (int) (700*(value-1)*(value-1));
 			green = (int) (-255 * value + 383);
 			red = (int) (-510 * value+510);
 		} else {
