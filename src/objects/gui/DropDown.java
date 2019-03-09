@@ -198,6 +198,12 @@ public class DropDown extends Menu {
 		if (Main.mouse.getY() > getPosition().getY() + getDropDownHeight()) {
 			return 0;
 		}
+		if (Main.mouse.getX() < getPosition().getX()) {
+			return 0;
+		}
+		if (Main.mouse.getX() > getPosition().getX()+170) {
+			return 0;
+		}
 		return (int) (Main.mouse.getY() - getPosition().getY() + 30) / 30 - 1;
 	}
 

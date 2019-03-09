@@ -9,6 +9,9 @@
 ### Update 1.2:
 #### Sounds and animations
 
+### Update 1.3:
+#### Gamemodes
+
 ### Update 2.0:
 #### Multiplayer
 

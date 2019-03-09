@@ -268,7 +268,7 @@ public abstract class Unit {
 		if (id == UnitID.SHIP) smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+		for (int i = 0; i < nation.enemyNation.unitSize() && (id == UnitID.ARTILLERY && weight == UnitID.LIGHT); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if (tempUnit.engaged) {
 				Point tempPoint = tempUnit.getPosition();

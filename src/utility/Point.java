@@ -6,6 +6,10 @@ public class Point {
 		this.setX(x);
 		this.setY(y);
 	}
+	public Point(Point p) {
+		this.setX(p.getX());
+		this.setY(p.getY());
+	}
 	public double getY() {
 		return y;
 	}

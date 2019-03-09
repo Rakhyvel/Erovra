@@ -1,13 +1,12 @@
 package main;
 
-import input.Keyboard;
-import input.Mouse;
-
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
+import input.Keyboard;
+import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -30,7 +29,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -112,7 +111,7 @@ public class Main {
 	 * Sets up the game's window
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 41);
+		frame.setSize(width + 7, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -170,8 +169,8 @@ public class Main {
 			}
 		}
 		while (sweden.unitSize() + russia.unitSize() < 2);
-		sweden.addUnit(new Infantry(sweden.getUnit(0).getPosition(), sweden));
-		russia.addUnit(new Infantry(russia.getUnit(0).getPosition(), russia));
+		sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
+		russia.addUnit(new Infantry(new Point(russia.getUnit(0).getPosition()), russia));
 	}
 
 	/**

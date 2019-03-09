@@ -48,14 +48,19 @@ public class Plane extends Unit {
 				nation.coins += 10;
 			}
 			aaAim();
-			acquireTarget();
 			if (bombsAway) {
 				if (position.getDist(getTarget()) < 1) {
-					nation.coins += 1.5 * health;
+					nation.coins += health;
 					nation.unitArray.remove(this);
 				}
 			} else {
+				if(nation.isAIControlled()) {
+					acquireTarget();
+				} else {
+					clickToMove();
+				}
 				if (position.getDist(getTarget()) < 1) {
+					setTarget(new Point(nation.capital.getPosition()));
 					nation.addProjectile(new Bomb(position, nation));
 					bombsAway = true;
 				}
@@ -153,7 +158,7 @@ public class Plane extends Unit {
 		}
 		if (smallestUnit != null) {
 			smallestUnit.engage();
-			setTarget(smallestPoint);
+			setTarget(new Point(smallestPoint));
 		} else {
 			setTarget(smallestPoint);
 		}
@@ -163,6 +168,15 @@ public class Plane extends Unit {
 	public void render(Render r) {
 		float direction = position.subVec(getTarget()).getRadian();
 		if (velocity.getY() > 0) direction += 3.14f;
+		
+		if(weight == UnitID.HEAVY && !nation.isAIControlled() && !bombsAway) {
+			if (isSelected()) {
+				r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 16, r.flag, nation.color);
+				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
+			}
+		}
 
 		if (Main.ticks % 4 < 2) {
 			if (getWeight() == UnitID.LIGHT) r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.fighter1, r.lighten(nation.color), direction);

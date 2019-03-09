@@ -10,7 +10,7 @@ import utility.Point;
 public class Map {
 
 	Random rand = new Random();
-	public static float[][] mountain = new float[2048][2048];
+	public static float[][] mountain = new float[1025][513];
 	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[7];
@@ -170,14 +170,18 @@ public class Map {
 		int green = 0;
 		int red = 0;
 
-		if (value < .5f) {
-			blue = (int) (400 * (value - .5f) + 250);
-			green = (int) (500 * (value - .5f) + 200);
-			red = (int) (600 * (value - .5f) + 150);
-		} else if (value < 1) {
-			blue = (int) (-500 * (value - .5f) + 150);
-			green = (int) (-200 * (value - .5f) + 200);
-			red = (int) (-500 * (value - .5f) + 200);
+		if (value < .495f) {
+			blue = (int) (455 * value+32);
+			green = (int) (760 * Math.pow(value,1.6));
+			red = (int) (1020 * value * value);
+		} else if (value < .5f) {
+			blue = 255;
+			green = 255;
+			red = 255;
+		}else if (value < 1) {
+			blue = (int) (800*(value-1)*(value-1));
+			green = (int) (-255 * value + 383);
+			red = (int) (-510 * value+510);
 		} else {
 			blue = (int) (value * value * value * 85);
 			green = (int) (value * value * value * 85);

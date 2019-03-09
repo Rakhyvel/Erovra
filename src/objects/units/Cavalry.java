@@ -62,15 +62,16 @@ public class Cavalry extends Unit {
 			float direction = position.subVec(getFacing()).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;
-
-			if (isSelected()) {
-				r.drawImageScreen((int)getTarget().getX(), (int)getTarget().getY(), 16, r.flag, nation.color);
-				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
-						220 << 16 | 220 << 8 | 220);
+			if(!nation.isAIControlled()) {
+				if (isSelected()) {
+					r.drawImageScreen((int)getTarget().getX(), (int)getTarget().getY(), 16, r.flag, nation.color);
+					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
+							220 << 16 | 220 << 8 | 220);
+				}
 			}
-
+				
 			if (getWeight() == UnitID.LIGHT)
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color),
 						direction);

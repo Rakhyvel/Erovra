@@ -507,7 +507,7 @@ public class Render extends Canvas {
 		}
 	}
 
-	public void drawLine(Point p1, Point p2, int color, int background) {
+	public void drawLandLine(Point p1, Point p2, int color, int background) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
 		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
@@ -597,6 +597,214 @@ public class Render extends Canvas {
 							endPoint.setY(y);
 							break;
 						}
+						if (background != 0) {
+							pixels[id - 5] = background;
+							pixels[id - 4] = background;
+						}
+						pixels[id - 3] = 0;
+						pixels[id - 2] = 0;
+						pixels[id - 1] = color;
+						pixels[id] = color;
+						pixels[id + 1] = 0;
+						pixels[id + 2] = 0;
+						if (background != 0) {
+							pixels[id + 4] = background;
+							pixels[id + 3] = background;
+						}
+					}
+				}
+			}
+			if(p2.getY() < p1.getY()) {
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian());
+			} else {	
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian()+3.14f);
+			}
+		}
+	}
+	public void drawSeaLine(Point p1, Point p2, int color, int background) {
+		Point endPoint = p2;
+		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
+		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
+			if (slope < 1 && slope > -1) {
+				if (p2.getX() > p1.getX()) {
+					for (double i = p1.getX(); i < p2.getX(); i++) {
+						int x = (int) i;
+						int y = (int) (slope * (i - p1.getX()) + p1.getY());
+						int id = y * (width + 1) + x;
+						if (Map.getArray((int) x, (int) y) > .5) {
+							endPoint.setX(x);
+							endPoint.setY(y);
+							break;
+						}
+						if (background != 0) {
+							pixels[id - 4100] = background;
+							pixels[id - 3075] = background;
+						}
+						pixels[id - 2050] = 0;
+						pixels[id - 1025] = 0;
+						pixels[id] = color;
+						pixels[id + 1025] = color;
+						pixels[id + 2050] = 0;
+						pixels[id + 3075] = background;
+						if (background != 0) {
+							pixels[id + 5125] = background;
+							pixels[id + 4100] = background;
+						}
+					}
+				} else {
+					for (double i = p1.getX(); i > p2.getX(); i--) {
+						int x = (int) i;
+						int y = (int) (slope * (i - p1.getX()) + p1.getY());
+						int id = y * (width + 1) + x;
+						if (Map.getArray((int) x, (int) y) > .5) {
+							endPoint.setX(x);
+							endPoint.setY(y);
+							break;
+						}
+						if (background != 0) {
+							pixels[id - 5125] = background;
+							pixels[id - 4100] = background;
+						}
+						pixels[id - 3075] = 0;
+						pixels[id - 2050] = 0;
+						pixels[id - 1025] = color;
+						pixels[id] = color;
+						pixels[id + 1025] = 0;
+						pixels[id + 2050] = 0;
+						if (background != 0) {
+							pixels[id + 4100] = background;
+							pixels[id + 3075] = background;
+						}
+					}
+				}
+			} else {
+				if (p2.getY() > p1.getY()) {
+					for (int y = (int) p1.getY(); y < p2.getY(); y++) {
+						int x = (int) ((y - p1.getY()) / slope + p1.getX());
+						int id = (int) (y * (width + 1)) + x;
+						if (Map.getArray((int) x, (int) y) > .5) {
+							endPoint.setX(x);
+							endPoint.setY(y);
+							break;
+						}
+						if (background != 0) {
+							pixels[id - 4] = background;
+							pixels[id - 3] = background;
+						}
+						pixels[id - 2] = 0;
+						pixels[id - 1] = 0;
+						pixels[id] = color;
+						pixels[id + 1] = color;
+						pixels[id + 2] = 0;
+						pixels[id + 3] = 0;
+						if (background != 0) {
+							pixels[id + 5] = background;
+							pixels[id + 4] = background;
+						}
+					}
+				} else {
+					for (int y = (int) p1.getY(); y > p2.getY(); y--) {
+						int x = (int) ((y - p1.getY()) / slope + p1.getX());
+						int id = (int) (y * (width + 1)) + x;
+						if (Map.getArray((int) x, (int) y) > .5) {
+							endPoint.setX(x);
+							endPoint.setY(y);
+							break;
+						}
+						if (background != 0) {
+							pixels[id - 5] = background;
+							pixels[id - 4] = background;
+						}
+						pixels[id - 3] = 0;
+						pixels[id - 2] = 0;
+						pixels[id - 1] = color;
+						pixels[id] = color;
+						pixels[id + 1] = 0;
+						pixels[id + 2] = 0;
+						if (background != 0) {
+							pixels[id + 4] = background;
+							pixels[id + 3] = background;
+						}
+					}
+				}
+			}
+			if(p2.getY() < p1.getY()) {
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian());
+			} else {	
+				drawImageScreen((int) endPoint.getX(), (int) endPoint.getY(), 18, arrow, color,p2.subVec(p1).getRadian()+3.14f);
+			}
+		}
+	}
+	public void drawLine(Point p1, Point p2, int color, int background) {
+		Point endPoint = p2;
+		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
+		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
+			if (slope < 1 && slope > -1) {
+				if (p2.getX() > p1.getX()) {
+					for (double i = p1.getX(); i < p2.getX(); i++) {
+						int x = (int) i;
+						int y = (int) (slope * (i - p1.getX()) + p1.getY());
+						int id = y * (width + 1) + x;
+						if (background != 0) {
+							pixels[id - 4100] = background;
+							pixels[id - 3075] = background;
+						}
+						pixels[id - 2050] = 0;
+						pixels[id - 1025] = 0;
+						pixels[id] = color;
+						pixels[id + 1025] = color;
+						pixels[id + 2050] = 0;
+						pixels[id + 3075] = background;
+						if (background != 0) {
+							pixels[id + 5125] = background;
+							pixels[id + 4100] = background;
+						}
+					}
+				} else {
+					for (double i = p1.getX(); i > p2.getX(); i--) {
+						int x = (int) i;
+						int y = (int) (slope * (i - p1.getX()) + p1.getY());
+						int id = y * (width + 1) + x;
+						if (background != 0) {
+							pixels[id - 5125] = background;
+							pixels[id - 4100] = background;
+						}
+						pixels[id - 3075] = 0;
+						pixels[id - 2050] = 0;
+						pixels[id - 1025] = color;
+						pixels[id] = color;
+						pixels[id + 1025] = 0;
+						pixels[id + 2050] = 0;
+						if (background != 0) {
+							pixels[id + 4100] = background;
+							pixels[id + 3075] = background;
+						}
+					}
+				}
+			} else {
+				if (p2.getY() > p1.getY()) {
+					for (int y = (int) p1.getY(); y < p2.getY(); y++) {
+						int x = (int) ((y - p1.getY()) / slope + p1.getX());
+						int id = (int) (y * (width + 1)) + x;
+						if (background != 0) {
+							pixels[id - 4] = background;
+							pixels[id - 3] = background;
+						}
+						pixels[id - 2] = 0;
+						pixels[id - 1] = 0;
+						pixels[id] = color;
+						pixels[id + 1] = color;
+						pixels[id + 2] = 0;
+						pixels[id + 3] = 0;
+						if (background != 0) {
+							pixels[id + 5] = background;
+							pixels[id + 4] = background;
+						}
+					}
+				} else {
+					for (int y = (int) p1.getY(); y > p2.getY(); y--) {
+						int x = (int) ((y - p1.getY()) / slope + p1.getX());
+						int id = (int) (y * (width + 1)) + x;
 						if (background != 0) {
 							pixels[id - 5] = background;
 							pixels[id - 4] = background;
