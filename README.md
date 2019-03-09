@@ -1,4 +1,12 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.13
+- Fixed arrows being wonky, now work with ships as well
+- Bombers may be retargeted, show a target on screen, and return to base
+- Landing craft selection made better **again**
+- Improved artillery radii, added it to cruisers 
+- Improved map colors, map generation
+- Fixed mountain and ship collision avoidance *(FINALLY!!)*
+
 ### Erovra 1.0.12
 - Ships will now convoy their own landing craft
 - Updated colors to be prettier
