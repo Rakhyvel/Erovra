@@ -175,7 +175,7 @@ public class Map {
 			green = (int) (760 * Math.pow(value,1.6));
 			red = (int) (850 * value * value);
 		} else if (value < 1) {
-			blue = (int) (700*(value-1)*(value-1));
+			blue = (int) (650*(value-1)*(value-1));
 			green = (int) (-255 * value + 383);
 			red = (int) (-510 * value+510);
 		} else {
