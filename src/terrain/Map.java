@@ -54,7 +54,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (1 - ((smallestDistance) / 25000.0f)) / 2 + 0.2f;
+					islandMask[i] = ((1 - ((smallestDistance) / 25000.0f)) / 2 + 0.2f);
 				}
 			}
 			for (int i = 0; i < 45; i++) {
@@ -81,7 +81,11 @@ public class Map {
 					}
 				} else if (id == MapID.MOUNTAIN) {
 					float r = rand.nextFloat();
-					mountain[x * 128][y * 128] = (r * r) + .5f;
+					if (r < 1) {
+						mountain[x * 128][y * 128] = (r * r * .8f) + .6f;
+					} else {
+						mountain[x * 128][y * 128] = r;
+					}
 				}
 			}
 
@@ -98,7 +102,7 @@ public class Map {
 					int x = i2 % s * 2 * p;
 					int y = i2 / s * 2 * p;
 
-					float m = (rand.nextFloat() - .5f) / (1 << i);
+					float m = (rand.nextFloat() - .5f) / (3 << (i - 1));
 					if (x + 2 * p < Main.width + 1) {
 						mountain[x + p][y] = ((mountain[x][y] + mountain[x + 2 * p][y]) / 2) + m;
 					}
@@ -111,30 +115,56 @@ public class Map {
 					int x = i2 % s * 2 * p;
 					int y = i2 / s * 2 * p;
 					// m: a random
-					float m = (rand.nextFloat() - .5f) / (2 << i);
 
-					if (x + 2 * p < Main.width + 1 && y + 2 * p < Main.height + 1) {
-						mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
+					float m = 0;
+					if (i < 4) {
+						m = (rand.nextFloat() - .5f) / (4 << i);
+						if (x + 2 * p < Main.width + 1 && y + 2 * p < Main.height + 1) {
+							mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f + m);
 
-						mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
+							mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f + m);
 
-						mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p] + mountain[x][y + p] + mountain[x + p][y])*.25f) + m;
+							mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p] + mountain[x][y + p] + mountain[x + p][y]) * .25f + m);
+						}
+					} else {
+						m = (rand.nextFloat() - .5f) / (2 << i);
+						if (x + 2 * p < Main.width + 1 && y + 2 * p < Main.height + 1) {
+							mountain[x + p][y + 2 * p] = ((mountain[x][y + 2 * p] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
+
+							mountain[x + 2 * p][y + p] = ((mountain[x + 2 * p][y] + mountain[x + 2 * p][y + 2 * p]) * .5f) + m;
+
+							mountain[x + p][y + p] = ((mountain[x + p][y + 2 * p] + mountain[x + 2 * p][y + p] + mountain[x][y + p] + mountain[x + p][y]) * .25f) + m;
+						}
 					}
 				}
 
 			}
+		}
+		for(int i = 0; i < 1025*513; i++){
+			int x = i % 1025;
+			int y = i / 1025;
+			mountain[x][y] = transform(mountain[x][y],1.5f);
+			if(mountain[x][y] > 1.5)
+				mountain[x][y] = 1.5f;
+			if(mountain[x][y] < 0)
+				mountain[x][y] = 0f;
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = i % 1025;
 			int y = i / 1025;
 			if (id == MapID.ISLANDS) {
-
 				mapData[i] = getColor(getArray(x, y));
 			} else {
 				mapData[i] = getColor(getArray(x, y));
 			}
 		}
+	}
+
+	float transform(float r, float nonlinearity) {
+		double verticalStretch = 1.01311/nonlinearity-.0787654;
+		double newHeight = (verticalStretch*Math.tan(nonlinearity*r-(nonlinearity*0.5))+0.5);
+		return (float)newHeight;
 	}
 
 	// getArray(...): returns the float value at a given coordinate
@@ -170,19 +200,28 @@ public class Map {
 		int green = 0;
 		int red = 0;
 
-		if (value < .5f) {
-			blue = (int) (455 * value+32);
-			green = (int) (760 * Math.pow(value,1.6));
-			red = (int) (850 * value * value);
+		if (value < .495f) {
+			blue = (int) (460 * value + 38);
+			red = (int) (820 * value * value - 6);
+			green = (int) (1040 * value * value - 6);
+		} else if (value < .5) {
+			blue = (int) (255);
+			green = (int) (255);
+			red = (int) (255);
 		} else if (value < 1) {
-			blue = (int) (650*(value-1)*(value-1));
-			green = (int) (-255 * value + 383);
-			red = (int) (-510 * value+510);
+			blue = (int) (730 * (value - 1) * (value - 1) - 9);
+			green = (int) (-290 * (value - 1) + 80);
+			red = (int) (1000 * (value - 1) * (value - 1) - 12);
 		} else {
 			blue = (int) (value * value * value * 85);
 			green = (int) (value * value * value * 85);
 			red = (int) (value * value * value * 85);
 		}
+//
+//		blue = (int) (value * 255);
+//		green = (int) (value * 255);
+//		red = (int) (value * 255);
+
 		if (blue < 0) blue = 0;
 		if (green < 0) green = 0;
 		if (red < 0) red = 0;

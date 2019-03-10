@@ -29,7 +29,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.ISLANDS;
+	public static MapID mapID = MapID.RIVER;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -47,7 +47,7 @@ public class Main {
 	public static int difficulty = 0;
 
 	// GitHub
-	public static String version = "Erovra 1.0.13";
+	public static String version = "Erovra 1.0.14";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -129,7 +129,7 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Sweden");
+		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Russia");
 		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
@@ -149,7 +149,7 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < .9) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -161,7 +161,7 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < .9) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;
