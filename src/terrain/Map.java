@@ -69,9 +69,11 @@ public class Map {
 			} else if (id == MapID.MOUNTAIN) {
 				generateMountain();
 			}
-			mountain = perlinNoise(1, 1);
+			rand.setSeed(seed);
+			mountain = perlinNoise(2, .5f);
 			for (int i2 = 2; i2 < 9; i2++) {
-				int denominator = 1 << (i2 - 1);
+				int denominator = 1 << (i2);
+				rand.setSeed(seed);
 				float[][] tempMountain = perlinNoise(i2, 1.0f / denominator);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
@@ -87,6 +89,7 @@ public class Map {
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = i % 1025;
 			int y = i / 1025;
+			mountain[x][y] = mountain[x][y] * 0.5f + 0.4f;
 			mountain[x][y] = transform(mountain[x][y], 1.5f);
 			if (mountain[x][y] > 1.5)
 				mountain[x][y] = 1.5f;
@@ -122,7 +125,7 @@ public class Map {
 				int x1 = (int) (x / wavelength) * wavelength;
 				int y1 = (int) (y / wavelength) * wavelength;
 				if (x != x1 || y != y1) {
-					noise[x][y] = bicosineInterpolation(x1, y1, wavelength, noise, x, y);
+					noise[x][y] = (bilinearInterpolation(x1, y1, wavelength, noise, x, y)+bicosineInterpolation(x1, y1, wavelength, noise, x, y))/2;
 				}
 			}
 		}
@@ -214,17 +217,17 @@ public class Map {
 		return (float) newHeight;
 	}
 
-	float bilinearInterpolation(int x1, int y1, int p, int x2, int y2) {
+	float bilinearInterpolation(int x1, int y1, int p, float[][] noise, int x2, int y2) {
 		// (x1,y1)- coords of top left corner of box
 		// p- length/heigth pf box
 		// (x3,y3)- coords of point
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1.5f;
 		}
-		float topInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) y1], x1 + p,
-				mountain[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) (y1 + p)], x1 + p,
-				mountain[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = linearInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
+				noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = linearInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
+				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return linearInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
