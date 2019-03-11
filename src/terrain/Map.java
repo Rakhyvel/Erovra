@@ -20,8 +20,10 @@ public class Map {
 	 * Uses simplex noise and linear interpolation to render the terrain for the
 	 * game
 	 * 
-	 * @param seed Random seed to be used for the generation
-	 * @param id   Which type of generation to be done
+	 * @param seed
+	 *            Random seed to be used for the generation
+	 * @param id
+	 *            Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
@@ -67,14 +69,18 @@ public class Map {
 			} else if (id == MapID.MOUNTAIN) {
 				generateMountain();
 			}
-			mountain = perlinNoise(2, 1);
-			for(int i2 = 1; i2 < 9; i2++) {
-				int denominator = 1 << (i2-1);
-				float[][] tempMountain = perlinNoise(i2, 1.0f/denominator);
+			mountain = perlinNoise(1, 1);
+			for (int i2 = 2; i2 < 9; i2++) {
+				int denominator = 1 << (i2 - 1);
+				float[][] tempMountain = perlinNoise(i2, 1.0f / denominator);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					mountain[x][y] = 2*mountain[x][y] * tempMountain[x][y];
+					mountain[x][y] = (mountain[x][y] - 0.5f) + (tempMountain[x][y] - 0.5f) + 0.5f;
+					if (mountain[x][y] > 1.5)
+						mountain[x][y] = 1.5f;
+					if (mountain[x][y] < 0)
+						mountain[x][y] = 0f;
 				}
 			}
 		}
@@ -161,7 +167,7 @@ public class Map {
 		for (int i = 0; i < 45; i++) {
 			int x = (i % 9);
 			int y = (i / 9);
-			mountain[x * 128][y * 128] = rand.nextFloat() / 3 + 0.6f;
+			mountain[x * 128][y * 128] = rand.nextFloat() / 3 + 1f;
 		}
 	}
 
@@ -228,8 +234,10 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	/**
-	 * @param x coordiate on the map
-	 * @param y coordiate on the map
+	 * @param x
+	 *            coordiate on the map
+	 * @param y
+	 *            coordiate on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
@@ -237,7 +245,8 @@ public class Map {
 	}
 
 	/**
-	 * @param p Point on the map
+	 * @param p
+	 *            Point on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
@@ -247,7 +256,8 @@ public class Map {
 	}
 
 	/**
-	 * @param value The float value from 0f-1f
+	 * @param value
+	 *            The float value from 0f-1f
 	 * @return A color based on the depth, 0 being a deep blue, 0.5f being coast,
 	 *         and 1 being green plains.
 	 */
@@ -256,6 +266,23 @@ public class Map {
 		int green = 0;
 		int red = 0;
 
+		// if (value < .495f) {
+		// blue = (int) (460 * value + 38);
+		// red = (int) (820 * value * value - 6);
+		// green = (int) (1040 * value * value - 6);
+		// } else if (value < .5) {
+		// blue = (int) (255);
+		// green = (int) (255);
+		// red = (int) (255);
+		// } else if (value < 1) {
+		// blue = (int) (730 * (value - 1) * (value - 1) - 9);
+		// green = (int) (-290 * (value - 1) + 80);
+		// red = (int) (1000 * (value - 1) * (value - 1) - 12);
+		// } else {
+		// blue = (int) (value * value * value * 85);
+		// green = (int) (value * value * value * 85);
+		// red = (int) (value * value * value * 85);
+		// }
 		if (value < .495f) {
 			blue = (int) (460 * value + 38);
 			red = (int) (820 * value * value - 6);

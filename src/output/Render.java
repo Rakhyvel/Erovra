@@ -535,13 +535,15 @@ public class Render extends Canvas {
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
+			int x = i % 1025;
 			int y = i / 1025;
+			int d = (int) new Point((x+512)/2,y).getDistSquared(new Point(512,256));
 			int color = pixels[i];
 			int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 			int a = (r + g + b) / 3;
-			r = (int)((a + r) / (2 + (y/200.0)));
-			g = (int) ((a + g) / (2 + (y/200.0)));
-			b = (int) ((a + b) / (2 + (y/200.0)));
+			r = (int)((a + r) / (2 + (d/1000.0)));
+			g = (int) ((a + g) / (2 + (d/1000.0)));
+			b = (int) ((a + b) / (2 + (d/1000.0)));
 			image[i] = r << 16 | g << 8 | b;
 		}
 		return image;
