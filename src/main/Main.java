@@ -149,7 +149,7 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < .9) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < .9) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -161,7 +161,7 @@ public class Main {
 			for (int i = 0; i < 84; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < .9) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < .9) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;

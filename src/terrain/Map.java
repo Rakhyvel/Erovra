@@ -20,10 +20,8 @@ public class Map {
 	 * Uses simplex noise and linear interpolation to render the terrain for the
 	 * game
 	 * 
-	 * @param seed
-	 *            Random seed to be used for the generation
-	 * @param id
-	 *            Which type of generation to be done
+	 * @param seed Random seed to be used for the generation
+	 * @param id   Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID id) {
 		rand.setSeed(seed);
@@ -69,14 +67,14 @@ public class Map {
 			} else if (id == MapID.MOUNTAIN) {
 				generateMountain();
 			}
-			int a = 128;
-			for (int i = 0; i < 1025 * 513; i++) {
-				int x = i % 1025;
-				int y = i / 1025;
-				int x1 = (int) (x / a) * a;
-				int y1 = (int) (y / a) * a;
-				if (x != x1 || y != y1) {
-					mountain[x][y] = bicosineInterpolation(x1, y1, a, x, y);
+			mountain = perlinNoise(2, 1);
+			for(int i2 = 1; i2 < 9; i2++) {
+				int denominator = 1 << (i2-1);
+				float[][] tempMountain = perlinNoise(i2, 1.0f/denominator);
+				for (int i = 0; i < 1025 * 513; i++) {
+					int x = i % 1025;
+					int y = i / 1025;
+					mountain[x][y] = 2*mountain[x][y] * tempMountain[x][y];
 				}
 			}
 		}
@@ -84,8 +82,10 @@ public class Map {
 			int x = i % 1025;
 			int y = i / 1025;
 			mountain[x][y] = transform(mountain[x][y], 1.5f);
-			if (mountain[x][y] > 1.5) mountain[x][y] = 1.5f;
-			if (mountain[x][y] < 0) mountain[x][y] = 0f;
+			if (mountain[x][y] > 1.5)
+				mountain[x][y] = 1.5f;
+			if (mountain[x][y] < 0)
+				mountain[x][y] = 0f;
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
@@ -98,14 +98,50 @@ public class Map {
 			}
 		}
 	}
-	
-	int[][] perlinNoise(int frequency, int amplitude){
-		int[][] noise = new int[1025][513];
-		if(frequency > 0 && frequency < 9) {
+
+	float[][] perlinNoise(int frequency, float amplitude) {
+		float[][] noise = new float[1025][513];
+		if (frequency > 0 && frequency < 9) {
 			int wavelength = 1 << (-frequency + 9);
-			
+			int width = (1025 / wavelength) + 1;
+			int height = (513 / wavelength) + 1;
+			for (int i = 0; i < width * height; i++) {
+				int x = (i % width) * wavelength;
+				int y = (i / width) * wavelength;
+				noise[x][y] = amplitude * rand.nextFloat() + 0.5f - (0.5f * amplitude);
+			}
+			for (int i = 0; i < 1025 * 513; i++) {
+				int x = i % 1025;
+				int y = i / 1025;
+				int x1 = (int) (x / wavelength) * wavelength;
+				int y1 = (int) (y / wavelength) * wavelength;
+				if (x != x1 || y != y1) {
+					noise[x][y] = bicosineInterpolation(x1, y1, wavelength, noise, x, y);
+				}
+			}
 		}
 		return noise;
+	}
+
+	float bicosineInterpolation(int x1, int y1, int p, float[][] noise, int x2, int y2) {
+		// (x1,y1)- coords of top left corner of box
+		// p- length/heigth pf box
+		// (x3,y3)- coords of point
+		if (x1 + p > 1025 || y1 + p > 513) {
+			return 1f;
+		}
+		float topInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
+				noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
+				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
+		return cosineInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
+	}
+
+	float cosineInterpolation(int x1, float y1, int x2, float y2, int m) {
+		double xDiff = (x2 - x1);
+		double mu2 = (1 - Math.cos((m / xDiff - x1 / xDiff) * Math.PI)) / 2;
+		double y3 = (y1 * (1 - mu2) + y2 * mu2);
+		return (float) y3;
 	}
 
 	void generateMountain() {
@@ -145,11 +181,12 @@ public class Map {
 			mountain[x * 128][y * 128] = Math.max(((1 - x) + (1 - y) + 10), x + y) * 0.07f;
 		}
 	}
-	
-	void generateSea(){
+
+	void generateSea() {
 		for (int i = 0; i < 45; i++) {
 			int x = (i % 9);
-			int y = (i / 9);if (x == 0 || x == 8) {
+			int y = (i / 9);
+			if (x == 0 || x == 8) {
 				mountain[x * 128][y * 128] = .9f;
 			} else if (x == 1 || x == 7) {
 				mountain[x * 128][y * 128] = rand.nextFloat() * .5f + .25f;
@@ -166,27 +203,9 @@ public class Map {
 	float transform(float r, float nonlinearity) {
 		double verticalStretch = 0.762799 / nonlinearity - .0787654;
 		double newHeight = (verticalStretch * Math.tan(nonlinearity * r - (nonlinearity * 0.5)) + 0.5);
-		if (newHeight > 1) newHeight = 2 * (r - 1) * (r - 1) + 1;
+		if (newHeight > 1)
+			newHeight = 2 * (r - 1) * (r - 1) + 1;
 		return (float) newHeight;
-	}
-
-	float bicosineInterpolation(int x1, int y1, int p, int x2, int y2) {
-		// (x1,y1)- coords of top left corner of box
-		// p- length/heigth pf box
-		// (x3,y3)- coords of point
-		if (x1 + p > 1025 || y1 + p > 513) {
-			return 1.5f;
-		}
-		float topInterpolation = cosineInterpolation(x1, mountain[(int) x1][(int) y1], x1 + p, mountain[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = cosineInterpolation(x1, mountain[(int) x1][(int) (y1 + p)], x1 + p, mountain[(int) (x1 + p)][(int) (y1 + p)], x2);
-		return cosineInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
-	}
-
-	float cosineInterpolation(int x1, float y1, int x2, float y2, int m) {
-		double xDiff = (x2 - x1);
-		double mu2 = (1 - Math.cos((m / xDiff - x1 / xDiff) * Math.PI)) / 2;
-		double y3 = (y1 * (1 - mu2) + y2 * mu2);
-		return (float) y3;
 	}
 
 	float bilinearInterpolation(int x1, int y1, int p, int x2, int y2) {
@@ -196,8 +215,10 @@ public class Map {
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1.5f;
 		}
-		float topInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) y1], x1 + p, mountain[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) (y1 + p)], x1 + p, mountain[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) y1], x1 + p,
+				mountain[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = linearInterpolation(x1, mountain[(int) x1][(int) (y1 + p)], x1 + p,
+				mountain[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return linearInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
@@ -207,10 +228,8 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	/**
-	 * @param x
-	 *            coordiate on the map
-	 * @param y
-	 *            coordiate on the map
+	 * @param x coordiate on the map
+	 * @param y coordiate on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
@@ -218,20 +237,19 @@ public class Map {
 	}
 
 	/**
-	 * @param p
-	 *            Point on the map
+	 * @param p Point on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
+			return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
 	/**
-	 * @param value
-	 *            The float value from 0f-1f
-	 * @return A color based on the depth, 0 being a deep blue, 0.5f being
-	 *         coast, and 1 being green plains.
+	 * @param value The float value from 0f-1f
+	 * @return A color based on the depth, 0 being a deep blue, 0.5f being coast,
+	 *         and 1 being green plains.
 	 */
 	int getColor(float value) {
 		int blue = 0;
@@ -260,12 +278,18 @@ public class Map {
 		// green = (int) (value * 255);
 		// red = (int) (value * 255);
 
-		if (blue < 0) blue = 0;
-		if (green < 0) green = 0;
-		if (red < 0) red = 0;
-		if (blue > 255) blue = 255;
-		if (green > 255) green = 255;
-		if (red > 255) red = 255;
+		if (blue < 0)
+			blue = 0;
+		if (green < 0)
+			green = 0;
+		if (red < 0)
+			red = 0;
+		if (blue > 255)
+			blue = 255;
+		if (green > 255)
+			green = 255;
+		if (red > 255)
+			red = 255;
 		return 255 << 24 | red << 16 | green << 8 | blue;
 	}
 }
