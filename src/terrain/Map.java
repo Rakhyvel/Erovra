@@ -98,6 +98,15 @@ public class Map {
 			}
 		}
 	}
+	
+	int[][] perlinNoise(int frequency, int amplitude){
+		int[][] noise = new int[1025][513];
+		if(frequency > 0 && frequency < 9) {
+			int wavelength = 1 << (-frequency + 9);
+			
+		}
+		return noise;
+	}
 
 	void generateMountain() {
 		for (int i = 0; i < 45; i++) {
