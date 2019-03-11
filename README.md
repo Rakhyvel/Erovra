@@ -1,4 +1,17 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.14
+- Fixed dropdowns for industry
+- Updated bombers so that they don't show their first targets
+- Updated bombs so that units hit will be shown
+- Updated terrain generation, added function that flattens coastal regions
+- Arrows no longer make the game crash
+- Can no longer build factories, ports, or airfields on mountain tiles
+- Added patrol points for fighters and attackers
+- Cruiser speed boost
+- Landing craft now land at the coast instead of a little ways in
+- Artillery shells change size to simulate a parabolic arc
+- Torpedo sprites now have screws
+
 ### Erovra 1.0.13
 - Fixed arrows being wonky, now work with ships as well
 - Bombers may be retargeted, show a target on screen, and return to base

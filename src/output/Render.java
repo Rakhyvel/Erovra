@@ -42,10 +42,10 @@ public class Render extends Canvas {
 	// Water Units
 	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
 	public int[] destroyer = image.loadImage("/res/water/destroyer.png", 13, 45);
-	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 16, 61);
+	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 14, 61);
 	public int[] landingHit = image.loadImage("/res/water/landingHit.png", 17, 36);
 	public int[] destroyerHit = image.loadImage("/res/water/destroyerHit.png", 17, 49);
-	public int[] cruiserHit = image.loadImage("/res/water/cruiserHit.png", 20, 65);
+	public int[] cruiserHit = image.loadImage("/res/water/cruiserHit.png", 18, 65);
 
 	// Air Units
 	public int[] fighter1 = image.loadImage("/res/air/fighter.png", 36, 35);
@@ -68,7 +68,8 @@ public class Render extends Canvas {
 
 	// Projectiles
 	public int[] shell = image.loadImage("/res/projectiles/shell.png", 4, 4);
-	public int[] torpedo = image.loadImage("/res/projectiles/torpedo.png", 2, 7);
+	public int[] torpedo = image.loadImage("/res/projectiles/torpedo.png", 3, 14);
+	public int[] torpedo1 = image.loadImage("/res/projectiles/torpedo1.png", 1, 14);
 	public int[] bullet = image.loadImage("/res/projectiles/bullet.png", 2, 2);
 	public int[] bomb = image.loadImage("/res/projectiles/bomb.png", 16, 8);
 
@@ -76,6 +77,7 @@ public class Render extends Canvas {
 	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
 	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
 	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
+	public int[] target = image.loadImage("/res/target.png", 32, 32);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -386,6 +388,57 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate, float opacity) {
+		int h = image.length / w;
+		for (int i = 0; i < image.length; i++) {
+			float alpha = ((image[i] >> 24 & 255) / 255.0f) * opacity;
+			if (alpha > 0) {
+				double x1 = (i % w) - w / 2;
+				double y1 = i / w - h / 2;
+				double x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
+				double y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
+				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+				float screen = (image[i] & 255) / 255.0f;
+				// Setting new colors
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+				}
+
+				// Recombining colors
+				int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+
+				
+				if (x2 + y2 > 0 && x2 + y2 < width * height) {
+					int id = (int)(x2+y2);
+					// Finding alpha
+					r = ((pixels[id] >> 16) & 255);
+					g = ((pixels[id] >> 8) & 255);
+					b = (pixels[id] & 255);
+					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+
+					// Finally adding colors to pixel array
+					pixels[id] = newColor + newColor2;
+					id = (int)(x2+y2+1);
+					// Finding alpha
+					r = ((pixels[id] >> 16) & 255);
+					g = ((pixels[id] >> 8) & 255);
+					b = (pixels[id] & 255);
+					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+
+					// Finally adding colors to pixel array
+					pixels[id] = newColor + newColor2;
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * Returns a lighter color
@@ -461,7 +514,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 27 << 16 | 30 << 8 | 40;
+			image[i] = 27 << 16 | 27 << 8 | 30;
 		}
 		return image;
 	}
@@ -510,14 +563,14 @@ public class Render extends Canvas {
 	public void drawLandLine(Point p1, Point p2, int color, int background) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
-		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
+		if (p2.getX() < 1021 && p2.getX() >= 5 && p2.getY() < 509 && p2.getY() >= 5 && p1.getDist(p2) > 32) {
 			if (slope < 1 && slope > -1) {
 				if (p2.getX() > p1.getX()) {
 					for (double i = p1.getX(); i < p2.getX(); i++) {
 						int x = (int) i;
 						int y = (int) (slope * (i - p1.getX()) + p1.getY());
 						int id = y * (width + 1) + x;
-						if (Map.getArray((int) x, (int) y) < .5) {
+						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int)x,(int)y) > 1) {
 							endPoint.setX(x);
 							endPoint.setY(y);
 							break;
@@ -542,7 +595,7 @@ public class Render extends Canvas {
 						int x = (int) i;
 						int y = (int) (slope * (i - p1.getX()) + p1.getY());
 						int id = y * (width + 1) + x;
-						if (Map.getArray((int) x, (int) y) < .5) {
+						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int)x,(int)y) > 1) {
 							endPoint.setX(x);
 							endPoint.setY(y);
 							break;
@@ -568,7 +621,7 @@ public class Render extends Canvas {
 					for (int y = (int) p1.getY(); y < p2.getY(); y++) {
 						int x = (int) ((y - p1.getY()) / slope + p1.getX());
 						int id = (int) (y * (width + 1)) + x;
-						if (Map.getArray((int) x, (int) y) < .5) {
+						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int)x,(int)y) > 1) {
 							endPoint.setX(x);
 							endPoint.setY(y);
 							break;
@@ -592,7 +645,7 @@ public class Render extends Canvas {
 					for (int y = (int) p1.getY(); y > p2.getY(); y--) {
 						int x = (int) ((y - p1.getY()) / slope + p1.getX());
 						int id = (int) (y * (width + 1)) + x;
-						if (Map.getArray((int) x, (int) y) < .5) {
+						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int)x,(int)y) > 1) {
 							endPoint.setX(x);
 							endPoint.setY(y);
 							break;
@@ -624,7 +677,7 @@ public class Render extends Canvas {
 	public void drawSeaLine(Point p1, Point p2, int color, int background) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
-		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
+		if (p2.getX() < 1021 && p2.getX() >= 4 && p2.getY() < 509 && p2.getY() >= 4 && p1.getDist(p2) > 32) {
 			if (slope < 1 && slope > -1) {
 				if (p2.getX() > p1.getX()) {
 					for (double i = p1.getX(); i < p2.getX(); i++) {
@@ -738,7 +791,7 @@ public class Render extends Canvas {
 	public void drawLine(Point p1, Point p2, int color, int background) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
-		if (p2.getX() < 1025 && p2.getX() >= 0 && p2.getY() < 513 && p2.getY() >= 0 && p1.getDist(p2) > 32) {
+		if (p1.getX() < 1021 && p1.getX() >= 4 && p1.getY() < 509 && p1.getY() >= 4 && p2.getX() < 1020 && p2.getX() >= 4 && p2.getY() < 508 && p2.getY() >= 4 && p1.getDist(p2) > 32) {
 			if (slope < 1 && slope > -1) {
 				if (p2.getX() > p1.getX()) {
 					for (double i = p1.getX(); i < p2.getX(); i++) {

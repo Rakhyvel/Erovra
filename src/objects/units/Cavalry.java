@@ -45,7 +45,7 @@ public class Cavalry extends Unit {
 				clickToMove();
 			}
 			engaged = autoAim(cal);
-			if (engaged && spotted == 0) {
+			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
 			}
 			if (spotted > 0)

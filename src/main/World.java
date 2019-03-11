@@ -31,9 +31,9 @@ public class World {
 	private DropDown dropDown = new DropDown();
 	public ErrorMessage errorMessage = new ErrorMessage();
 	private boolean nullifySelected = false;
-	Point mouseStartPoint = new Point(-1,-1);
-	
-	public World(){
+	Point mouseStartPoint = new Point(-1, -1);
+
+	public World() {
 		menuArray.add(errorMessage);
 	}
 
@@ -106,7 +106,7 @@ public class World {
 		for (int i = 0; i < menuArray.size(); i++) {
 			menuArray.get(i).tick();
 		}
-		if(nullifySelected){
+		if (nullifySelected) {
 			selectedUnit = null;
 			nullifySelected = false;
 		}
@@ -120,25 +120,43 @@ public class World {
 	 */
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
+			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
+				if (friendly.getProjectile(i2).getID() == UnitID.TORPEDO) {
+					friendly.getProjectile(i2).render(r);
+				}
+			}
+			for (int i2 = 0; i2 < hostile.projectileSize(); i2++) {
+				if (hostile.getProjectile(i2).getID() == UnitID.TORPEDO) {
+					hostile.getProjectile(i2).render(r);
+				}
+			}
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() != UnitID.PLANE)
+					friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() != UnitID.PLANE)
+					hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
-				friendly.getProjectile(i2).render(r);
+				if (friendly.getProjectile(i2).getID() != UnitID.TORPEDO) {
+					friendly.getProjectile(i2).render(r);
+				}
 			}
 			for (int i2 = 0; i2 < hostile.projectileSize(); i2++) {
-				hostile.getProjectile(i2).render(r);
+				if (hostile.getProjectile(i2).getID() != UnitID.TORPEDO) {
+					hostile.getProjectile(i2).render(r);
+				}
 			}
 
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() == UnitID.PLANE) friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() == UnitID.PLANE)
+					friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() == UnitID.PLANE) hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() == UnitID.PLANE)
+					hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
@@ -160,7 +178,8 @@ public class World {
 	 *            Graphics object
 	 */
 	public void drawCoins(Render r) {
-		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 973, 10, r.font16, 250 << 16 | 250 << 8 | 250);
+		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 973, 10, r.font16,
+				250 << 16 | 250 << 8 | 250);
 	}
 
 	/**
@@ -189,8 +208,8 @@ public class World {
 	public DropDown getDropDown() {
 		return dropDown;
 	}
-	
-	public void nullifySelected(){
+
+	public void nullifySelected() {
 		nullifySelected = true;
 	}
 }

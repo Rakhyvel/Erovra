@@ -31,6 +31,10 @@ public class Point {
 	public double getDist(Point p2) {
 		return (x-p2.x)*(x-p2.x)+(y-p2.y)*(y-p2.y);
 	}
+	public double getDistSquared(Point p2) {
+		double distance = (x-p2.x)*(x-p2.x)+(y-p2.y)*(y-p2.y);
+		return Math.sqrt(distance);
+	}
 	public Vector getTargetVector(Point p) {
 		if(getDist(p) == 0)
 			return new Vector(0,0);

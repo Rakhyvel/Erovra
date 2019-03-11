@@ -1,5 +1,6 @@
 package objects.units;
 
+import main.Main;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
@@ -10,8 +11,8 @@ public abstract class Industry extends Unit {
 
 	protected int start = 0;
 	protected float maxStart = 1;
-	protected UnitID product;
-	protected UnitID productWeight;
+	protected UnitID product = UnitID.NONE;
+	protected UnitID productWeight = UnitID.NONE;
 
 	public Industry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -56,7 +57,16 @@ public abstract class Industry extends Unit {
 			setStart(1);
 			maxStart = getStart();
 		}
+		if(!nation.isAIControlled())
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		return false;
+	}
+	
+	int getDropDownHeight() {
+		if(getProduct() == UnitID.NONE) {
+			return 150;
+		} 
+		return 60;
 	}
 
 	@Override

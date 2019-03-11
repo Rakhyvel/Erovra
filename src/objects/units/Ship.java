@@ -33,11 +33,12 @@ public class Ship extends Unit {
 			}
 			velocity.setX(0);
 			velocity.setY(0);
+			dropDownHeight = 90;
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			defense = 2;
 		} else {
-			speed = .05f;
+			speed = .1f;
 			defense = 6;
 		}
 		id = UnitID.SHIP;
@@ -116,10 +117,13 @@ public class Ship extends Unit {
 						}
 						if (Main.mouse.getMouseLeftDown()) {
 							clicked = true;
+							dropDownHeight = 0;
 						} else if (clicked) {
 							clicked = false;
 							chanceToSelect = true;
 						}
+					} else {
+						dropDownHeight = 90;
 					}
 				}
 				if (health < 0) {
@@ -127,7 +131,7 @@ public class Ship extends Unit {
 					nation.unitArray.remove(getPassenger2());
 				}
 			}
-			if (engaged && spotted == 0) {
+			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60 / speed);
 			}
 			if (spotted > 0)
@@ -138,7 +142,7 @@ public class Ship extends Unit {
 	// isLander(): checks to see if the boat has reached land, used for landind
 	// craft
 	boolean isLanded() {
-		return Map.getArray(position) > 0.505f;
+		return Map.getArray(position) > 0.5f;
 	}
 
 	void loadPassengers() {
@@ -207,7 +211,7 @@ public class Ship extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 13, r.destroyer, nation.color,
 						direction);
 			if (getWeight() == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.cruiser, r.darken(nation.color),
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 14, r.cruiser, r.darken(nation.color),
 						direction);
 
 			if ((hit > 1) && getWeight() == UnitID.LIGHT)
@@ -217,7 +221,7 @@ public class Ship extends Unit {
 				r.drawImageScreen((int) position.getX(), (int) position.getY(), 17, r.destroyerHit, nation.color,
 						direction);
 			if ((hit > 1) && getWeight() == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 20, r.cruiserHit,
+				r.drawImageScreen((int) position.getX(), (int) position.getY(), 18, r.cruiserHit,
 						r.darken(nation.color), direction);
 		}
 	}
@@ -257,6 +261,7 @@ public class Ship extends Unit {
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
+		d.setPosition(position);
 		drawOption("", 1, 0.5f, r, d);
 		drawOption("", 2, 0.5f, r, d);
 		drawSlot(1, r, d);

@@ -21,6 +21,7 @@ public class Infantry extends Unit {
 		speed = .1f;
 		defense = 1;
 		id = UnitID.INFANTRY;
+		dropDownHeight = 150;
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class Infantry extends Unit {
 				clickToDropDown();
 			}
 			engaged = autoAim(1);
-			if (engaged && spotted == 0) {
+			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
 			}
 			if (spotted > 0)

@@ -24,7 +24,6 @@ public class DropDown extends Menu {
 	private boolean shown = false;
 	private boolean shouldClose = false;
 	private int closeTick;
-	private int dropDownHeight;
 	private boolean leftClicked;
 
 	@Override
@@ -112,10 +111,10 @@ public class DropDown extends Menu {
 			position.setX(0);
 		}
 		if (p.getY() > 0) {
-			if (p.getY() < 512 - getDropDownHeight() + 30) {
+			if (p.getY() < 512 - getDropDownHeight()) {
 				position.setY(p.getY());
 			} else {
-				position.setY(512 - getDropDownHeight() + 30);
+				position.setY(512 - getDropDownHeight());
 			}
 		} else {
 			position.setY(0);
@@ -131,29 +130,7 @@ public class DropDown extends Menu {
 		this.unit = unit;
 		unit.setHit(3);
 		shown = true;
-		setDropDownHeight();
 		setPosition(unit.getPosition());
-	}
-
-	/**
-	 * Calculates the height of the drop down depending on the unit
-	 */
-	private void setDropDownHeight() {
-		if (unit.getID() == UnitID.INFANTRY) {
-			dropDownHeight = 30 * 6;
-		} else if (unit.getID() == UnitID.PORT || unit.getID() == UnitID.CITY || unit.getID() == UnitID.AIRFIELD) {
-			dropDownHeight = 30 * 6;
-		} else if (unit.getID() == UnitID.FACTORY) {
-			dropDownHeight = 30 * 7;
-		} else if (unit.getID() == UnitID.SHIP) {
-			dropDownHeight = 30 * 4;
-		} else {
-			dropDownHeight = 60;
-		}
-	}
-
-	public void setDropDownHeight(int height) {
-		dropDownHeight = height;
 	}
 
 	/**
@@ -269,6 +246,8 @@ public class DropDown extends Menu {
 	}
 
 	public int getDropDownHeight() {
-		return dropDownHeight;
+		if(unit != null)
+			return unit.dropDownHeight;
+		return 0;
 	}
 }

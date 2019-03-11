@@ -28,7 +28,7 @@ public class Port extends Industry {
 
 	@Override
 	public void tick(double t) {
-		if (engaged)
+		if (engaged || hit > 0)
 			spotted = true;
 		disengage();
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
@@ -139,9 +139,8 @@ public class Port extends Industry {
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
-		if (getProduct() != UnitID.NONE) {
-			d.setDropDownHeight(60);
-		}
+		dropDownHeight = getDropDownHeight();
+		d.setPosition(position);
 		d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4, nation.getShipCost(),
 				nation.getShipCost() * 2, this);
 	}

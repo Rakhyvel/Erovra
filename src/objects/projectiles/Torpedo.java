@@ -1,5 +1,6 @@
 package objects.projectiles;
 
+import main.Main;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -14,9 +15,11 @@ import utility.Vector;
  *
  */
 public class Torpedo extends Projectile {
+	private Point startingPoint;
 
 	public Torpedo(Point position, Nation nation, Vector velocity) {
 		super(position, nation);
+		startingPoint = new Point(position);
 		speed = 2f;
 		setAttack(2);
 		this.velocity = (velocity.normalize().scalar(getSpeed()));
@@ -25,18 +28,29 @@ public class Torpedo extends Projectile {
 
 	@Override
 	public void tick(double t) {
-		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX()
+				|| position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 			hit();
 		}
 		bulletMove();
-		if (Map.getArray(position) > 0.5f) hit();
+		if (Map.getArray(position) > 0.5f || position.getDist(startingPoint) > 70000)
+			hit();
 
 	}
 
 	@Override
 	public void render(Render r) {
-		r.drawImageScreen((int) position.getX(), (int) position.getY(), 1, r.torpedo, nation.color, velocity.getRadian());
-
+		float direction = velocity.getRadian();
+		if (velocity.getY() > 0)
+			direction += 3.14f;
+		
+		float opacity = (float) (0.0019*Math.sqrt(-(position.getDist(startingPoint)-70000)));
+		System.out.println(opacity);
+		if (Main.ticks % 8 < 4) {
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 3, r.torpedo, nation.color, direction,opacity);
+		} else {
+			r.drawImageScreen((int) position.getX(), (int) position.getY(), 1, r.torpedo1, nation.color, direction,opacity);
+		}
 	}
 
 }

@@ -27,7 +27,7 @@ public class City extends Unit {
 
 	@Override
 	public void tick(double t) {
-		if (engaged) spotted = true;
+		if (engaged || hit > 0) spotted = true;
 		engaged = false;
 		detectHit();
 		if ((Main.ticks - born) % 320 == 0) {

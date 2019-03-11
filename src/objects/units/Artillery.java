@@ -47,7 +47,7 @@ public class Artillery extends Unit {
 			} else {
 				engaged = autoArtilleryAim(128);
 			}
-			if (engaged && spotted == 0) {
+			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60 / speed);
 			}
 			if (spotted > 0) spotted--;
