@@ -54,7 +54,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = ((1 - ((smallestDistance) / 25000.0f)) / 2 + 0.2f);
+					islandMask[i] = ((1 - ((smallestDistance) / 15000.0f)) / 10f)+ 0.2f;
 				}
 			}
 
@@ -70,9 +70,13 @@ public class Map {
 				generateMountain();
 			}
 			rand.setSeed(seed);
-			mountain = perlinNoise(2, .5f);
+			for (int i = 0; i < 1025 * 513; i++) {
+				int x = i % 1025;
+				int y = i / 1025;
+				mountain[x][y] = islandMask[i];
+			}
 			for (int i2 = 2; i2 < 9; i2++) {
-				int denominator = 1 << (i2);
+				int denominator = 1 << (i2-1);
 				rand.setSeed(seed);
 				float[][] tempMountain = perlinNoise(i2, 1.0f / denominator);
 				for (int i = 0; i < 1025 * 513; i++) {
@@ -89,8 +93,8 @@ public class Map {
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = i % 1025;
 			int y = i / 1025;
-			mountain[x][y] = mountain[x][y] * 0.5f + 0.4f;
-			mountain[x][y] = transform(mountain[x][y], 1.5f);
+			mountain[x][y] = mountain[x][y] * 0.5f + 0.5f;
+			mountain[x][y] = transform(mountain[x][y], .1f);
 			if (mountain[x][y] > 1.5)
 				mountain[x][y] = 1.5f;
 			if (mountain[x][y] < 0)
@@ -125,7 +129,7 @@ public class Map {
 				int x1 = (int) (x / wavelength) * wavelength;
 				int y1 = (int) (y / wavelength) * wavelength;
 				if (x != x1 || y != y1) {
-					noise[x][y] = (bilinearInterpolation(x1, y1, wavelength, noise, x, y)+bicosineInterpolation(x1, y1, wavelength, noise, x, y))/2;
+					noise[x][y] = bicosineInterpolation(x1, y1, wavelength, noise, x, y);
 				}
 			}
 		}
@@ -211,7 +215,7 @@ public class Map {
 
 	float transform(float r, float nonlinearity) {
 		double verticalStretch = 0.762799 / nonlinearity - .0787654;
-		double newHeight = (verticalStretch * Math.tan(nonlinearity * r - (nonlinearity * 0.5)) + 0.5);
+		double newHeight = (verticalStretch * Math.tan(nonlinearity * r - (nonlinearity * 0.5)) + 0.4);
 		if (newHeight > 1)
 			newHeight = 2 * (r - 1) * (r - 1) + 1;
 		return (float) newHeight;
@@ -269,40 +273,24 @@ public class Map {
 		int green = 0;
 		int red = 0;
 
-		// if (value < .495f) {
-		// blue = (int) (460 * value + 38);
-		// red = (int) (820 * value * value - 6);
-		// green = (int) (1040 * value * value - 6);
-		// } else if (value < .5) {
-		// blue = (int) (255);
-		// green = (int) (255);
-		// red = (int) (255);
-		// } else if (value < 1) {
-		// blue = (int) (730 * (value - 1) * (value - 1) - 9);
-		// green = (int) (-290 * (value - 1) + 80);
-		// red = (int) (1000 * (value - 1) * (value - 1) - 12);
-		// } else {
-		// blue = (int) (value * value * value * 85);
-		// green = (int) (value * value * value * 85);
-		// red = (int) (value * value * value * 85);
-		// }
-		if (value < .495f) {
-			blue = (int) (460 * value + 38);
-			red = (int) (820 * value * value - 6);
-			green = (int) (1040 * value * value - 6);
-		} else if (value < .5) {
-			blue = (int) (255);
-			green = (int) (255);
-			red = (int) (255);
-		} else if (value < 1) {
-			blue = (int) (730 * (value - 1) * (value - 1) - 9);
-			green = (int) (-290 * (value - 1) + 80);
-			red = (int) (1000 * (value - 1) * (value - 1) - 12);
-		} else {
-			blue = (int) (value * value * value * 85);
-			green = (int) (value * value * value * 85);
-			red = (int) (value * value * value * 85);
-		}
+		 if (value < .495f) {
+		 blue = (int) (460 * value + 38);
+		 red = (int) (820 * value * value - 6);
+		 green = (int) (1040 * value * value - 6);
+		 } else if (value < .5) {
+		 blue = (int) (255);
+		 green = (int) (255);
+		 red = (int) (255);
+		 } else if (value < 1) {
+		 blue = (int) (730 * (value - 1) * (value - 1) - 9);
+		 green = (int) (-290 * (value - 1) + 80);
+		 red = (int) (1000 * (value - 1) * (value - 1) - 12);
+		 } else {
+		 blue = (int) (value * value * value * 85);
+		 green = (int) (value * value * value * 85);
+		 red = (int) (value * value * value * 85);
+		 }
+		
 		//
 		// blue = (int) (value * 255);
 		// green = (int) (value * 255);
