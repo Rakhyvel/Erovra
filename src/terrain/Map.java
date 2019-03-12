@@ -59,7 +59,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = ((1 - ((smallestDistance) / 255.0f)+0.5f) / 3f);
+					islandMask[i] = ((1 - ((smallestDistance) / 255.0f)+0.25f) / 2.5f);
 				}
 				for(int i = 0; i < 1024*512; i++){
 					int x = i % 1025;

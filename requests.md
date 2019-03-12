@@ -1,5 +1,6 @@
 - Ships spaz when target is their position
 - Bullets should have streaks
+- Artillery lingers
 
 - Repair function
 - Upgrade function
