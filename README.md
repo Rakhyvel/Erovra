@@ -11,6 +11,7 @@
 - Landing craft now land at the coast instead of a little ways in
 - Artillery shells change size to simulate a parabolic arc
 - Torpedo sprites now have screws
+- MASSIVELY changed terrain generation, now uses true perlin noise with cosine interpolation
 
 ### Erovra 1.0.13
 - Fixed arrows being wonky, now work with ships as well

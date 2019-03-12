@@ -38,8 +38,34 @@ public class Map {
 		} else {
 			if (id == MapID.SEA) {
 				mountain = perlinNoise(1, 1f);
-			} else if(id == MapID.MOUNTAIN) {
+			} else if (id == MapID.MOUNTAIN) {
 				mountain = perlinNoise(2, 5f);
+			} else if (id == MapID.ISLANDS) {
+				for (int i = 0; i < 7; i++) {
+					points[i] = new Point(i % 7 * 170, rand.nextInt(512));
+				}
+				points[0].setY(64 + rand.nextInt(100));
+				points[0].setX(64);
+				points[6].setY(400 + rand.nextInt(100));
+				points[6].setX(960);
+				for (int i = 0; i < 1025 * 513; i++) {
+					int x = i % 1025;
+					int y = i / 1025;
+					int smallestDistance = 35000;
+					Point point = new Point(x, y);
+					for (int i2 = 0; i2 < 7; i2++) {
+						int tempDist = (int) point.getDistSquared(points[i2]);
+						if (tempDist < smallestDistance) {
+							smallestDistance = tempDist;
+						}
+					}
+					islandMask[i] = ((1 - ((smallestDistance) / 255.0f)+0.5f) / 3f);
+				}
+				for(int i = 0; i < 1024*512; i++){
+					int x = i % 1025;
+					int y = i / 1025;
+					mountain[x][y] = islandMask[i];
+				}
 			} else {
 				mountain = perlinNoise(2, .3f);
 			}
@@ -92,7 +118,7 @@ public class Map {
 					} else if (id == MapID.RIVER) {
 						noise[x][y] = generateRiver(x, y, amplitude);
 					} else {
-						noise[x][y] = amplitude * (rand.nextFloat() - 0.5f);
+						noise[x][y] = amplitude * (rand.nextFloat() - amplitude/2);
 					}
 				} else {
 					if (id == MapID.SEA) {
@@ -100,7 +126,7 @@ public class Map {
 					} else if (id == MapID.RIVER) {
 						noise[x][y] = generateRiver(x, y, amplitude);
 					} else {
-						noise[x][y] = rand.nextFloat();
+						noise[x][y] = rand.nextFloat() + islandMask[i];
 					}
 				}
 			}
@@ -149,8 +175,8 @@ public class Map {
 	}
 
 	float generateRiver(int x, int y, float amplitude) {
-		float land = amplitude * ((rand.nextFloat() - 0.5f) + amplitude * 50 * Math.abs(x+ 50*(rand.nextFloat()-0.5f) - (y + 256 + 100*(rand.nextFloat()-0.5f))) / (51.0f/amplitude) + amplitude);
-		if(land > 0.3){
+		float land = amplitude * ((rand.nextFloat() - 0.5f) + amplitude * 50 * Math.abs(x + 50 * (rand.nextFloat() - 0.5f) - (y + 256 + 100 * (rand.nextFloat() - 0.5f))) / (51.0f / amplitude) + amplitude);
+		if (land > 0.3) {
 			land = 0.3f;
 		}
 		return land;
