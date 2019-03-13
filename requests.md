@@ -5,6 +5,12 @@
 - ClearPath() should take mountains into account
 - Plane AI should target own capital if not air supremacy, and target the enemy capital if air supremacy
 - Artillery stims when they fire, should face their target
+- Bombers should not capture
+- Make cruisers a lil more rotund
+- Make cruisers a little slower
+- Destroyers/cruisers shouldn't be able to colide
+- Make sure dead units actually get removed
+- 
 
 - Upgrade function
 - Cancel function for industry
