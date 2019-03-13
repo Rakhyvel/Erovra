@@ -1,8 +1,11 @@
+- Repair function
 - Ships spaz when target is their position
 - Bullets should have streaks
 - Artillery lingers
+- ClearPath() should take mountains into account
+- Plane AI should target own capital if not air supremacy, and target the enemy capital if air supremacy
+- Artillery stims when they fire, should face their target
 
-- Repair function
 - Upgrade function
 - Cancel function for industry
 - Squad functions

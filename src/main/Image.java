@@ -55,7 +55,9 @@ public class Image {
 		for (int i = 0; i < img2.length; i++) {
 			int x = (int) ((i % newWidth) * invFactor);
 			int y = (int) ((i / newWidth) * invFactor);
-			img2[i] = img[y * width + x];
+			int id = y*width + x;
+			if (id >= 0 && id < img.length)
+				img2[i] = img[y * width + x];
 		}
 		return img2;
 	}
