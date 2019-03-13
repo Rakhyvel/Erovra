@@ -1,4 +1,7 @@
 - Repair function
+	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
+	- Its a setting in capital, and you decide how much per second each unit gets OR
+	- Its a toggle on/off on buildings that takes some coins for health
 - Ships spaz when target is their position
 - Bullets should have streaks
 - Artillery lingers

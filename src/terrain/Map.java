@@ -83,7 +83,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = ((1 - ((smallestDistance) / 535.0f) + 0.4f)/2f);
+					islandMask[i] = ((1 - ((smallestDistance) / 690.0f) + 0.4f)/2f);
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -143,7 +143,7 @@ public class Map {
 					if (id == MapID.SEA) {
 						noise[x][y] = generateSea(amplitude, x);
 					} else if (id == MapID.RIVER) {
-						noise[x][y] = amplitude * (rand.nextFloat() - amplitude / 2);
+						noise[x][y] = amplitude/2 * (rand.nextFloat() - amplitude / 2);
 					} else {
 						noise[x][y] = amplitude * (rand.nextFloat() - amplitude / 2);
 					}
