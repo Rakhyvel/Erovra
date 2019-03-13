@@ -66,7 +66,7 @@ public abstract class Industry extends Unit {
 		if(getProduct() == UnitID.NONE) {
 			return 150;
 		} 
-		return 60;
+		return 90;
 	}
 
 	@Override

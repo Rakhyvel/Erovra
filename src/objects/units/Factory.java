@@ -133,6 +133,12 @@ public class Factory extends Industry {
 					cavalry = !cavalry;
 				}
 			}
+		} else {
+			if(d.buttonsHovered == 2) {
+				setProductWeight(UnitID.NONE);
+				setProduct(UnitID.NONE);
+				nation.coins+=10;
+			}
 		}
 	}
 

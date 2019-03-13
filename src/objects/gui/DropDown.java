@@ -196,20 +196,20 @@ public class DropDown extends Menu {
 	 * @param heavyCost The cost of a heavy unit
 	 */
 	public void drawIndustry(Render r, String light, String medium, String heavy, int lightCost, int medCost,
-			int heavyCost, Industry indsutry) {
-		if (indsutry.getProduct() != UnitID.NONE) {
+			int heavyCost, Industry industry) {
+		if (industry.getProduct() != UnitID.NONE) {
 			int minutes = 0, seconds = 0;
 			String product = " ";
-			if (indsutry.getProductWeight() == UnitID.LIGHT) {
+			if (industry.getProductWeight() == UnitID.LIGHT) {
 				product += light;
-			} else if (indsutry.getProductWeight() == UnitID.MEDIUM) {
+			} else if (industry.getProductWeight() == UnitID.MEDIUM) {
 				product += medium;
-			} else if (indsutry.getProductWeight() == UnitID.HEAVY) {
+			} else if (industry.getProductWeight() == UnitID.HEAVY) {
 				product += heavy;
 			}
-			if (indsutry.getStart() > 0) {
-				minutes = indsutry.getStart() / 3600;
-				seconds = (indsutry.getStart() / 60) - minutes * 60;
+			if (industry.getStart() > 0) {
+				minutes = industry.getStart() / 3600;
+				seconds = (industry.getStart() / 60) - minutes * 60;
 				if (minutes >= 1) {
 					product += " " + minutes + "m,";
 				}
@@ -219,6 +219,7 @@ public class DropDown extends Menu {
 					0.5f);
 			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
 					250 << 16 | 250 << 8 | 250);
+			drawOption("Cancel order (-10)", 2, 0.5f, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
 				drawOption(light + " (" + lightCost + ")", 1, 0.5f, r);

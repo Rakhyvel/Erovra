@@ -1,7 +1,4 @@
-- Repair function
-	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
-	- Its a setting in capital, and you decide how much per second each unit gets OR
-	- Its a toggle on/off on buildings that takes some coins for health
+- ~~Cancel function for industry~~
 - Ships spaz when target is their position
 - Bullets should have streaks
 - Artillery lingers
@@ -13,10 +10,15 @@
 - Make cruisers a little slower
 - Destroyers/cruisers shouldn't be able to colide
 - Make sure dead units actually get removed
-- 
+- Ports shouldn't be so strong lol
+- Shouldn't be able to select planes for landing craft
+- Write AI for attacker patrol points
+- Top bar to provide contrast between coin number and snow
+- Increase shooting range
 
 - Upgrade function
-- Cancel function for industry
+- Repair function
+	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
 - Squad functions
 	- Patrol
 	- Task forces
