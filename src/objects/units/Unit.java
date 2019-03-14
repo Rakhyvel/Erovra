@@ -308,7 +308,7 @@ public abstract class Unit {
 				smallestPoint = new Point(-1, -1);
 				for (int i = 0; i < nation.unitSize(); i++) {
 					Unit tempUnit = nation.getUnit(i);
-					Point tempPoint = tempUnit.getPosition();
+					Point tempPoint = tempUnit.target.addPoint(tempUnit.getPosition()).multScalar(0.5);
 					int tempDist = (int) position.getDist(tempPoint);
 					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0) {
 						if (wetPath(tempPoint, 32)) {

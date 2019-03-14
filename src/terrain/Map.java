@@ -51,7 +51,7 @@ public class Map {
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					int smallestDistance = 35000;
+					int smallestDistance = 200;
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 7; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
@@ -77,7 +77,7 @@ public class Map {
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					int smallestDistance = 35000;
+					int smallestDistance = 140;
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 16; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);

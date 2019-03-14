@@ -153,6 +153,11 @@ public class Plane extends Unit {
 				}
 			}
 		} else {
+			if(nation.airSupremacy > nation.enemyNation.airSupremacy && nation.isAIControlled()) {
+				secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
+			} else {
+				secondaryTarget = new Point(nation.capital.getPosition());
+			}
 			patrolPoint = new Point(secondaryTarget);
 		}
 	}
