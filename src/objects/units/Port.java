@@ -22,7 +22,7 @@ public class Port extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 5;
+		defense = 3;
 		setProductWeight(UnitID.NONE);
 	}
 
@@ -133,6 +133,12 @@ public class Port extends Industry {
 				nation.unitArray.remove(this);
 				d.shouldClose();
 				nation.coins+=10;
+			}
+		} else {
+			if (d.buttonsHovered == 2) {
+				setProductWeight(UnitID.NONE);
+				setProduct(UnitID.NONE);
+				nation.coins += 10;
 			}
 		}
 	}

@@ -95,7 +95,13 @@ public class Airfield extends Industry {
 			} else if (d.buttonsHovered == 4) {
 				nation.unitArray.remove(this);
 				d.shouldClose();
-				nation.coins+=10;
+				nation.coins += 10;
+			}
+		} else {
+			if (d.buttonsHovered == 2) {
+				setProductWeight(UnitID.NONE);
+				setProduct(UnitID.NONE);
+				nation.coins += 10;
 			}
 		}
 	}

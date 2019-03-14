@@ -38,7 +38,7 @@ public class Ship extends Unit {
 			speed = .1f;
 			defense = 2;
 		} else {
-			speed = .1f;
+			speed = .075f;
 			defense = 6;
 		}
 		id = UnitID.SHIP;

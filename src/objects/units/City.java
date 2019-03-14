@@ -22,7 +22,7 @@ public class City extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.CITY;
-		defense = 4;
+		defense = 3;
 	}
 
 	@Override

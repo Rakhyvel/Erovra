@@ -20,8 +20,10 @@ public class Map {
 	 * Uses simplex noise and linear interpolation to render the terrain for the
 	 * game
 	 * 
-	 * @param seed Random seed to be used for the generation
-	 * @param id   Which type of generation to be done
+	 * @param seed
+	 *            Random seed to be used for the generation
+	 * @param id
+	 *            Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID map) {
 		rand.setSeed(seed);
@@ -65,11 +67,11 @@ public class Map {
 					mountain[x][y] = islandMask[i];
 				}
 			} else if (id == MapID.RIVER) {
+				points[0] = new Point(512, 0);
+				points[15] = new Point(512, 512);
 				for (int i = 0; i < 16; i++) {
-					if (i < 8) {
-						points[i] = new Point(rand.nextInt(256)-128, i % 16 * 85);
-					} else {
-						points[i] = new Point(rand.nextInt(256)+896, (i-8) % 16 * 85);
+					if (i > 0) {
+						points[i] = new Point(rand.nextInt(128) - 64 + points[i - 1].getX(), (i) % 16 * 42.5);
 					}
 				}
 				for (int i = 0; i < 1025 * 513; i++) {
@@ -83,7 +85,9 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = ((1 - ((smallestDistance) / 690.0f) + 0.4f)/2f);
+					// (smallestDistance+20)/500.0f
+					// (smallestDistance+125)/500.0f
+					islandMask[i] = (float) Math.min((smallestDistance + 125) / 500.0f, (smallestDistance + 800) / 2000.0f);
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -91,7 +95,7 @@ public class Map {
 					mountain[x][y] = islandMask[i];
 				}
 			} else {
-				mountain = perlinNoise(2, .3f);
+				mountain = perlinNoise(2, .5f);
 			}
 			for (int i2 = 3; i2 < 9; i2++) {
 				int denominator = 1 << (i2);
@@ -100,27 +104,20 @@ public class Map {
 					int x = i % 1025;
 					int y = i / 1025;
 					mountain[x][y] += tempMountain[x][y];
-					if (mountain[x][y] > 1.5)
-						mountain[x][y] = 1.5f;
-					if (mountain[x][y] < 0)
-						mountain[x][y] = 0f;
+					if (mountain[x][y] > 1.5) mountain[x][y] = 1.5f;
+					if (mountain[x][y] < 0) mountain[x][y] = 0f;
 				}
 			}
 		}
 		for (int i = 0; i < 1025 * 513; i++) {
 			int x = i % 1025;
 			int y = i / 1025;
-			if (id == MapID.PLAINS) {
-				mountain[x][y] = generatePlains(mountain[x][y]);
-			} else if (id == MapID.MOUNTAIN) {
+			if (id == MapID.MOUNTAIN) {
 				mountain[x][y] = generateMountain(mountain[x][y]);
 			}
-			if (mountain[x][y] < 1 && mountain[x][y] > 0.5f)
-				mountain[x][y] = transform(mountain[x][y]);
-			if (mountain[x][y] > 1.5)
-				mountain[x][y] = 1.5f;
-			if (mountain[x][y] < 0)
-				mountain[x][y] = 0f;
+			if (mountain[x][y] < 1 && mountain[x][y] > 0.5f) mountain[x][y] = transform(mountain[x][y]);
+			if (mountain[x][y] > 1.5) mountain[x][y] = 1.5f;
+			if (mountain[x][y] < 0) mountain[x][y] = 0f;
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
@@ -143,14 +140,16 @@ public class Map {
 					if (id == MapID.SEA) {
 						noise[x][y] = generateSea(amplitude, x);
 					} else if (id == MapID.RIVER) {
-						noise[x][y] = amplitude/2 * (rand.nextFloat() - amplitude / 2);
+						noise[x][y] = amplitude * (rand.nextFloat() - amplitude / 2);
 					} else {
 						noise[x][y] = amplitude * (rand.nextFloat() - amplitude / 2);
 					}
 				} else {
 					if (id == MapID.SEA) {
 						noise[x][y] = rand.nextFloat() + (Math.abs(x - 512) * Math.abs(x - 512) / 500000.0f - 0.5f);
-					}else {
+					} else if (id == MapID.PLAINS){
+						noise[x][y] = generatePlains(rand.nextFloat());
+					} else {
 						noise[x][y] = rand.nextFloat() + islandMask[i];
 					}
 				}
@@ -175,10 +174,8 @@ public class Map {
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1f;
 		}
-		float topInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
-				noise[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
-				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) y1], x1 + p, noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p, noise[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return cosineInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
@@ -194,7 +191,7 @@ public class Map {
 	}
 
 	float generatePlains(float land) {
-		return land *0.4f + 0.5f;
+		return land/3.0f + 0.45f;
 	}
 
 	float generateIslands(float land) {
@@ -202,13 +199,7 @@ public class Map {
 	}
 
 	float generateRiver(int x, int y, float amplitude) {
-		float land = amplitude
-				* ((rand.nextFloat() - 0.5f)
-						+ amplitude * 50
-								* Math.abs(x + 50 * (rand.nextFloat() - 0.5f)
-										- (y + 256 + 100 * (rand.nextFloat() - 0.5f)))
-								/ (51.0f / amplitude)
-						+ amplitude);
+		float land = amplitude * ((rand.nextFloat() - 0.5f) + amplitude * 50 * Math.abs(x + 50 * (rand.nextFloat() - 0.5f) - (y + 256 + 100 * (rand.nextFloat() - 0.5f))) / (51.0f / amplitude) + amplitude);
 		if (land > 0.3) {
 			land = 0.3f;
 		}
@@ -216,8 +207,7 @@ public class Map {
 	}
 
 	float generateSea(float amplitude, int x) {
-		return amplitude * ((rand.nextFloat() - 0.5f) + amplitude * .5f * (Math.abs(x - 512) / (512.0f / amplitude))
-				- amplitude);
+		return amplitude * ((rand.nextFloat() - 0.5f) + amplitude * .5f * (Math.abs(x - 512) / (512.0f / amplitude)) - amplitude);
 	}
 
 	float transform(float r) {
@@ -238,10 +228,8 @@ public class Map {
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1.5f;
 		}
-		float topInterpolation = linearInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
-				noise[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = linearInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
-				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = linearInterpolation(x1, noise[(int) x1][(int) y1], x1 + p, noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = linearInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p, noise[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return linearInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
@@ -251,8 +239,10 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	/**
-	 * @param x coordiate on the map
-	 * @param y coordiate on the map
+	 * @param x
+	 *            coordiate on the map
+	 * @param y
+	 *            coordiate on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
@@ -260,19 +250,20 @@ public class Map {
 	}
 
 	/**
-	 * @param p Point on the map
+	 * @param p
+	 *            Point on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
-			return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
 	/**
-	 * @param value The float value from 0f-1f
-	 * @return A color based on the depth, 0 being a deep blue, 0.5f being coast,
-	 *         and 1 being green plains.
+	 * @param value
+	 *            The float value from 0f-1f
+	 * @return A color based on the depth, 0 being a deep blue, 0.5f being
+	 *         coast, and 1 being green plains.
 	 */
 	int getColor(float value) {
 		int blue = 0;
@@ -302,18 +293,12 @@ public class Map {
 		// green = (int) (value * 255);
 		// red = (int) (value * 255);
 
-		if (blue < 0)
-			blue = 0;
-		if (green < 0)
-			green = 0;
-		if (red < 0)
-			red = 0;
-		if (blue > 255)
-			blue = 255;
-		if (green > 255)
-			green = 255;
-		if (red > 255)
-			red = 255;
+		if (blue < 0) blue = 0;
+		if (green < 0) green = 0;
+		if (red < 0) red = 0;
+		if (blue > 255) blue = 255;
+		if (green > 255) green = 255;
+		if (red > 255) red = 255;
 		return 255 << 24 | red << 16 | green << 8 | blue;
 	}
 }
