@@ -1,6 +1,17 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.15
+- Added cancel feature to industry
+- Fixed shells lingering after they hit
+- Updated plane AI to interact with patrol points
+- Units calculate whether or not they are hit before other operations
+- Ports, airfields, cities, and factories have the same defense (in prep for upgradable buildings)
+- Can no longer select ships or planes to go inside of landing craft
+- Added top bar for coins (In prep for task forces)
+- Can no longer see enemy plane patrol point
+- Ships don't overlap anymore
+
 ### Erovra 1.0.14
-- Fixed dropdowns for industry
+- Fixed dropdown height for industry
 - Updated bombers so that they don't show their first targets
 - Updated bombs so that units hit will be shown
 - Updated terrain generation, added function that flattens coastal regions

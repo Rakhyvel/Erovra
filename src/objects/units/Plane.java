@@ -41,49 +41,51 @@ public class Plane extends Unit {
 
 	@Override
 	public void tick(double t) {
-		if (getWeight() != UnitID.HEAVY) {
-			planeAim();
-			patrol();
-			if(!nation.isAIControlled())
-				clickToPatrol();
-		} else {
-			if (getTarget().getX() == -1) {
-				nation.unitArray.remove(this);
-				nation.coins += 10;
-			}
-			aaAim();
-			if (bombsAway) {
-				if (position.getDist(getTarget()) < 1) {
-					nation.coins += health;
-					nation.unitArray.remove(this);
-				}
-			} else {
-				if (nation.isAIControlled()) {
-					acquireTarget();
-				} else {
-					clickToMove();
-				}
-				if (position.getDist(getTarget()) < 1) {
-					setTarget(new Point(nation.capital.getPosition()));
-					nation.addProjectile(new Bomb(position, nation));
-					bombsAway = true;
-				}
-			}
-		}
 		detectHit();
-		velocity = position.getTargetVector(getTarget()).normalize().scalar(getSpeed());
-		position = position.addVector(velocity);
-		if (position.getX() < 0) {
-			position.setX(0);
-		}
-		if (position.getY() < 0) {
-			position.setY(0);
-		}
-		if (position.getY() > 512) {
-			position.setY(512);
-		}
-		if (position.getX() > 1024) {
-			position.setX(1024);
+		if(health > 0) {
+			if (getWeight() != UnitID.HEAVY) {
+				planeAim();
+				patrol();
+				if(!nation.isAIControlled())
+					clickToPatrol();
+			} else {
+				if (getTarget().getX() == -1) {
+					nation.unitArray.remove(this);
+					nation.coins += 10;
+				}
+				aaAim();
+				if (bombsAway) {
+					if (position.getDist(getTarget()) < 1) {
+						nation.coins += health;
+						nation.unitArray.remove(this);
+					}
+				} else {
+					if (nation.isAIControlled()) {
+						acquireTarget();
+					} else {
+						clickToMove();
+					}
+					if (position.getDist(getTarget()) < 1) {
+						setTarget(new Point(nation.capital.getPosition()));
+						nation.addProjectile(new Bomb(position, nation));
+						bombsAway = true;
+					}
+				}
+			}
+			velocity = position.getTargetVector(getTarget()).normalize().scalar(getSpeed());
+			position = position.addVector(velocity);
+			if (position.getX() < 0) {
+				position.setX(0);
+			}
+			if (position.getY() < 0) {
+				position.setY(0);
+			}
+			if (position.getY() > 512) {
+				position.setY(512);
+			}
+			if (position.getX() > 1024) {
+				position.setX(1024);
+			}
 		}
 	}
 
@@ -188,21 +190,22 @@ public class Plane extends Unit {
 		float direction = position.subVec(getTarget()).getRadian();
 		if (velocity.getY() > 0)
 			direction += 3.14f;
-
-		if (weight == UnitID.HEAVY && !nation.isAIControlled() && !bombsAway) {
-			if (isSelected()) {
-				r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 32, r.target, nation.color);
-				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-				r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
-						220 << 16 | 220 << 8 | 220);
-			}
-		} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
-			if (isSelected()) {
-				r.drawImageScreen((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.target, nation.color);
-				r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-			} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-				r.drawImageScreen((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.target, nation.color);
+		if(!nation.isAIControlled()) {
+			if (weight == UnitID.HEAVY && !bombsAway) {
+				if (isSelected()) {
+					r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 32, r.target, nation.color);
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
+							220 << 16 | 220 << 8 | 220);
+				}
+			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
+				if (isSelected()) {
+					r.drawImageScreen((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.target, nation.color);
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+					r.drawImageScreen((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.target, nation.color);
+				}
 			}
 		}
 

@@ -40,8 +40,7 @@ public class World {
 	/**
 	 * Calls the tick method for each object in the game
 	 * 
-	 * @param t
-	 *            The time in millis since last tick
+	 * @param t The time in millis since last tick
 	 */
 	public void tick(double t) {
 		highlightedUnit = null;
@@ -115,8 +114,7 @@ public class World {
 	/**
 	 * Calls for each object in the game to draw
 	 * 
-	 * @param r
-	 *            Render object used to draw to the canvas
+	 * @param r Render object used to draw to the canvas
 	 */
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
@@ -159,6 +157,8 @@ public class World {
 					hostile.getUnit(i2).render(r);
 			}
 
+			r.drawRect(1024-128, 0, 128, 20, 0, 0.5f);
+			
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
 				friendly.getCoin(i2).render(r);
 			}
@@ -174,19 +174,17 @@ public class World {
 	/**
 	 * Draws the amount of coins
 	 * 
-	 * @param g
-	 *            Graphics object
+	 * @param g Graphics object
 	 */
 	public void drawCoins(Render r) {
-		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 973, 10, r.font16,
+		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 993, 10, r.font16,
 				250 << 16 | 250 << 8 | 250);
 	}
 
 	/**
 	 * Sets the friendly nation
 	 * 
-	 * @param nation
-	 *            The nation to be set to friendly
+	 * @param nation The nation to be set to friendly
 	 */
 	public void setFriendly(Nation nation) {
 		friendly = nation;
@@ -195,8 +193,7 @@ public class World {
 	/**
 	 * The hostile nation
 	 * 
-	 * @param nation
-	 *            The nation to be set to hostile
+	 * @param nation The nation to be set to hostile
 	 */
 	public void setHostile(Nation nation) {
 		hostile = nation;

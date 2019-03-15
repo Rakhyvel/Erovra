@@ -38,7 +38,8 @@ public class Cavalry extends Unit {
 
 	@Override
 	public void tick(double t) {
-		if (!isBoarded()) {
+		detectHit();
+		if (!isBoarded() && health > 0) {
 			if (nation.isAIControlled()) {
 				wander();
 			} else {
@@ -50,7 +51,6 @@ public class Cavalry extends Unit {
 			}
 			if (spotted > 0)
 				spotted--;
-			detectHit();
 			targetMove();
 		}
 	}

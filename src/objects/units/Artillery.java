@@ -34,7 +34,8 @@ public class Artillery extends Unit {
 
 	@Override
 	public void tick(double t) {
-		if (!isBoarded()) {
+		detectHit();
+		if (!isBoarded() && health > 0) {
 			if (!nation.isAIControlled()) {
 				clickToMove();
 			} else {
@@ -51,7 +52,6 @@ public class Artillery extends Unit {
 				spotted = (int) (60 / speed);
 			}
 			if (spotted > 0) spotted--;
-			detectHit();
 			targetMove();
 		}
 	}

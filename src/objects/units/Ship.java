@@ -46,8 +46,8 @@ public class Ship extends Unit {
 
 	@Override
 	public void tick(double t) {
-		if (!(nation.defeated || nation.enemyNation.defeated)) {
-			detectHit();
+		detectHit();
+		if (!(nation.defeated || nation.enemyNation.defeated) && health > 0) {
 			if (getWeight() != UnitID.LIGHT) {
 				if (nation.isAIControlled()) {
 					wander();
@@ -188,8 +188,8 @@ public class Ship extends Unit {
 	public void render(Render r) {
 		if (spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {
-			float direction = position.subVec(getTarget()).getRadian();
-			if (velocity.getY() > 0)
+			float direction = position.subVec(getFacing()).getRadian();
+			if (position.subVec(getFacing()).getY() > 0)
 				direction += 3.14f;
 
 			if (!nation.isAIControlled()) {
@@ -244,6 +244,7 @@ public class Ship extends Unit {
 			}
 		}
 		setTarget(smallestPoint);
+		setFacing(getTarget());
 		velocity = position.subVec(getTarget()).normalize().scalar(speed);
 	}
 

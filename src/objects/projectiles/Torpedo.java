@@ -45,7 +45,6 @@ public class Torpedo extends Projectile {
 			direction += 3.14f;
 		
 		float opacity = (float) (0.0019*Math.sqrt(-(position.getDist(startingPoint)-70000)));
-		System.out.println(opacity);
 		if (Main.ticks % 8 < 4) {
 			r.drawImageScreen((int) position.getX(), (int) position.getY(), 3, r.torpedo, nation.color, direction,opacity);
 		} else {

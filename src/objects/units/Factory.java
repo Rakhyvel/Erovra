@@ -23,7 +23,7 @@ public class Factory extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.FACTORY;
-		defense = 4;
+		defense = 2;
 		if (nation.getFactoryCost() == 60 && nation.isAIControlled()) {
 			cavalry = false;
 		}
@@ -32,19 +32,21 @@ public class Factory extends Industry {
 
 	@Override
 	public void tick(double t) {
-		if (engaged || hit > 0)
-			spotted = true;
-		engaged = false;
 		detectHit();
-		setStart(getStart() - 1);
-		if (!nation.isAIControlled()) {
-			clickToDropDown();
-		}
-
-		if (getStart() < 0) {
-			addProduct();
-			if (nation.isAIControlled())
-				decideNewProduct();
+		if(health > 0) {
+			if (engaged || hit > 0)
+				spotted = true;
+			engaged = false;
+			setStart(getStart() - 1);
+			if (!nation.isAIControlled()) {
+				clickToDropDown();
+			}
+	
+			if (getStart() < 0) {
+				addProduct();
+				if (nation.isAIControlled())
+					decideNewProduct();
+			}
 		}
 	}
 

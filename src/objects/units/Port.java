@@ -22,26 +22,28 @@ public class Port extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 4;
+		defense = 2;
 		setProductWeight(UnitID.NONE);
 	}
 
 	@Override
 	public void tick(double t) {
-		if (engaged || hit > 0)
-			spotted = true;
-		disengage();
-		if (!(nation.defeated || nation.enemyNation.defeated)) {
-			detectHit();
-			setStart(getStart() - 1);
-			if (!nation.isAIControlled()) {
-				clickToDropDown();
-			}
-
-			if (getStart() < 0) {
-				addProduct();
-				if (nation.isAIControlled())
-					decideNewProduct();
+		detectHit();
+		if(health > 0) {
+			if (engaged || hit > 0)
+				spotted = true;
+			disengage();
+			if (!(nation.defeated || nation.enemyNation.defeated)) {
+				setStart(getStart() - 1);
+				if (!nation.isAIControlled()) {
+					clickToDropDown();
+				}
+	
+				if (getStart() < 0) {
+					addProduct();
+					if (nation.isAIControlled())
+						decideNewProduct();
+				}
 			}
 		}
 	}

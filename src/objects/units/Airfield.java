@@ -22,23 +22,25 @@ public class Airfield extends Industry {
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
-		defense = 4;
+		defense = 2;
 		id = UnitID.AIRFIELD;
 	}
 
 	@Override
 	public void tick(double t) {
-		if (engaged) spotted = true;
-		engaged = false;
 		detectHit();
-		setStart(getStart() - 1);
-		if (!nation.isAIControlled()) {
-			clickToDropDown();
-		}
-
-		if (getStart() < 0) {
-			addProduct();
-			if (nation.isAIControlled()) decideNewProduct();
+		if(health > 0) {
+			if (engaged) spotted = true;
+			engaged = false;
+			setStart(getStart() - 1);
+			if (!nation.isAIControlled()) {
+				clickToDropDown();
+			}
+	
+			if (getStart() < 0) {
+				addProduct();
+				if (nation.isAIControlled()) decideNewProduct();
+			}
 		}
 	}
 

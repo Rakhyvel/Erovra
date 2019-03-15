@@ -30,7 +30,7 @@ public class Bomb extends Projectile {
 	public void tick(double t) {
 		fall--;
 		if (fall < 1) {
-			setAttack(30);
+			setAttack(10);
 		}
 		if (fall < 0) {
 			hit();

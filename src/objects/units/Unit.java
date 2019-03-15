@@ -242,7 +242,11 @@ public abstract class Unit {
 	 *            The point the unit should face
 	 */
 	public void setFacing(Point facing) {
-		this.facing = facing;
+		if(facing != null) {
+		this.facing = new Point(facing);
+		} else {
+			this.facing = facing;
+		}
 	}
 
 	/**
@@ -263,6 +267,21 @@ public abstract class Unit {
 	 */
 	Point getNextStep(Point target) {
 		return position.addVector(position.getTargetVector(target).normalize().scalar(speed));
+	}
+	
+	Point getLandingPoint(Point point1, Point point2, int depth) {
+		boolean ocean = true;
+		Point testPoint = new Point(-1, -1);
+		for (int i = 1; i < depth; i++) {
+			double invDepth = i / depth;
+			testPoint.setX((point1.getX() - point2.getX()) * invDepth + point2.getX());
+			testPoint.setY((point1.getY() - point2.getY()) * invDepth + point2.getY());
+			ocean &= (Map.getArray((int) testPoint.getX(), (int) testPoint.getY()) < .5);
+			if (!ocean) {
+				return testPoint;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -298,7 +317,7 @@ public abstract class Unit {
 		}
 		if (smallestUnit != null) {
 			setTarget(smallestPoint);
-			setFacing(getTarget());
+			setFacing(smallestPoint);
 		} else {
 			if (position.getDist(getTarget()) < 1) retarget();
 			if (id == UnitID.INFANTRY) settle();
@@ -313,12 +332,12 @@ public abstract class Unit {
 					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0) {
 						if (wetPath(tempPoint, 32)) {
 							smallestDistance = tempDist;
-							smallestPoint = tempUnit.target.addPoint(tempPoint).multScalar(0.5);
+							smallestPoint = tempUnit.target.addPoint(getLandingPoint(tempUnit.getPosition(),tempUnit.getTarget(),32)).multScalar(0.5);
 							smallestUnit = tempUnit;
 						}
 					}
 				}
-				if (smallestUnit != null) {
+				if (smallestUnit != null && target.getDist(smallestPoint) > 9400) {
 					setTarget(smallestPoint);
 					setFacing(getTarget());
 				} else {
@@ -352,8 +371,8 @@ public abstract class Unit {
 			target = portPoint;
 			facing = target;
 		}
-		if (nation.getAirfieldCost() < 60) nation.buyAirfield(position);
-		if (nation.getFactoryCost() < 60) nation.buyFactory(position);
+		if (nation.getAirfieldCost() < nation.coins /2) nation.buyAirfield(position);
+		if (nation.getFactoryCost() < nation.coins /2) nation.buyFactory(position);
 	}
 
 	/**
@@ -465,7 +484,6 @@ public abstract class Unit {
 	 */
 	boolean autoAim(float cal) {
 		int smallestDistance = 2048;
-		if (id == UnitID.SHIP) smallestDistance = 35000;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
@@ -548,7 +566,7 @@ public abstract class Unit {
 		if (smallestUnit != null && wetPath(smallestPoint, 32)) {
 			smallestUnit.engage();
 			if (nation.isAIControlled()) {
-				if (smallestDistance < 2048) setTarget(position);
+				if (smallestDistance < 9000) setTarget(position);
 				setFacing(smallestPoint);
 			}
 			if ((Main.ticks - born) % 90 == 0) {
