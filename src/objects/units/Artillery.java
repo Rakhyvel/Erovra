@@ -59,7 +59,7 @@ public class Artillery extends Unit {
 	@Override
 	public void render(Render r) {
 		if ((spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
-			float direction = position.subVec(getTarget()).getRadian();
+			float direction = position.subVec(getFacing()).getRadian();
 			if (velocity.getY() > 0) direction += 3.14f;
 
 			if(!nation.isAIControlled()) {

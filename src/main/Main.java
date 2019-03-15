@@ -132,7 +132,7 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Russia");
+		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Sweden");
 //		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);

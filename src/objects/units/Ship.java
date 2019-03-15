@@ -49,15 +49,15 @@ public class Ship extends Unit {
 		if (!(nation.defeated || nation.enemyNation.defeated)) {
 			detectHit();
 			if (getWeight() != UnitID.LIGHT) {
-				if (getWeight() == UnitID.HEAVY) {
-					engaged = torpedoAim() || aaAim() || autoArtilleryAim(64);
-				} else {
-					engaged = torpedoAim() || aaAim();
-				}
 				if (nation.isAIControlled()) {
 					wander();
 				} else {
 					clickToMove();
+				}
+				if (getWeight() == UnitID.HEAVY) {
+					engaged = torpedoAim() || aaAim() || autoArtilleryAim(64);
+				} else {
+					engaged = torpedoAim() || aaAim();
 				}
 				targetMove();
 			} else {
@@ -98,7 +98,7 @@ public class Ship extends Unit {
 					if (passengers != 0) {
 						if (chanceToSelect) {
 							for (int i = 0; i < nation.unitSize(); i++) {
-								if (nation.getUnit(i).isSelected() && !nation.getUnit(i).equals(this)) {
+								if (nation.getUnit(i).isSelected() && nation.getUnit(i).getID() != UnitID.PLANE && nation.getUnit(i).getID() != UnitID.SHIP) {
 									nation.getUnit(i).setBoarded(true);
 									nation.getUnit(i).setSelected(false);
 									Main.world.selectedUnit = null;
@@ -195,12 +195,14 @@ public class Ship extends Unit {
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
 					r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 16, r.flag, nation.color);
-					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);	
-					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
+					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+					if (weight == UnitID.HEAVY)
+						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
 							220 << 16 | 220 << 8 | 220);
-					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
+					if (weight == UnitID.HEAVY)
+						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
 				}
 			}
 
@@ -324,11 +326,11 @@ public class Ship extends Unit {
 			textColor = 255 << 16;
 		}
 		boolean hovered = buttonID == d.getButtonsHovered();
-		if(buttonID == 1) {
-			if(getPassenger1() != null)
+		if (buttonID == 1) {
+			if (getPassenger1() != null)
 				hovered = false;
 		} else if (buttonID == 2) {
-			if(getPassenger2() != null)
+			if (getPassenger2() != null)
 				hovered = false;
 		}
 		if ((hovered | passengers == buttonID) && shade != 0.7f) {

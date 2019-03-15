@@ -23,7 +23,7 @@ public class Factory extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.FACTORY;
-		defense = 3;
+		defense = 4;
 		if (nation.getFactoryCost() == 60 && nation.isAIControlled()) {
 			cavalry = false;
 		}

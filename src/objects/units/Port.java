@@ -22,7 +22,7 @@ public class Port extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 3;
+		defense = 4;
 		setProductWeight(UnitID.NONE);
 	}
 
