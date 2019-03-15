@@ -20,6 +20,7 @@
 - Upgrade function
 - Repair function
 	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
+- Zoom function
 - Squad functions
 	- Patrol
 	- Task forces
