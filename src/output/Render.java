@@ -383,7 +383,7 @@ public class Render extends Canvas {
 					x2 += 0.5;
 					y2 += 0.5;
 					pixels[(int) (x2)
-							+ (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2)]));
+							+ (int) (y2)] = (int) ((alpha * newColor) + ((1 - alpha) * pixels[(int) (x2 + y2-1)]));
 				}
 			}
 		}

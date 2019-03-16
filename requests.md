@@ -1,8 +1,8 @@
+- Upgrade function
 - Bullets should have streaks
 - Make cruisers a lil more rotund
 - Add gunners to bombers
 
-- Upgrade function
 - Zoom function
 - Repair function
 	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR

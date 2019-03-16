@@ -270,15 +270,11 @@ public class Nation {
 	}
 
 	public void defeat() {
-		if (name.contains("Sweden")) {
-			Main.setState(StateID.DEFEAT);
-		} else {
-			Main.setState(StateID.VICTORY);
-		}
+		Main.world.defeatedName = name;
 	}
 
 	public void victory() {
-		Main.setState(StateID.VICTORY);
+		Main.world.defeatedName = enemyNation.name;
 	}
 
 	public void setAIControlled(boolean ai) {

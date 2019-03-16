@@ -32,6 +32,7 @@ public class World {
 	public ErrorMessage errorMessage = new ErrorMessage();
 	private boolean nullifySelected = false;
 	Point mouseStartPoint = new Point(-1, -1);
+	public String defeatedName = "";
 
 	public World() {
 		menuArray.add(errorMessage);
@@ -118,6 +119,13 @@ public class World {
 	 */
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
+			if(!defeatedName.equals("")) {
+				if(defeatedName.contains("Sweden")) {
+					Main.setState(StateID.DEFEAT);
+				} else {
+					Main.setState(StateID.VICTORY);
+				}
+			}
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
 				if (friendly.getProjectile(i2).getID() == UnitID.TORPEDO) {
 					friendly.getProjectile(i2).render(r);
@@ -188,6 +196,7 @@ public class World {
 	 */
 	public void setFriendly(Nation nation) {
 		friendly = nation;
+		defeatedName = "";
 	}
 
 	/**
