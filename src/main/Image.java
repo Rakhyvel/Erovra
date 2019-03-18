@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
  *
  */
 public class Image {
-
 	/**
 	 * Takes a path to an image, its width and height, and returns the image as
 	 * an integer array using 32 bit color
@@ -95,5 +94,36 @@ public class Image {
 			if (id >= 0 && id < img.length && x >= 0 && x < 2048) img2[i] = img[id];
 		}
 		return img2;
+	}
+	
+	public static int[] getScreenBlend(int[] image, int w, int color) {
+		int[] newImage = new int[image.length];
+		int r, g, b;
+		float screen, alpha;
+		for (int i = 0; i < image.length; i++) {
+			alpha = ((image[i] >> 24 & 255) / 255.0f);
+			if (alpha > 0.9f) {
+				// Finding and splitting starting colors
+				screen = (image[i] & 255) / 255.0f;
+				r = ((color >> 16) & 255);
+				g = ((color >> 8) & 255);
+				b = (color & 255);
+
+				// Setting new colors
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+				}
+				// Recombining colors
+				newImage[i] = (255<<24)|(int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+			}
+		}
+		return newImage;
 	}
 }

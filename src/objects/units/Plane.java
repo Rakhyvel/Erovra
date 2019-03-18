@@ -1,5 +1,6 @@
 package objects.units;
 
+import main.Image;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
@@ -193,7 +194,7 @@ public class Plane extends Unit {
 		if(!nation.isAIControlled()) {
 			if (weight == UnitID.HEAVY && !bombsAway) {
 				if (isSelected()) {
-					r.drawImage((int) target.getX(), (int) target.getY(), 32, r.getScreenBlend(r.target, 32, nation.color));
+					r.drawImage((int) target.getX(), (int) target.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color));
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
@@ -201,10 +202,10 @@ public class Plane extends Unit {
 				}
 			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
 				if (isSelected()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.getScreenBlend(r.target, 32, nation.color));
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color));
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, r.getScreenBlend(r.target, 32, nation.color));
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color));
 				}
 			}
 		}

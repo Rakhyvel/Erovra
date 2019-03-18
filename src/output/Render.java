@@ -407,37 +407,6 @@ public class Render extends Canvas {
 		}
 	}
 
-	public int[] getScreenBlend(int[] image, int w, int color) {
-		int[] newImage = new int[image.length];
-		int r, g, b;
-		float screen, alpha;
-		for (int i = 0; i < image.length; i++) {
-			alpha = ((image[i] >> 24 & 255) / 255.0f);
-			if (alpha > 0.9f) {
-				// Finding and splitting starting colors
-				screen = (image[i] & 255) / 255.0f;
-				r = ((color >> 16) & 255);
-				g = ((color >> 8) & 255);
-				b = (color & 255);
-
-				// Setting new colors
-				if (screen <= 0.5f) {
-					screen *= 2;
-					r = (int) (r * screen);
-					g = (int) (g * screen);
-					b = (int) (b * screen);
-				} else {
-					r = (int) (255 - 2 * (255 - r) * (1 - screen));
-					g = (int) (255 - 2 * (255 - g) * (1 - screen));
-					b = (int) (255 - 2 * (255 - b) * (1 - screen));
-				}
-				// Recombining colors
-				newImage[i] = (255<<24)|(int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-			}
-		}
-		return newImage;
-	}
-
 	/**
 	 * Returns a lighter color
 	 * 
@@ -545,31 +514,17 @@ public class Render extends Canvas {
 	 * @param color
 	 *            Color of the string
 	 */
-	public void drawString(String label, int x, int y, Font font, int color) {
-		int carriage = 0;
-		int letter;
-		int length = font.getStringWidth(label) - 1;
-		for (int i = 0; i < label.length(); i++) {
-			letter = label.charAt(i);
-			if (letter == 7) {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), 250 << 16 | 250 << 8, 1);
-			} else {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color, 1);
-			}
-			carriage += font.getKern(letter);
-		}
-	}
 
 	public void drawString(String label, int x, int y, Font font, int color, float opacity) {
 		int carriage = 0;
 		int letter;
-		int length = font.getStringWidth(label) - 1;
+		int length = font.getStringWidth(label);
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
-			if (letter == 7) {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), 250 << 16 | 250 << 8, opacity);
+			if(letter == 7) {
+				drawImage(x + carriage - length / 2 + font.getSize()/2, y, font.getSize(), Image.getScreenBlend(font.getLetter(letter),font.getSize(), 250<<16|250<<8));
 			} else {
-				drawLetter(x + carriage - length / 2, y - 7, font.getSize(), font.getLetter(letter), color, opacity);
+				drawImage(x + carriage - length / 2 + font.getSize()/2, y, font.getSize(), Image.getScreenBlend(font.getLetter(letter),font.getSize(), color));
 			}
 			carriage += font.getKern(letter);
 		}

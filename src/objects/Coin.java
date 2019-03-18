@@ -1,5 +1,6 @@
 package objects;
 
+import main.Image;
 import output.Render;
 import utility.Point;
 
@@ -33,7 +34,7 @@ public class Coin {
 	 */
 	public void render(Render r) {
 		if (nation.name.contains("Sweden")) {
-			r.drawImage((int) position.getX(), (int) position.getY(), 16, r.getScreenBlend(r.cityHit, 16, 250<<16|250<<8));
+			r.drawImage((int) position.getX(), (int) position.getY(), 16, Image.getScreenBlend(r.cityHit, 16, 250<<16|250<<8));
 		}
 	}
 

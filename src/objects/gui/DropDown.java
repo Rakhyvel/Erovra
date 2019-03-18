@@ -59,7 +59,7 @@ public class DropDown extends Menu {
 			r.drawRect((int) getPosition().getX(), (int) getPosition().getY(), 170, 30, 64 << 16 | 64 << 8 | 64, 0.5f);
 			r.drawString(String.valueOf(unit.getID()) + " (" + (int) unit.getHealth() + "/10)",
 					(int) getPosition().getX() + 85, (int) getPosition().getY() + 10, r.font16,
-					250 << 16 | 250 << 8 | 250);
+					250 << 16 | 250 << 8 | 250,1);
 
 			unit.dropDownRender(r, this);
 
@@ -87,10 +87,10 @@ public class DropDown extends Menu {
 		}
 		if (buttonsHovered == buttonID && shade != 0.7f) {
 			r.drawRect(x, y + buttonID * 30, 170, 30, 200 << 16 | 200 << 8 | 200, 0.5f);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250,1);
 		} else {
 			r.drawRect(x, y + buttonID * 30, 170, 30, 0, shade);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor,1);
 		}
 	}
 
@@ -218,7 +218,7 @@ public class DropDown extends Menu {
 			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30, 64 << 16 | 64 << 8 | 64,
 					0.5f);
 			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
-					250 << 16 | 250 << 8 | 250);
+					250 << 16 | 250 << 8 | 250,1);
 			drawOption("Cancel order (-10)", 2, 0.5f, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {

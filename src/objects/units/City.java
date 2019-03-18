@@ -1,5 +1,6 @@
 package objects.units;
 
+import main.Image;
 import main.Main;
 import main.StateID;
 import main.UnitID;
@@ -50,12 +51,12 @@ public class City extends Unit {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 0);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * (Main.ticks % 6000) / 6000), 2, nation.color);
-				r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.capital, 32, nation.color));
+				r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.capital, 32, nation.color));
 			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.city, 32, nation.color));
+				r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.city, 32, nation.color));
 			}
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.getScreenBlend(r.cityHit, 36, nation.color));
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, Image.getScreenBlend(r.cityHit, 36, nation.color));
 			}
 		}
 	}

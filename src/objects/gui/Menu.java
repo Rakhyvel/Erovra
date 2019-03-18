@@ -46,10 +46,10 @@ public abstract class Menu {
 	void drawButton(String label, int x, int y, int buttonID, Render r) {
 		if (buttonsHovered == buttonID) {
 			r.drawRect(x - 110, y - 20, 220, 40, 200 << 16 | 200 << 8 | 200, 0.5f);
-			r.drawString(label, x, y, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawString(label, x, y, r.font16, 250 << 16 | 250 << 8 | 250,1);
 		} else {
 			r.drawRect(x - 110, y - 20, 220, 40, 0, 0.5f);
-			r.drawString(label, x, y, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawString(label, x, y, r.font16, 250 << 16 | 250 << 8 | 250,1);
 		}
 	}
 }

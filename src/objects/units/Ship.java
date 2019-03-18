@@ -314,7 +314,7 @@ public class Ship extends Unit {
 				name = String.valueOf(getPassenger2().getID());
 			}
 		}
-		r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 250 << 16 | 250 << 8 | 250);
+		r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 250 << 16 | 250 << 8 | 250,1);
 
 	}
 
@@ -335,10 +335,10 @@ public class Ship extends Unit {
 		}
 		if ((hovered | passengers == buttonID) && shade != 0.7f) {
 			r.drawRect(x, y + buttonID * 30, 170, 30, 200 << 16 | 200 << 8 | 200, 0.5f);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250,1);
 		} else {
 			r.drawRect(x, y + buttonID * 30, 170, 30, 0, shade);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor,1);
 		}
 	}
 }

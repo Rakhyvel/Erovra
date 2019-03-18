@@ -1,5 +1,6 @@
 package objects.units;
 
+import main.Image;
 import main.Main;
 import main.StateID;
 import main.UnitID;
@@ -115,9 +116,9 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.port, 32, nation.color));
+			r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.port, 32, nation.color));
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.getScreenBlend(r.cityHit, 36, nation.color));
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, Image.getScreenBlend(r.cityHit, 36, nation.color));
 			}
 		}
 	}

@@ -38,7 +38,7 @@ public class MainMenu extends Menu {
 	@Override
 	public void render(Render r) {
 		if (Main.gameState == StateID.MENU) {
-			r.drawString("Erovra", 512, 130, r.font32, 0);
+			r.drawString("Erovra", 512, 130, r.font32, 0,1);
 			drawButton("Start New Game", 512, 208, 1, r);
 			drawButton("Settings", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
