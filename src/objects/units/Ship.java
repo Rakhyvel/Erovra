@@ -196,12 +196,12 @@ public class Ship extends Unit {
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 					if (weight == UnitID.HEAVY)
-						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
+						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange,0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
 							220 << 16 | 220 << 8 | 220);
 					if (weight == UnitID.HEAVY)
-						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);
+						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange,0);
 				}
 			}
 
@@ -314,7 +314,7 @@ public class Ship extends Unit {
 				name = String.valueOf(getPassenger2().getID());
 			}
 		}
-		r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 250 << 16 | 250 << 8 | 250,1);
+		r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 250 << 16 | 250 << 8 | 250);
 
 	}
 
@@ -334,11 +334,11 @@ public class Ship extends Unit {
 				hovered = false;
 		}
 		if ((hovered | passengers == buttonID) && shade != 0.7f) {
-			r.drawRect(x, y + buttonID * 30, 170, 30, 200 << 16 | 200 << 8 | 200, 0.5f);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250,1);
+			r.drawRect(x, y + buttonID * 30, 170, 30, 128 << 24|200 << 16 | 200 << 8 | 200);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250);
 		} else {
-			r.drawRect(x, y + buttonID * 30, 170, 30, 0, shade);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor,1);
+			r.drawRect(x, y + buttonID * 30, 170, 30, (int)(shade * 255) << 24);
+			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor);
 		}
 	}
 }

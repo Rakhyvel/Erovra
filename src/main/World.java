@@ -165,7 +165,7 @@ public class World {
 					hostile.getUnit(i2).render(r);
 			}
 
-			r.drawRect(1024-128, 0, 128, 20, 0, 0.5f);
+			r.drawRect(1024-128, 0, 128, 20, 128 << 24);
 			
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
 				friendly.getCoin(i2).render(r);
@@ -186,7 +186,7 @@ public class World {
 	 */
 	public void drawCoins(Render r) {
 		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 993, 10, r.font16,
-				250 << 16 | 250 << 8 | 250,1);
+				250 << 16 | 250 << 8 | 250);
 	}
 
 	/**

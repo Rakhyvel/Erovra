@@ -1,5 +1,6 @@
 package objects.projectiles;
 
+import main.Image;
 import main.UnitID;
 import objects.Nation;
 import output.Render;
@@ -25,7 +26,8 @@ public class Bullet extends Projectile {
 
 	@Override
 	public void tick(double t) {
-		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX()
+				|| position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 			hit();
 		}
 		bulletMove();
@@ -33,6 +35,7 @@ public class Bullet extends Projectile {
 
 	@Override
 	public void render(Render r) {
-		r.drawImageScreen((int) position.getX(), (int) position.getY(), 2, r.bullet, nation.color, 0);
+		r.drawImage((int) position.getX(), (int) position.getY(), 2, Image.getScreenBlend(r.bullet, 2, nation.color),
+				0);
 	}
 }

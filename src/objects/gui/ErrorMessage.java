@@ -15,9 +15,9 @@ public class ErrorMessage extends Menu {
 	@Override
 	public void render(Render r) {
 		if (errorTick > 30) {
-			r.drawString(errorMessage, 512, 400, r.font16, 230 << 16 | 23 << 8 | 23, 1);
+			r.drawString(errorMessage, 512, 400, r.font16, 230 << 16 | 23 << 8 | 23);
 		} else if (errorTick > 0) {
-			r.drawString(errorMessage, 512, 400, r.font16, 230 << 16 | 23 << 8 | 23, errorTick / 30.0f);
+			r.drawString(errorMessage, 512, 400, r.font16, (int)((errorTick/30.0f)*255) << 24|230 << 16 | 23 << 8 | 23);
 		}
 	}
 

@@ -29,7 +29,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RIVER;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -131,8 +131,8 @@ public class Main {
 		ticks = 0;
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
-		Nation sweden = new Nation(25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(230 << 16 | 25 << 8 | 25, "Russia");
+		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
+		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
 		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
