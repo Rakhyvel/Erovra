@@ -115,9 +115,9 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.port, nation.color);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.port, 32, nation.color));
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.cityHit, nation.color);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.getScreenBlend(r.cityHit, 36, nation.color));
 			}
 		}
 	}

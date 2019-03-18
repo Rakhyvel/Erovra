@@ -33,7 +33,7 @@ public class Coin {
 	 */
 	public void render(Render r) {
 		if (nation.name.contains("Sweden")) {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 16, r.coin, 250<<16|250<<8);
+			r.drawImage((int) position.getX(), (int) position.getY(), 16, r.getScreenBlend(r.cityHit, 16, 250<<16|250<<8));
 		}
 	}
 

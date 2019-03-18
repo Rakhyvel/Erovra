@@ -64,7 +64,6 @@ public class Cavalry extends Unit {
 				direction += 3.14f;
 			if(!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawImageScreen((int)getTarget().getX(), (int)getTarget().getY(), 16, r.flag, nation.color);
 					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,

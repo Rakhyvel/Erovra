@@ -194,7 +194,6 @@ public class Ship extends Unit {
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawImageScreen((int) getTarget().getX(), (int) getTarget().getY(), 16, r.flag, nation.color);
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 					if (weight == UnitID.HEAVY)
 						r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, 128, r.medArtRange);

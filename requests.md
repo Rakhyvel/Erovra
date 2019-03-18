@@ -1,4 +1,7 @@
 - Upgrade function
+	- Faster production
+	- More health
+	- Takes a minute to convert
 - Bullets should have streaks
 - Make cruisers a lil more rotund
 - Add gunners to bombers

@@ -38,6 +38,6 @@ public class Shell extends Projectile {
 	public void render(Render r) {
 		double scale = position.getDistSquared(target)/distance;
 		scale = (-3 * (scale-.5) * (scale-.5)) + 1.25f;
-		r.drawImageScreen((int) position.getX(), (int) position.getY(), (float)(4*scale), Image.resize(r.shell, 4, (float)scale), 255);
+		r.drawImage((int) position.getX(), (int) position.getY(), (int)(4*scale), Image.resize(r.shell, 4, (float)scale));
 	}
 }
