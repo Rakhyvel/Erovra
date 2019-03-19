@@ -2,7 +2,7 @@ package terrain;
 
 import java.util.Random;
 
-import main.Image;
+import objects.gui.Image;
 import main.MapID;
 import utility.Point;
 
@@ -13,7 +13,7 @@ public class Map {
 	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[513];
-	Image image = new Image();
+	Image mapImg = new Image("/res/projectiles/bullet.png", 2, 2);
 	MapID id;
 
 	/**
@@ -29,7 +29,7 @@ public class Map {
 		rand.setSeed(seed);
 		id = map;
 		if (id == MapID.CUSTOM) {
-			int[] customImage = image.loadImage("/res/island.jpg", 1024, 512);
+			int[] customImage = mapImg.loadImage("/res/island.jpg", 1024, 512);
 			for (int i = 0; i < 1024 * 512 && i < customImage.length; i++) {
 				int x = (i % 1024);
 				int y = (i / 1024);

@@ -1,9 +1,11 @@
-package main;
+package objects.gui;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import main.Main;
 
 /**
  * Handles loading images and resizing images, in int array form.
@@ -12,6 +14,26 @@ import javax.imageio.ImageIO;
  *
  */
 public class Image {
+
+	private int[] pixels;
+	String path;
+	private int width;
+	int height;
+
+	public Image(String path, int width, int height) {
+		this.path = path;
+		this.setWidth(width);
+		this.height = height;
+		setPixels(loadImage(path, width, height));
+	}
+
+	public Image(String path, int width, int height, int[] pixels) {
+		this.path = path;
+		this.setWidth(width);
+		this.height = height;
+		setPixels(pixels);
+	}
+
 	/**
 	 * Takes a path to an image, its width and height, and returns the image as
 	 * an integer array using 32 bit color
@@ -47,18 +69,17 @@ public class Image {
 	 *            The factor to be scaled
 	 * @return The resized image
 	 */
-	public static int[] resize(int[] img, int width, float factor) {
+	public Image resize(float factor) {
 		float invFactor = 1 / factor;
-		float newWidth = factor * width;
-		int[] img2 = new int[(int) (img.length * factor * factor)];
+		float newWidth = factor * getWidth();
+		int[] img2 = new int[(int) (getWidth() * factor) * (int) (height * factor)];
 		for (int i = 0; i < img2.length; i++) {
 			int x = (int) ((i % newWidth) * invFactor);
 			int y = (int) ((i / newWidth) * invFactor);
-			int id = y*width + x;
-			if (id >= 0 && id < img.length)
-				img2[i] = img[y * width + x];
+			int id = y * getWidth() + x;
+			if (id >= 0 && id < getPixels().length) img2[i] = getPixels()[y * getWidth() + x];
 		}
-		return img2;
+		return new Image(path, (int) (getWidth() * factor), (int) (height * factor),img2);
 	}
 
 	/**
@@ -76,35 +97,35 @@ public class Image {
 	 * @return An integer array of the scaled up image, with the same length as
 	 *         the original
 	 */
-	public static int[] rescale(int[] img, int width, float factor) {
+	public Image rescale(float factor) {
 		// Set up the new variables
-		int[] img2 = new int[img.length];
+		int[] img2 = new int[getPixels().length];
 		int xCenter = (int) (512 * Main.zoom) - 512;
 		int yCenter = (int) (256 * Main.zoom) - 256;
 		int x, y, id;
 		// Walk through the new image
-		for (int i = 0; i < 1025*513; i++) {
+		for (int i = 0; i < 1025 * 513; i++) {
 
 			// Find the new coordinates
-			x = (int) (i%width * Main.zoom - xCenter);
-			y = (int) (i/width * Main.zoom - yCenter);
+			x = (int) (i % getWidth() * Main.zoom - xCenter);
+			y = (int) (i / getWidth() * Main.zoom - yCenter);
 
 			// If the new coordinates are on screen, print them
 			id = (y * 2048 + x);
-			if (id >= 0 && id < img.length && x >= 0 && x < 2048) img2[i] = img[id];
+			if (id >= 0 && id < getPixels().length && x >= 0 && x < 2048) img2[i] = getPixels()[id];
 		}
-		return img2;
+		return new Image(path, getWidth(), height, img2);
 	}
-	
-	public static int[] getScreenBlend(int[] image, int w, int color) {
-		int[] newImage = new int[image.length];
+
+	public Image getScreenBlend(int color) {
 		int r, g, b;
 		float screen, alpha;
-		for (int i = 0; i < image.length; i++) {
-			alpha = ((image[i] >> 24 & 255) / 255.0f);
+		int[] img2 = new int[pixels.length];
+		for (int i = 0; i < pixels.length; i++) {
+			alpha = ((pixels[i] >> 24 & 255) / 255.0f);
 			if (alpha > 0.9f) {
 				// Finding and splitting starting colors
-				screen = (image[i] & 255) / 255.0f;
+				screen = (pixels[i] & 255) / 255.0f;
 				r = ((color >> 16) & 255);
 				g = ((color >> 8) & 255);
 				b = (color & 255);
@@ -121,9 +142,25 @@ public class Image {
 					b = (int) (255 - 2 * (255 - b) * (1 - screen));
 				}
 				// Recombining colors
-				newImage[i] = (255<<24)|(int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				img2[i] = (255 << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			}
 		}
-		return newImage;
+		return new Image(path, getWidth(), height, img2);
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int[] getPixels() {
+		return pixels;
+	}
+
+	public void setPixels(int[] pixels) {
+		this.pixels = pixels;
 	}
 }

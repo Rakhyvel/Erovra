@@ -5,6 +5,7 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -15,6 +16,9 @@ import utility.Point;
  * @see Unit
  */
 public class Infantry extends Unit {
+	
+	int weightColor = 255<<24;
+	Image infantry;
 
 	public Infantry(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -22,6 +26,8 @@ public class Infantry extends Unit {
 		defense = 1;
 		id = UnitID.INFANTRY;
 		dropDownHeight = 150;
+		weightColor = nation.color;
+		infantry = new Image("/res/ground/infantry.png", 32, 16).getScreenBlend(weightColor);
 	}
 
 	@Override
@@ -60,11 +66,10 @@ public class Infantry extends Unit {
 							220 << 16 | 220 << 8 | 220);
 				}
 			}
-			
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.infantry, nation.color, direction);
+
+			r.drawImage((int) position.getX(), (int) position.getY(), infantry, direction);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color,
-						direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), r.hitSprite, direction);
 			}
 		}
 	}

@@ -281,7 +281,7 @@ public abstract class Unit {
 				return testPoint;
 			}
 		}
-		return null;
+		return new Point(position);
 	}
 
 	/**

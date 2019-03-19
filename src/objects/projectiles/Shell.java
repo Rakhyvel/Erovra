@@ -1,8 +1,8 @@
 package objects.projectiles;
 
-import main.Image;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -15,6 +15,7 @@ import utility.Point;
 public class Shell extends Projectile {
 	
 	float distance;
+	Image shell = new Image("/res/projectiles/shell.png", 4, 4);
 
 	public Shell(Point position, Nation nation, Point target) {
 		super(position, nation);
@@ -38,6 +39,6 @@ public class Shell extends Projectile {
 	public void render(Render r) {
 		double scale = position.getDistSquared(target)/distance;
 		scale = (-3 * (scale-.5) * (scale-.5)) + 1.25f;
-		r.drawImage((int) position.getX(), (int) position.getY(), (int)(4*scale), Image.resize(r.shell, 4, (float)scale),0);
+		r.drawImage((int) position.getX(), (int) position.getY(), shell.resize((float)scale),0);
 	}
 }

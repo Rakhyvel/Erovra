@@ -1,11 +1,11 @@
 package objects.units;
 
-import main.Image;
 import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -18,6 +18,7 @@ import utility.Point;
 public class Port extends Industry {
 
 	private boolean spotted = false;
+	Image port;
 
 	public Port(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -25,6 +26,7 @@ public class Port extends Industry {
 		id = UnitID.PORT;
 		defense = 2;
 		setProductWeight(UnitID.NONE);
+		port = new Image("/res/buildings/port.png", 32, 32).getScreenBlend(nation.color);
 	}
 
 	@Override
@@ -116,9 +118,9 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.port, 32, nation.color),0);
+			r.drawImage((int) position.getX(), (int) position.getY(), port,0);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, Image.getScreenBlend(r.cityHit, 36, nation.color),0);
+				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
 			}
 		}
 	}

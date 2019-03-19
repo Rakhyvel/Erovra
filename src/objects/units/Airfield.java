@@ -1,11 +1,11 @@
 package objects.units;
 
-import main.Image;
 import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -20,11 +20,13 @@ import utility.Point;
 public class Airfield extends Industry {
 
 	private boolean spotted = false;
+	Image airfield;
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
 		defense = 2;
 		id = UnitID.AIRFIELD;
+		airfield = new Image("/res/buildings/airfield.png", 32, 32).getScreenBlend(nation.color);
 	}
 
 	@Override
@@ -79,9 +81,9 @@ public class Airfield extends Industry {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.airfield, 32, nation.color),0);
+			r.drawImage((int) position.getX(), (int) position.getY(), airfield,0);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, Image.getScreenBlend(r.cityHit, 36, nation.color),0);
+				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit,0);
 			}
 		}
 	}

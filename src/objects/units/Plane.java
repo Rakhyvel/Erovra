@@ -1,10 +1,10 @@
 package objects.units;
 
-import main.Image;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import objects.projectiles.Bomb;
 import objects.projectiles.Bullet;
 import output.Render;
@@ -22,6 +22,10 @@ public class Plane extends Unit {
 	private Point patrolPoint;
 	private boolean bombsAway = false;
 	private Point secondaryTarget = new Point(nation.capital.position);
+	int weightColor = 255<<24;
+	Image plane1;
+	Image plane2;
+	Image planeHit;
 
 	public Plane(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -29,13 +33,25 @@ public class Plane extends Unit {
 			speed = .9f;
 			defense = 1f;
 			patrolPoint = new Point(nation.enemyNation.capital.getPosition()).addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
+			weightColor = Render.lighten(nation.color);
+			plane1 = new Image("/res/air/fighter.png", 36, 35).getScreenBlend(weightColor);
+			plane2 = new Image("/res/air/fighter1.png", 36, 35).getScreenBlend(weightColor);
+			planeHit = new Image("/res/air/fighterHit.png", 40, 39);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .6f;
 			defense = 2f;
+			weightColor = nation.color;
+			plane1 = new Image("/res/air/attack.png", 44, 33).getScreenBlend(weightColor);
+			plane2 = new Image("/res/air/attack1.png", 44, 33).getScreenBlend(weightColor);
+			planeHit = new Image("/res/air/attackHit.png", 48, 37);
 		} else {
 			speed = 0.3f;
 			defense = 2f;
 			acquireTarget();
+			weightColor = Render.darken(nation.color);
+			plane1 = new Image("/res/air/bomber1.png", 68, 40).getScreenBlend(weightColor);
+			plane2 = new Image("/res/air/bomber2.png", 68, 40).getScreenBlend(weightColor);
+			planeHit = new Image("/res/air/bomberHit.png", 72, 44);
 		}
 		id = UnitID.PLANE;
 	}
@@ -194,7 +210,7 @@ public class Plane extends Unit {
 		if(!nation.isAIControlled()) {
 			if (weight == UnitID.HEAVY && !bombsAway) {
 				if (isSelected()) {
-					r.drawImage((int) target.getX(), (int) target.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color),0);
+					r.drawImage((int) target.getX(), (int) target.getY(), r.target.getScreenBlend(nation.color),0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
@@ -202,43 +218,21 @@ public class Plane extends Unit {
 				}
 			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
 				if (isSelected()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color),0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), r.target.getScreenBlend(nation.color),0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32, Image.getScreenBlend(r.target, 32, nation.color),0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), r.target.getScreenBlend(nation.color),0);
 				}
 			}
 		}
 
 		if (Main.ticks % 4 < 2) {
-			if (getWeight() == UnitID.LIGHT)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.fighter1, r.lighten(nation.color),
-						direction);
-			if (getWeight() == UnitID.MEDIUM)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 44, r.attacker1, nation.color,
-						direction);
-			if (getWeight() == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 68, r.bomber1, r.darken(nation.color),
-						direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), plane1,direction);
 		} else {
-			if (getWeight() == UnitID.LIGHT)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.fighter2, r.lighten(nation.color),
-						direction);
-			if (getWeight() == UnitID.MEDIUM)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 44, r.attacker2, nation.color,
-						direction);
-			if (getWeight() == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 68, r.bomber2, r.darken(nation.color),
-						direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), plane2,direction);
 		}
-		if (hit > 1 && getWeight() == UnitID.LIGHT)
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 40, r.fighterHit, r.lighten(nation.color),
-					direction);
-		if (hit > 1 && getWeight() == UnitID.MEDIUM)
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 48, r.attackerHit, nation.color, direction);
-		if (hit > 1 && getWeight() == UnitID.HEAVY)
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 72, r.bomberHit, r.darken(nation.color),
-					direction);
+		if (hit > 1)
+			r.drawImage((int) position.getX(), (int) position.getY(), planeHit, direction);
 	}
 
 	@Override

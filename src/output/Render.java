@@ -6,12 +6,12 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import main.Image;
 import main.Main;
 import main.SpriteSheet;
 import main.StateID;
 import main.World;
 import objects.gui.Font;
+import objects.gui.Image;
 import terrain.Map;
 import utility.Point;
 
@@ -30,54 +30,17 @@ public class Render extends Canvas {
 	int[] newMap;
 	boolean captured = false;
 
-	Image image = new Image();
 	// Ground Units
-	public int[] artillery = image.loadImage("/res/ground/artillery.png", 32, 16);
-	public int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
-	public int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
-	public int[] hitSprite = image.loadImage("/res/ground/hit.png", 36, 20);
-	public int[] medArtRange = image.loadImage("/res/ground/medArtRange.png", 128, 128);
-	public int[] heavyArtRange = image.loadImage("/res/ground/heavyArtRange.png", 256, 256);
-
-	// Water Units
-	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
-	public int[] destroyer = image.loadImage("/res/water/destroyer.png", 13, 45);
-	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 14, 61);
-	public int[] landingHit = image.loadImage("/res/water/landingHit.png", 17, 36);
-	public int[] destroyerHit = image.loadImage("/res/water/destroyerHit.png", 17, 49);
-	public int[] cruiserHit = image.loadImage("/res/water/cruiserHit.png", 18, 65);
-
-	// Air Units
-	public int[] fighter1 = image.loadImage("/res/air/fighter.png", 36, 35);
-	public int[] fighter2 = image.loadImage("/res/air/fighter1.png", 36, 35);
-	public int[] attacker1 = image.loadImage("/res/air/attack.png", 44, 33);
-	public int[] attacker2 = image.loadImage("/res/air/attack1.png", 44, 33);
-	public int[] bomber1 = image.loadImage("/res/air/bomber1.png", 68, 40);
-	public int[] bomber2 = image.loadImage("/res/air/bomber2.png", 68, 40);
-	public int[] fighterHit = image.loadImage("/res/air/fighterHit.png", 40, 39);
-	public int[] attackerHit = image.loadImage("/res/air/attackHit.png", 48, 37);
-	public int[] bomberHit = image.loadImage("/res/air/bomberHit.png", 72, 44);
+	public Image hitSprite = new Image("/res/ground/hit.png", 36, 20);
+	public Image medArtRange = new Image("/res/ground/medArtRange.png", 128, 128);
+	public Image heavyArtRange = new Image("/res/ground/heavyArtRange.png", 256, 256);
 
 	// Buildings
-	public int[] city = image.loadImage("/res/buildings/city.png", 32, 32);
-	public int[] port = image.loadImage("/res/buildings/port.png", 32, 32);
-	public int[] factory = image.loadImage("/res/buildings/factory.png", 32, 32);
-	public int[] capital = image.loadImage("/res/buildings/capital.png", 32, 32);
-	public int[] airfield = image.loadImage("/res/buildings/airfield.png", 32, 32);
-	public int[] cityHit = image.loadImage("/res/buildings/buildingHit.png", 36, 36);
-
-	// Projectiles
-	public int[] shell = image.loadImage("/res/projectiles/shell.png", 4, 4);
-	public int[] torpedo = image.loadImage("/res/projectiles/torpedo.png", 3, 14);
-	public int[] torpedo1 = image.loadImage("/res/projectiles/torpedo1.png", 1, 14);
-	public int[] bullet = image.loadImage("/res/projectiles/bullet.png", 2, 2);
-	public int[] bomb = image.loadImage("/res/projectiles/bomb.png", 16, 8);
+	public Image cityHit = new Image("/res/buildings/buildingHit.png", 36, 36);
 
 	// Misc
-	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
-	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
-	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
-	public int[] target = image.loadImage("/res/target.png", 32, 32);
+	public Image arrow = new Image("/res/arrow.png", 18, 9);
+	public Image target = new Image("/res/target.png", 32, 32);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -200,31 +163,33 @@ public class Render extends Canvas {
 	 * @param w     The width of the image
 	 * @param image The image
 	 */
-	public void drawImage(int x, int y, int w, int[] image, float rotate) {
+	public void drawImage(int x, int y, Image img, float rotate) {
+		int w = img.getWidth();
+		int[] image = img.getPixels();
 		int h = 1, r, g, b;
 		if (w > 0) {
 			h = image.length / w;
 		}
 
-		for (int i = 0; i < image.length; i++) {
-			float alpha = ((image[i] >> 24 & 255) / 255.0f);
+		for (float i = 0; i < image.length; i+=0.3333f) {
+			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f);
 			double x1 = (i % w) - w / 2;
 			double y1 = i / w - h / 2;
 			double x2 = (int) (x1 + x);
-			double y2 = (int) (y1 + y) * (width + 1) + 0.5;
+			double y2 = (int) (y1 + y);
 			if (alpha > 0) {
 				x1 = (i % w) - w / 2;
 				y1 = i / w - h / 2;
 				if (rotate != 0) {
 					x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
-					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
+					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
 				}
-				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					int id = (int) (x2 + y2);
+				int id = (int) (x2 + y2 * (width + 1) + 0.5);
+				if (id > 0 && id < width * height){
 					// Finding alpha
-					r = ((image[i] >> 16) & 255);
-					g = ((image[i] >> 8) & 255);
-					b = (image[i] & 255);
+					r = ((image[(int)i] >> 16) & 255);
+					g = ((image[(int)i] >> 8) & 255);
+					b = (image[(int)i] & 255);
 					int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 
 					// Finding alpha
@@ -240,55 +205,31 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	
+	/**
+	 * Draws a string
+	 * 
+	 * @param label String to be drawn
+	 * @param x     coordinate value of the middle of the string
+	 * @param y     coordinate value of the string
+	 * @param font  Font to be used
+	 * @param color Color of the string
+	 */
 
-	public void drawImageScreen(int x, int y, int w, int[] image, int color, float rotate, float opacity) {
-		int h = image.length / w;
-		for (int i = 0; i < image.length; i++) {
-			float alpha = ((image[i] >> 24 & 255) / 255.0f) * opacity;
-			if (alpha > 0) {
-				double x1 = (i % w) - w / 2;
-				double y1 = i / w - h / 2;
-				double x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
-				double y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y) * (width + 1) + 0.5;
-				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-				float screen = (image[i] & 255) / 255.0f;
-				// Setting new colors
-				if (screen <= 0.5f) {
-					screen *= 2;
-					r = (int) (r * screen);
-					g = (int) (g * screen);
-					b = (int) (b * screen);
-				} else {
-					r = (int) (255 - 2 * (255 - r) * (1 - screen));
-					g = (int) (255 - 2 * (255 - g) * (1 - screen));
-					b = (int) (255 - 2 * (255 - b) * (1 - screen));
-				}
-
-				// Recombining colors
-				int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-
-				if (x2 + y2 > 0 && x2 + y2 < width * height) {
-					int id = (int) (x2 + y2);
-					// Finding alpha
-					r = ((pixels[id] >> 16) & 255);
-					g = ((pixels[id] >> 8) & 255);
-					b = (pixels[id] & 255);
-					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8
-							| (int) (b * (1 - alpha));
-
-					// Finally adding colors to pixel array
-					pixels[id] = newColor + newColor2;
-					id = (int) (x2 + y2 + 1);
-					// Finding alpha
-					r = ((pixels[id] >> 16) & 255);
-					g = ((pixels[id] >> 8) & 255);
-					b = (pixels[id] & 255);
-					newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-
-					// Finally adding colors to pixel array
-					pixels[id] = newColor + newColor2;
-				}
+	public void drawString(String label, int x, int y, Font font, int color) {
+		int carriage = 0;
+		int letter;
+		int length = font.getStringWidth(label);
+		Image letterImage;
+		for (int i = 0; i < label.length(); i++) {
+			letter = label.charAt(i);
+			if (letter == 7) {
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter)).getScreenBlend(250 << 16 | 250 << 8);
+			} else {
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter)).getScreenBlend(color);
 			}
+			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
+			carriage += font.getKern(letter);
 		}
 	}
 
@@ -340,10 +281,10 @@ public class Render extends Canvas {
 	 */
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		int a = (r + g + b) >> 5;
-		r = (a + r) >> 1;
-		g = (a + g) >> 1;
-		b = (a + b) >> 1;
+		int a = (r + g + b);
+		r = (a + r) >> 2;
+		g = (a + g) >> 2;
+		b = (a + b) >> 2;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -370,33 +311,6 @@ public class Render extends Canvas {
 			image[i] = 100 - (y / 6) << 16 | 100 - (int) (y / 6) << 8 | 100 - (int) (y / 6);
 		}
 		return image;
-	}
-
-	/**
-	 * Draws a string
-	 * 
-	 * @param label String to be drawn
-	 * @param x     coordinate value of the middle of the string
-	 * @param y     coordinate value of the string
-	 * @param font  Font to be used
-	 * @param color Color of the string
-	 */
-
-	public void drawString(String label, int x, int y, Font font, int color) {
-		int carriage = 0;
-		int letter;
-		int length = font.getStringWidth(label);
-		for (int i = 0; i < label.length(); i++) {
-			letter = label.charAt(i);
-			if (letter == 7) {
-				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(),
-						Image.getScreenBlend(font.getLetter(letter), font.getSize(), 250 << 16 | 250 << 8), 0);
-			} else {
-				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(),
-						Image.getScreenBlend(font.getLetter(letter), font.getSize(), color), 0);
-			}
-			carriage += font.getKern(letter);
-		}
 	}
 
 	public void drawLandLine(Point p1, Point p2, int color, int background) {
@@ -507,10 +421,10 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian()+3.14f);
 			}
 		}
@@ -624,10 +538,10 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian()+3.14f);
 			}
 		}
@@ -722,10 +636,10 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, Image.getScreenBlend(arrow, 18, color),
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
 						p2.subVec(p1).getRadian()+3.14f);
 			}
 		}

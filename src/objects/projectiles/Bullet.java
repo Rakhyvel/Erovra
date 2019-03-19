@@ -1,8 +1,8 @@
 package objects.projectiles;
 
-import main.Image;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 import utility.Vector;
@@ -15,6 +15,7 @@ import utility.Vector;
  *
  */
 public class Bullet extends Projectile {
+	Image bullet = new Image("/res/projectiles/bullet.png", 2, 2);
 
 	public Bullet(Point position, Nation nation, Vector velocity, float cal, UnitID id) {
 		super(position, nation);
@@ -35,7 +36,6 @@ public class Bullet extends Projectile {
 
 	@Override
 	public void render(Render r) {
-		r.drawImage((int) position.getX(), (int) position.getY(), 2, Image.getScreenBlend(r.bullet, 2, nation.color),
-				0);
+		r.drawImage((int) position.getX(), (int) position.getY(), bullet.getScreenBlend(nation.color),0);
 	}
 }

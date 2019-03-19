@@ -3,6 +3,7 @@ package objects.projectiles;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
+import objects.gui.Image;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -16,6 +17,8 @@ import utility.Vector;
  */
 public class Torpedo extends Projectile {
 	private Point startingPoint;
+	Image torpedo1 = new Image("/res/projectiles/torpedo.png", 3, 14);
+	Image torpedo2 = new Image("/res/projectiles/torpedo1.png", 1, 14);
 
 	public Torpedo(Point position, Nation nation, Vector velocity) {
 		super(position, nation);
@@ -46,9 +49,9 @@ public class Torpedo extends Projectile {
 		
 		float opacity = (float) (0.0019*Math.sqrt(-(position.getDist(startingPoint)-70000)));
 		if (Main.ticks % 8 < 4) {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 3, r.torpedo, nation.color, direction,opacity);
+			r.drawImage((int) position.getX(), (int) position.getY(), torpedo1.getScreenBlend((int)(opacity*255)<<24 | 255<<16 | 255<<8 | 255), direction);
 		} else {
-			r.drawImageScreen((int) position.getX(), (int) position.getY(), 1, r.torpedo1, nation.color, direction,opacity);
+			r.drawImage((int) position.getX(), (int) position.getY(), torpedo2.getScreenBlend((int)(opacity*255)<<24 | 255<<16 | 255<<8 | 255), direction);
 		}
 	}
 

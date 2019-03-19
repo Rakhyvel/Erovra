@@ -5,6 +5,7 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -17,6 +18,8 @@ import utility.Point;
 public class Cavalry extends Unit {
 
 	private float cal;
+	int weightColor = 255<<24;
+	Image cavalry;
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -24,14 +27,20 @@ public class Cavalry extends Unit {
 			speed = .3f;
 			defense = 2;
 			cal = 0.5f;
+			weightColor = Render.lighten(nation.color);
+			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			defense = 2;
 			cal = 2f;
+			weightColor = nation.color;
+			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else {
 			speed = .05f;
 			defense = 2.5f;
 			cal = 2.5f;
+			weightColor = Render.darken(nation.color);
+			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		}
 		id = UnitID.CAVALRY;
 	}
@@ -71,17 +80,10 @@ public class Cavalry extends Unit {
 				}
 			}
 				
-			if (getWeight() == UnitID.LIGHT)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.lighten(nation.color),
-						direction);
-			if (getWeight() == UnitID.MEDIUM)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, nation.color, direction);
-			if (getWeight() == UnitID.HEAVY)
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 32, r.cavalry, r.darken(nation.color),
-						direction);
+
+			r.drawImage((int) position.getX(), (int) position.getY(), cavalry, direction);
 			if (hit > 1) {
-				r.drawImageScreen((int) position.getX(), (int) position.getY(), 36, r.hitSprite, nation.color,
-						direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), r.hitSprite, direction);
 			}
 		}
 	}

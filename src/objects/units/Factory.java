@@ -1,11 +1,11 @@
 package objects.units;
 
-import main.Image;
 import main.Main;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
+import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -19,6 +19,7 @@ public class Factory extends Industry {
 
 	private boolean spotted = false;
 	private boolean cavalry = true;
+	Image factory;
 
 	public Factory(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -29,6 +30,7 @@ public class Factory extends Industry {
 			cavalry = false;
 		}
 		dropDownHeight = 150;
+		factory = new Image("/res/buildings/factory.png", 32, 32).getScreenBlend(nation.color);
 	}
 
 	@Override
@@ -105,9 +107,9 @@ public class Factory extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, Image.getScreenBlend(r.factory, 32, nation.color),0);
+			r.drawImage((int) position.getX(), (int) position.getY(), factory,0);
 			if (hit > 1 || isSelected()) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, Image.getScreenBlend(r.cityHit, 36, nation.color),0);
+				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
 			}
 		}
 	}
