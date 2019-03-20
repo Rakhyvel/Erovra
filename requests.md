@@ -13,6 +13,9 @@
 - Artillery range is in wrong position
 - Bombs are drawn wrong, probably from resizing
 - Can still highlight units when dropdown is open
+- AI should focus on making two cities first
+- Dropboxes should follow units
+- Decommisioning should lower costs
 
 - Repair function
 	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
