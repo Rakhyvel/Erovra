@@ -2,6 +2,8 @@
 	- Faster production
 	- More health
 	- Takes a minute to convert
+	- If not full health, should repair, taking longer the more damaged and higher it is
+- Repair function
 - Bullets should have streaks
 - Make cruisers a lil more rotund
 - Add gunners to bombers
@@ -16,9 +18,10 @@
 - AI should focus on making two cities first
 - Dropboxes should follow units
 - Decommisioning should lower costs
+- Airplanes should select themselves only if nothing else is
+- Really gotta try to fix airplane aim
+- Can't decommision cities, need to to be able to repair/upgrade
 
-- Repair function
-	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
 - Squad functions
 	- Patrol
 	- Task forces

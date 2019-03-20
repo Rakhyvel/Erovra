@@ -12,7 +12,7 @@ public class Map {
 	public static float[][] mountain = new float[1025][513];
 	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
-	public static Point[] points = new Point[513];
+	public static Point[] points = new Point[1025];
 	Image mapImg = new Image("/res/projectiles/bullet.png", 2, 2);
 	MapID id;
 
@@ -68,12 +68,12 @@ public class Map {
 				}
 			} else if (id == MapID.RIVER) {
 				points[0] = new Point(rand.nextInt(512) + 256, 0);
-				points[512] = new Point(rand.nextInt(512) + 256, 512);
-				for (int n = 8; n >= 0; n--) {
+				points[1024] = new Point(rand.nextInt(512) + 256, 512);
+				for (int n = 9; n >= 0; n--) {
 					int p = 1 << n;
-					for (int i = p; i < 512; i += p * 2) {
+					for (int i = p; i < 1024; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
-						double offset = (n/2)*(512 * rand.nextFloat() - 256f)/(11-n);
+						double offset = (512 * rand.nextFloat() - 256f)/(10-n);
 						points[i].setX(points[i].getX() + offset);
 					}
 				}
@@ -82,13 +82,13 @@ public class Map {
 					int y = i / 1025;
 					int smallestDistance = 1024;
 					Point point = new Point(x, y);
-					for (int i2 = 0; i2 < 512; i2++) {
+					for (int i2 = 0; i2 < 1024; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
 						if (tempDist < smallestDistance) {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (float) Math.min((smallestDistance+100) / 320.0f, Math.min(((smallestDistance + 900) / 2000.0f), 256.0f/(y+1)));
+					islandMask[i] = (float) Math.min((smallestDistance+100) / 320.0f, (smallestDistance + 900) / 2000.0f);
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
