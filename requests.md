@@ -5,8 +5,15 @@
 - Bullets should have streaks
 - Make cruisers a lil more rotund
 - Add gunners to bombers
+- Errormessage doens't fade out properly
+	- Or topedos
+- Can't change planes target
+	- Attackers do change targets, but revert when there are no units around
+- Bombers can trap user if they were selected as they dropped bombs
+- Artillery range is in wrong position
+- Bombs are drawn wrong, probably from resizing
+- Can still highlight units when dropdown is open
 
-- Zoom function
 - Repair function
 	- Buildings (except capital) can pay 10 coins to get half of their lost health back OR
 - Squad functions
@@ -17,6 +24,10 @@
 
 ### Update 1.1:
 #### Instructions and menus
+- Instructions function
+- Settings function
+- Map choose screen
+- Zoom function
 
 ### Update 1.2:
 #### Sounds and animations
