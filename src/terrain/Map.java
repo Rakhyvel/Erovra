@@ -73,7 +73,7 @@ public class Map {
 					int p = 1 << n;
 					for (int i = p; i < 512; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
-						double offset = (512 * rand.nextFloat() - 256f)/(11-n);
+						double offset = (n/2)*(512 * rand.nextFloat() - 256f)/(11-n);
 						points[i].setX(points[i].getX() + offset);
 					}
 				}
@@ -88,7 +88,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (float) Math.min((smallestDistance+100) / 320.0f, (smallestDistance + 900) / 2000.0f);
+					islandMask[i] = (float) Math.min((smallestDistance+100) / 320.0f, Math.min(((smallestDistance + 900) / 2000.0f), 256.0f/(y+1)));
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
