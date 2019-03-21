@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Random;
+
 public enum MapID {
 	// Fully flat green
 	PLAINS,
@@ -12,5 +14,7 @@ public enum MapID {
 	// In the depths of a mountain range maze
 	MOUNTAIN,
 	// Whatever you want little man
-	CUSTOM;
+	CUSTOM,
+	// Choses a random one
+	RANDOM;
 }

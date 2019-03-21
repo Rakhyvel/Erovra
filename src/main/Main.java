@@ -1,17 +1,13 @@
 package main;
 
-import input.Keyboard;
-import input.Mouse;
-
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
-import javax.swing.filechooser.FileSystemView;
 
+import input.Keyboard;
+import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -34,8 +30,9 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.RANDOM;
 	private static double dt = 50 / 3.0;
+	static Random rand = new Random();
 
 	// Window
 	public static final int width = 1024;
@@ -137,16 +134,19 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
-		sweden.setAIControlled(false);
+		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
+//		sweden.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
+		MapID id = mapID;
+		if(mapID == MapID.RANDOM)
+			id = MapID.values()[rand.nextInt(5)];
 
 		do {
 			// Generate a new map
-			map.generateMap((int) System.currentTimeMillis() & 255, mapID);
+			map.generateMap((int) System.currentTimeMillis() & 255, id);
 
 			// Clear all objects in each nation
 			sweden.purgeAll();

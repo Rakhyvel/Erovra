@@ -138,6 +138,7 @@ public class Port extends Industry {
 				nation.unitArray.remove(this);
 				d.shouldClose();
 				nation.coins+=10;
+				nation.setPortCost(nation.getPortCost() / 2);
 			}
 		} else {
 			if (d.buttonsHovered == 2) {

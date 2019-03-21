@@ -28,6 +28,7 @@ public class Map {
 	public void generateMap(int seed, MapID map) {
 		rand.setSeed(seed);
 		id = map;
+		
 		if (id == MapID.CUSTOM) {
 			int[] customImage = mapImg.loadImage("/res/island.jpg", 1024, 512);
 			for (int i = 0; i < 1024 * 512 && i < customImage.length; i++) {

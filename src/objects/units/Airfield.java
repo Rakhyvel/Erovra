@@ -102,6 +102,7 @@ public class Airfield extends Industry {
 				nation.unitArray.remove(this);
 				d.shouldClose();
 				nation.coins += 10;
+				nation.setAirfieldCost(nation.getAirfieldCost() / 2);
 			}
 		} else {
 			if (d.buttonsHovered == 2) {
