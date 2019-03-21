@@ -10,6 +10,7 @@ public class Map {
 
 	Random rand = new Random();
 	public static float[][] mountain = new float[1025][513];
+	public static float[][] mountainFinal = new float[1025][513];
 	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[1025];

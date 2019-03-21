@@ -569,7 +569,6 @@ public abstract class Unit {
 			smallestUnit.engage();
 			if (nation.isAIControlled()) {
 				if (smallestDistance < 9000) setTarget(position);
-				setFacing(smallestPoint);
 			}
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(smallestPoint)));

@@ -10,6 +10,7 @@ import objects.projectiles.Bullet;
 import output.Render;
 import utility.Point;
 import utility.Trig;
+import utility.Vector;
 
 /**
  * Handles the logic and rendering for planes
@@ -22,7 +23,7 @@ public class Plane extends Unit {
 	private Point patrolPoint;
 	private boolean bombsAway = false;
 	private Point secondaryTarget = new Point(nation.capital.position);
-	int weightColor = 255<<24;
+	int weightColor = 255 << 24;
 	Image plane1;
 	Image plane2;
 	Image planeHit;
@@ -32,7 +33,8 @@ public class Plane extends Unit {
 		if (weight == UnitID.LIGHT) {
 			speed = .9f;
 			defense = 1f;
-			patrolPoint = new Point(nation.enemyNation.capital.getPosition()).addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
+			patrolPoint = new Point(nation.enemyNation.capital.getPosition())
+					.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 			weightColor = Render.lighten(nation.color);
 			plane1 = new Image("/res/air/fighter.png", 36, 35).getScreenBlend(weightColor);
 			plane2 = new Image("/res/air/fighter1.png", 36, 35).getScreenBlend(weightColor);
@@ -59,11 +61,11 @@ public class Plane extends Unit {
 	@Override
 	public void tick(double t) {
 		detectHit();
-		if(health > 0) {
+		if (health > 0) {
 			if (getWeight() != UnitID.HEAVY) {
 				planeAim();
 				patrol();
-				if(!nation.isAIControlled())
+				if (!nation.isAIControlled())
 					clickToPatrol();
 			} else {
 				if (getTarget().getX() == -1) {
@@ -87,7 +89,8 @@ public class Plane extends Unit {
 						nation.addProjectile(new Bomb(position, nation));
 						bombsAway = true;
 						if (Main.world.selectedUnit != null) {
-							if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
+							if (selected || Main.world.selectedUnit.equals(this))
+								Main.world.selectedUnit = null;
 						}
 					}
 				}
@@ -114,11 +117,31 @@ public class Plane extends Unit {
 	 */
 	void patrol() {
 		// If you're not dead on target, turn, or if you're too close, turn
-		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99)
-			a += 0.035 * getSpeed();
-		// If you're directly behind, turn slower
-		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < -0.5)
-			a -= 0.025 * getSpeed();
+//		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99)
+//			a += 0.035 * getSpeed();
+//		// If you're directly behind, turn slower
+//		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < -0.5)
+//			a -= 0.025 * getSpeed();
+		Vector targetVector = patrolPoint.subVec(position).normalize();
+		Vector determinateVector = new Vector(0,0);
+		// x = x * cos(pi/2)-y*sin(pi/2)
+		// y = x * sin(pi/2)+y*cos(pi/2)
+		determinateVector
+				.setX((float) (velocity.getX() * Math.cos(Math.PI / 2) - velocity.getY() * Math.sin(Math.PI / 2)));
+		determinateVector
+				.setY((float) (velocity.getX() * Math.sin(Math.PI / 2) + velocity.getY() * Math.cos(Math.PI / 2)));
+
+		if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > -0.5) {
+			if(velocity.normalize().dot(position.subVec(patrolPoint).normalize()) < 0.99) {
+				if (determinateVector.dot(targetVector) > 0) {
+					a += 0.03f * getSpeed();
+				} else{
+					a -= 0.03f * getSpeed();
+				}
+			}
+		} else {
+			a += 0.015f * getSpeed();
+		}
 		setTarget(position.addPoint(new Point(Trig.sin(a), Trig.cos(a))));
 
 	}
@@ -128,7 +151,7 @@ public class Plane extends Unit {
 	 */
 	void planeAim() {
 		int smallestDistance = 1310720;
-		if(weight == UnitID.MEDIUM)
+		if (weight == UnitID.MEDIUM)
 			smallestDistance = 36864;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
@@ -144,7 +167,7 @@ public class Plane extends Unit {
 					&& !tempUnit.isBoarded() && tempUnit.getID() != UnitID.NONE) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = 0;
-				if(weight == UnitID.MEDIUM) {
+				if (weight == UnitID.MEDIUM) {
 					tempDist = (int) secondaryTarget.getDist(tempPoint);
 				} else {
 					tempDist = (int) position.getDist(tempPoint);
@@ -160,7 +183,8 @@ public class Plane extends Unit {
 		}
 		if (smallestUnit != null) {
 			smallestUnit.engage();
-			patrolPoint = new Point(smallestPoint.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4)));
+			patrolPoint = new Point(smallestPoint
+					.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4)));
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && smallestDistance < 73728) {
 				if ((Main.ticks - born) % 15 == 0 && getWeight() == UnitID.LIGHT) {
 					nation.addProjectile(
@@ -175,8 +199,8 @@ public class Plane extends Unit {
 				}
 			}
 		} else {
-			if(nation.isAIControlled()){
-				if(nation.airSupremacy > nation.enemyNation.airSupremacy) {
+			if (nation.isAIControlled()) {
+				if (nation.airSupremacy > nation.enemyNation.airSupremacy) {
 					secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
 				} else {
 					secondaryTarget = new Point(nation.capital.getPosition());
@@ -212,10 +236,10 @@ public class Plane extends Unit {
 		float direction = position.subVec(getTarget()).getRadian();
 		if (velocity.getY() > 0)
 			direction += 3.14f;
-		if(!nation.isAIControlled()) {
+		if (!nation.isAIControlled()) {
 			if (weight == UnitID.HEAVY && !bombsAway) {
 				if (isSelected()) {
-					r.drawImage((int) target.getX(), (int) target.getY(), r.target.getScreenBlend(nation.color),0);
+					r.drawImage((int) target.getX(), (int) target.getY(), r.target.getScreenBlend(nation.color), 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
@@ -223,18 +247,20 @@ public class Plane extends Unit {
 				}
 			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
 				if (isSelected()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), r.target.getScreenBlend(nation.color),0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(),
+							r.target.getScreenBlend(nation.color), 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), r.target.getScreenBlend(nation.color),0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(),
+							r.target.getScreenBlend(nation.color), 0);
 				}
 			}
 		}
 
 		if (Main.ticks % 4 < 2) {
-			r.drawImage((int) position.getX(), (int) position.getY(), plane1,direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), plane1, direction);
 		} else {
-			r.drawImage((int) position.getX(), (int) position.getY(), plane2,direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), plane2, direction);
 		}
 		if (hit > 1)
 			r.drawImage((int) position.getX(), (int) position.getY(), planeHit, direction);

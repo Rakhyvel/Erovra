@@ -44,6 +44,9 @@ public class City extends Unit {
 				nation.addUnit(new Infantry(position, nation));
 				nation.setLandSupremacy(1);
 			}
+			if (!nation.isAIControlled()) {
+				clickToDropDown();
+			}
 		}
 	}
 

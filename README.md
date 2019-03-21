@@ -9,6 +9,8 @@
 - Added top bar for coins (In prep for task forces)
 - Can no longer see enemy plane patrol point
 - Ships don't overlap anymore
+- Updated rendering process for images to be more stream lined
+- Planes, especially fighters, have better targeting AI
 
 ### Erovra 1.0.14
 - Fixed dropdown height for industry
