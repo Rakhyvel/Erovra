@@ -32,13 +32,13 @@ public class GameMenu extends Menu {
 	@Override
 	public void render(Render r) {
 		if (Main.gameState == StateID.VICTORY) {
-			r.drawString("Victory!", 512, 160, r.font32, 23 << 16 | 128 << 8 | 230);
-			r.drawString("Time: " + Main.ticks / 3600 + " minutes", 512, 192, r.font16, 255 << 16 | 255 << 8 | 255);
+			r.drawString("Victory!", 512, 160, r.font32, 255<<24 | 23 << 16 | 128 << 8 | 230);
+			r.drawString("Time: " + Main.ticks / 3600 + " minutes", 512, 192, r.font16, 255<<24 | 255 << 16 | 255 << 8 | 255);
 			drawButton("Main Menu", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
 		} else if (Main.gameState == StateID.DEFEAT) {
-			r.drawString("Defeat!", 512, 160, r.font32, 230 << 16 | 23 << 8 | 23);
-			r.drawString("Time: " + Main.ticks / 3600 + " minutes", 512, 192, r.font16, 255 << 16 | 255 << 8 | 255);
+			r.drawString("Defeat!", 512, 160, r.font32, 255<<24 | 230 << 16 | 23 << 8 | 23);
+			r.drawString("Time: " + Main.ticks / 3600 + " minutes", 512, 192, r.font16, 255<<24 | 255 << 16 | 255 << 8 | 255);
 			drawButton("Main Menu", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
 		} else if (Main.gameState == StateID.PAUSED) {

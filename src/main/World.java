@@ -186,7 +186,7 @@ public class World {
 	 */
 	public void drawCoins(Render r) {
 		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 993, 10, r.font16,
-				250 << 16 | 250 << 8 | 250);
+				255<<24 | 250 << 16 | 250 << 8 | 250);
 	}
 
 	/**

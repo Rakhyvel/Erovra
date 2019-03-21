@@ -73,7 +73,7 @@ public class Map {
 					int p = 1 << n;
 					for (int i = p; i < 1024; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
-						double offset = (512 * rand.nextFloat() - 256f)/(10-n);
+						double offset = (512 * rand.nextFloat() - 256f)/(12-n);
 						points[i].setX(points[i].getX() + offset);
 					}
 				}

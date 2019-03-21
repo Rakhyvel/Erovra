@@ -4,16 +4,17 @@
 	- Takes a minute to convert
 	- If not full health, should repair, taking longer the more damaged and higher it is
 - Repair function
-- Bullets should have streaks
-- Make cruisers a lil more rotund
-- Add gunners to bombers
-- Errormessage doens't fade out properly
-	- Or topedos
-- Can't change planes target
-	- Attackers do change targets, but revert when there are no units around
-- Bombers can trap user if they were selected as they dropped bombs
-- Artillery range is in wrong position
-- Bombs are drawn wrong, probably from resizing
+	- Name
+	- Health
+	- Repair/upgrade button
+	- Building list
+- ~~Errormessage doens't fade out properly~~
+	- ~~Or topedos~~
+- ~~Can't change planes target~~
+	- ~~Attackers do change targets, but revert when there are no units around~~
+- ~~Bombers can trap user if they were selected as they dropped bombs~~
+- ~~Artillery range is in wrong position~~
+- ~~Bombs are drawn wrong, probably from resizing~~
 - Can still highlight units when dropdown is open
 - AI should focus on making two cities first
 - Dropboxes should follow units
@@ -37,6 +38,7 @@
 
 ### Update 1.2:
 #### Sounds and animations
+- Death animation, ghost out and drain color
 
 ### Update 1.3:
 #### Gamemodes

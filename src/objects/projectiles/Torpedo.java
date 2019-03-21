@@ -47,11 +47,13 @@ public class Torpedo extends Projectile {
 		if (velocity.getY() > 0)
 			direction += 3.14f;
 		
-		float opacity = (float) (0.0019*Math.sqrt(-(position.getDist(startingPoint)-70000)));
+		float opacity = (float) (0.001*Math.sqrt(-(position.getDist(startingPoint)-70000)));
+		torpedo1.setOpacity(opacity);
+		torpedo2.setOpacity(opacity);
 		if (Main.ticks % 8 < 4) {
-			r.drawImage((int) position.getX(), (int) position.getY(), torpedo1.getScreenBlend((int)(opacity*255)<<24 | 255<<16 | 255<<8 | 255), direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), torpedo1.getScreenBlend(255<<24 | 255<<16 | 255<<8 | 255), direction);
 		} else {
-			r.drawImage((int) position.getX(), (int) position.getY(), torpedo2.getScreenBlend((int)(opacity*255)<<24 | 255<<16 | 255<<8 | 255), direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), torpedo2.getScreenBlend(255<<24 | 255<<16 | 255<<8 | 255), direction);
 		}
 	}
 

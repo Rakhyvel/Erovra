@@ -172,7 +172,7 @@ public class Render extends Canvas {
 		}
 
 		for (float i = 0; i < image.length; i+=0.3333f) {
-			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f);
+			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f)*img.getOpacity();
 			double x1 = (i % w) - w / 2;
 			double y1 = i / w - h / 2;
 			double x2 = (int) (x1 + x);
@@ -224,9 +224,9 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter)).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(250 << 16 | 250 << 8);
 			} else {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter)).getScreenBlend(color);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(color);
 			}
 			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
 			carriage += font.getKern(letter);

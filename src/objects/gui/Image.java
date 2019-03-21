@@ -15,23 +15,25 @@ import main.Main;
  */
 public class Image {
 
+	private float opacity = 1;
 	private int[] pixels;
-	String path;
+	private String path;
 	private int width;
 	int height;
 
 	public Image(String path, int width, int height) {
-		this.path = path;
+		this.setPath(path);
 		this.setWidth(width);
 		this.height = height;
 		setPixels(loadImage(path, width, height));
 	}
 
-	public Image(String path, int width, int height, int[] pixels) {
-		this.path = path;
+	public Image(String path, int width, int height, int[] pixels, float opacity) {
+		this.setPath(path);
 		this.setWidth(width);
 		this.height = height;
 		setPixels(pixels);
+		this.opacity = opacity;
 	}
 
 	/**
@@ -71,15 +73,15 @@ public class Image {
 	 */
 	public Image resize(float factor) {
 		float invFactor = 1 / factor;
-		float newWidth = factor * getWidth();
-		int[] img2 = new int[(int) (getWidth() * factor) * (int) (height * factor)];
+		int newWidth = (int)(factor * getWidth());
+		int[] img2 = new int[(int) (getWidth() * factor * height * factor)];
 		for (int i = 0; i < img2.length; i++) {
 			int x = (int) ((i % newWidth) * invFactor);
 			int y = (int) ((i / newWidth) * invFactor);
 			int id = y * getWidth() + x;
 			if (id >= 0 && id < getPixels().length) img2[i] = getPixels()[y * getWidth() + x];
 		}
-		return new Image(path, (int) (getWidth() * factor), (int) (height * factor),img2);
+		return new Image(getPath(), (int) (getWidth() * factor), (int)(img2.length/newWidth),img2, opacity);
 	}
 
 	/**
@@ -114,7 +116,7 @@ public class Image {
 			id = (y * 2048 + x);
 			if (id >= 0 && id < getPixels().length && x >= 0 && x < 2048) img2[i] = getPixels()[id];
 		}
-		return new Image(path, getWidth(), height, img2);
+		return new Image(getPath(), getWidth(), height, img2, opacity);
 	}
 
 	public Image getScreenBlend(int color) {
@@ -145,7 +147,7 @@ public class Image {
 				img2[i] = (255 << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			}
 		}
-		return new Image(path, getWidth(), height, img2);
+		return new Image(getPath(), getWidth(), height, img2, opacity);
 	}
 
 	public int getWidth() {
@@ -162,5 +164,21 @@ public class Image {
 
 	public void setPixels(int[] pixels) {
 		this.pixels = pixels;
+	}
+
+	public float getOpacity() {
+		return opacity;
+	}
+
+	public void setOpacity(float opacity) {
+		this.opacity = opacity;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

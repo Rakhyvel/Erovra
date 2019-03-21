@@ -40,7 +40,7 @@ public class Bomb extends Projectile {
 
 	@Override
 	public void render(Render r) {
-		double scale = (-1/360000.0)*(600.0-fall)*(600.0-fall)+1.0;
+		double scale = (-1/360000.0)*(600.0-fall)*(600.0-fall)+1.1;
 		if (fall > 1) {
 			r.drawImage((int) position.getX(), (int) position.getY(), bomb.resize((float)scale), 0);
 		}

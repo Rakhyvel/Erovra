@@ -76,8 +76,8 @@ public class Artillery extends Unit {
 					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
-					if(weight == UnitID.MEDIUM) r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, r.medArtRange,0);
-					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX() - 128, (int) position.getY() - 128, r.heavyArtRange,0);
+					if(weight == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), r.medArtRange,0);
+					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), r.heavyArtRange,0);
 				}
 			}
 

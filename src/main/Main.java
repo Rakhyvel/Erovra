@@ -1,12 +1,17 @@
 package main;
 
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-
 import input.Keyboard;
 import input.Mouse;
+
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileSystemView;
+
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -29,7 +34,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RIVER;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 
 	// Window
@@ -114,7 +119,7 @@ public class Main {
 	 * 41 for mac
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 41);
+		frame.setSize(width + 7, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);

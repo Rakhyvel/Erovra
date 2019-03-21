@@ -33,7 +33,8 @@ public class Airfield extends Industry {
 	public void tick(double t) {
 		detectHit();
 		if(health > 0) {
-			if (engaged) spotted = true;
+			if (engaged || hit > 0)
+				spotted = true;
 			engaged = false;
 			setStart(getStart() - 1);
 			if (!nation.isAIControlled()) {

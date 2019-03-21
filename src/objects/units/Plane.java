@@ -86,6 +86,9 @@ public class Plane extends Unit {
 						setTarget(new Point(nation.capital.getPosition()));
 						nation.addProjectile(new Bomb(position, nation));
 						bombsAway = true;
+						if (Main.world.selectedUnit != null) {
+							if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
+						}
 					}
 				}
 			}
@@ -172,10 +175,12 @@ public class Plane extends Unit {
 				}
 			}
 		} else {
-			if(nation.airSupremacy > nation.enemyNation.airSupremacy && nation.isAIControlled()) {
-				secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
-			} else {
-				secondaryTarget = new Point(nation.capital.getPosition());
+			if(nation.isAIControlled()){
+				if(nation.airSupremacy > nation.enemyNation.airSupremacy) {
+					secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
+				} else {
+					secondaryTarget = new Point(nation.capital.getPosition());
+				}
 			}
 			patrolPoint = new Point(secondaryTarget);
 		}

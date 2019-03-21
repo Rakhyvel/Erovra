@@ -198,12 +198,11 @@ public class Ship extends Unit {
 			if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
 
 			if (!nation.isAIControlled()) {
+				if (weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), r.medArtRange, 0);
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-					if (weight == UnitID.HEAVY) r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, r.medArtRange, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
-					if (weight == UnitID.HEAVY) r.drawImage((int) position.getX() - 64, (int) position.getY() - 64, r.medArtRange, 0);
 				}
 			}
 
