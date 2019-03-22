@@ -91,24 +91,24 @@ public class Infantry extends Unit {
 	public void dropDownRender(Render r, DropDown d) {
 		d.setPosition(position);
 		if (nation.getCoinAmount() >= nation.getCityCost()) {
-			d.drawOption("City (" + nation.getCityCost() + ")", 1, 0.5f, r);
+			d.drawOption("City (" + nation.getCityCost() + ")", 2, 0.5f, r);
 		} else {
-			d.drawOption("City (" + nation.getCityCost() + ")", 1, 0.7f, r);
+			d.drawOption("City (" + nation.getCityCost() + ")", 2, 0.7f, r);
 		}
 		if (nation.getCoinAmount() >= nation.getFactoryCost()) {
-			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 2, 0.5f, r);
+			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 3, 0.5f, r);
 		} else {
-			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 2, 0.7f, r);
+			d.drawOption("Factory (" + nation.getFactoryCost() + ")", 3, 0.7f, r);
 		}
 		if (nation.getCoinAmount() >= nation.getPortCost()) {
-			d.drawOption("Port (" + nation.getPortCost() + ")", 3, 0.5f, r);
+			d.drawOption("Port (" + nation.getPortCost() + ")", 4, 0.5f, r);
 		} else {
-			d.drawOption("Port (" + nation.getPortCost() + ")", 3, 0.7f, r);
+			d.drawOption("Port (" + nation.getPortCost() + ")", 4, 0.7f, r);
 		}
 		if (nation.getCoinAmount() >= nation.getAirfieldCost()) {
-			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0.5f, r);
+			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 5, 0.5f, r);
 		} else {
-			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0.7f, r);
+			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 5, 0.7f, r);
 		}
 	}
 }

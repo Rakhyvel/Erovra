@@ -56,16 +56,16 @@ public class DropDown extends Menu {
 	@Override
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
-			r.drawRect((int) getPosition().getX(), (int) getPosition().getY(), 170, 30, 128 << 24|64 << 16 | 64 << 8 | 64);
-			r.drawString(String.valueOf(unit.getID()) + " (" + (int) unit.getHealth() + "/10)",
-					(int) getPosition().getX() + 85, (int) getPosition().getY() + 10, r.font16,
-					255 << 24|250 << 16 | 250 << 8 | 250);
-
+			r.drawRect((int) getPosition().getX(), (int) getPosition().getY()-6, 170, 30,
+					128 << 24 | 64 << 16 | 64 << 8 | 64);
+			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 14, (int) getPosition().getY() + 14-6,
+					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+			drawOption("Upgrade 1m", 1, 0.33f, r);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX() + 5, (int) getPosition().getY() + 23, 156, 6, 255 << 24);
-			r.drawRect((int) getPosition().getX() + 7, (int) getPosition().getY() + 25, (int) (15.2 * unit.getHealth()),
-					2, unit.nation.color);
+			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 54, 170, 6, 255 << 24);
+			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 56, (int) (17 * unit.getHealth()),
+					4, unit.nation.color);
 		}
 	}
 
@@ -86,11 +86,11 @@ public class DropDown extends Menu {
 			textColor = 255 << 16;
 		}
 		if (buttonsHovered == buttonID && shade != 0.7f) {
-			r.drawRect(x, y + buttonID * 30, 170, 30, 128 << 24|200 << 16 | 200 << 8 | 200);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
+			r.drawRect(x, y + buttonID * 30, 170, 30, 128 << 24 | 200 << 16 | 200 << 8 | 200);
+			r.drawString(label, x + 14, y + 14 + buttonID * 30, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 		} else {
-			r.drawRect(x, y + buttonID * 30, 170, 30, (int)(shade*255) << 24);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 255<<24 | textColor);
+			r.drawRect(x, y + buttonID * 30, 170, 30, (int) (shade * 255) << 24);
+			r.drawString(label, x + 14, y + 14 + buttonID * 30, r.font16, 255 << 24 | textColor, false);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class DropDown extends Menu {
 		if (Main.mouse.getX() < getPosition().getX()) {
 			return 0;
 		}
-		if (Main.mouse.getX() > getPosition().getX()+170) {
+		if (Main.mouse.getX() > getPosition().getX() + 170) {
 			return 0;
 		}
 		return (int) (Main.mouse.getY() - getPosition().getY() + 30) / 30 - 1;
@@ -215,25 +215,26 @@ public class DropDown extends Menu {
 				}
 				product += " " + seconds + "s";
 			}
-			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30, 128 << 24|64 << 16 | 64 << 8 | 64);
+			r.drawRect((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30,
+					128 << 24 | 64 << 16 | 64 << 8 | 64);
 			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
-					255<<24 | 250 << 16 | 250 << 8 | 250);
+					255 << 24 | 250 << 16 | 250 << 8 | 250);
 			drawOption("Cancel order (-10)", 2, 0.5f, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
-				drawOption(light + " (" + lightCost + ")", 1, 0.5f, r);
+				drawOption(light + " (" + lightCost + ")", 2, 0.5f, r);
 			} else {
-				drawOption(light + " (" + lightCost + ")", 1, 0.7f, r);
+				drawOption(light + " (" + lightCost + ")", 2, 0.7f, r);
 			}
 			if (unit.nation.getCoinAmount() >= medCost) {
-				drawOption(medium + " (" + medCost + ")", 2, 0.5f, r);
+				drawOption(medium + " (" + medCost + ")", 3, 0.5f, r);
 			} else {
-				drawOption(medium + " (" + medCost + ")", 2, 0.7f, r);
+				drawOption(medium + " (" + medCost + ")", 3, 0.7f, r);
 			}
 			if (unit.nation.getCoinAmount() >= heavyCost) {
-				drawOption(heavy + " (" + heavyCost + ")", 3, 0.5f, r);
+				drawOption(heavy + " (" + heavyCost + ")", 4, 0.5f, r);
 			} else {
-				drawOption(heavy + " (" + heavyCost + ")", 3, 0.7f, r);
+				drawOption(heavy + " (" + heavyCost + ")", 4, 0.7f, r);
 			}
 			if (!light.contains("Light tank") && !light.contains("Anti air")) {
 				drawOption("Decommision (-10)", 4, .5f, r);
@@ -246,7 +247,7 @@ public class DropDown extends Menu {
 	}
 
 	public int getDropDownHeight() {
-		if(unit != null)
+		if (unit != null)
 			return unit.dropDownHeight;
 		return 0;
 	}

@@ -232,6 +232,26 @@ public class Render extends Canvas {
 			carriage += font.getKern(letter);
 		}
 	}
+	public void drawString(String label, int x, int y, Font font, int color, boolean centered) {
+		int carriage = 0;
+		int letter;
+		int length = font.getStringWidth(label);
+		Image letterImage;
+		for (int i = 0; i < label.length(); i++) {
+			letter = label.charAt(i);
+			if (letter == 7) {
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(250 << 16 | 250 << 8);
+			} else {
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(color);
+			}
+			if(centered) {
+				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
+			} else {
+				drawImage(x + carriage + font.getSize() / 2, y, letterImage, 0);
+			}
+			carriage += font.getKern(letter);
+		}
+	}
 
 	/**
 	 * Returns a lighter color
