@@ -25,6 +25,7 @@ public class DropDown extends Menu {
 	private boolean shouldClose = false;
 	private int closeTick;
 	private boolean leftClicked;
+	private int tab = 0;
 
 	@Override
 	public void tick() {
@@ -56,13 +57,13 @@ public class DropDown extends Menu {
 	@Override
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
-			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 170, 30,
+			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
 					180 << 24| 64 << 16 | 64 << 8 | 64,7);
 			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 14,
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX()+1, (int) getPosition().getY() + 26, (int) (16.8 * unit.getHealth()),
+			r.drawRect((int) getPosition().getX()+1, (int) getPosition().getY() + 26, (int) (17.8 * unit.getHealth()),
 					4, unit.nation.color);
 		}
 	}
@@ -88,8 +89,29 @@ public class DropDown extends Menu {
 		if (buttonsHovered == buttonID) {
 			rectColor*=3.125;
 		} 
-		r.drawRectBorders(x, y + buttonID * 30, 170, 30, 180<<24|rectColor<<16|rectColor<<8|rectColor,borders);
+		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180<<24|rectColor<<16|rectColor<<8|rectColor,borders);
 		r.drawString(label, x + 7, y + 14 + buttonID * 30, r.font16, textColor, false);
+	}
+	
+	public void drawTab(int tabs, Image[] icons, Render r) {
+		for (int i = 0; i < tabs; i++) {
+			int x = (int) getPosition().getX() + 180/tabs * i;
+			int y = (int) getPosition().getY()+30;
+			int color = 180<<24;
+			int border = 12;
+			if(tab == i) {
+				color = 180<<24 | 32 << 16 | 32 << 8 | 32;
+				border = 4;
+			}
+			if(i == 0)
+				border |= 1;
+			r.drawRectBorders(x, y, 180/tabs, 30, color, border);
+			r.drawImage(x+90/tabs, y+15, icons[i].getScreenBlend(Main.world.friendly.color), -(float)Math.PI/4);
+		}
+	}
+	
+	public void selectTabs(int tabs) {
+		tab = (int)((Main.mouse.getX()-position.getX())/(180/tabs));
 	}
 
 	/**
@@ -159,7 +181,7 @@ public class DropDown extends Menu {
 	 * @return Whether or not the mouse is within the drop down's bounds
 	 */
 	public boolean isMouseInsideDropDown() {
-		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 170
+		return Main.mouse.getX() >= getPosition().getX() && Main.mouse.getX() < getPosition().getX() + 180
 				&& Main.mouse.getY() > getPosition().getY()
 				&& Main.mouse.getY() < getPosition().getY() + getDropDownHeight();
 	}
@@ -176,7 +198,7 @@ public class DropDown extends Menu {
 		if (Main.mouse.getX() < getPosition().getX()) {
 			return 0;
 		}
-		if (Main.mouse.getX() > getPosition().getX() + 170) {
+		if (Main.mouse.getX() > getPosition().getX() + 180) {
 			return 0;
 		}
 		return (int) (Main.mouse.getY() - getPosition().getY() + 30) / 30 - 1;
@@ -213,7 +235,7 @@ public class DropDown extends Menu {
 				}
 				product += " " + seconds + "s";
 			}
-			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 170, 30,
+			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 180, 30,
 					180 << 24| 64 << 16 | 64 << 8 | 64,13);
 			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
 					255 << 24 | 250 << 16 | 250 << 8 | 250);
@@ -233,9 +255,6 @@ public class DropDown extends Menu {
 				drawOption(heavy + " (" + heavyCost + ")", 4, 32, 13, r);
 			} else {
 				drawOption(heavy + " (" + heavyCost + ")", 4, 0, 13, r);
-			}
-			if (!light.contains("Light tank") && !light.contains("Anti air")) {
-				drawOption("Decommision (-10)", 5, 32, 13, r);
 			}
 		}
 	}

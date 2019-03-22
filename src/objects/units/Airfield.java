@@ -20,13 +20,14 @@ import utility.Point;
 public class Airfield extends Industry {
 
 	private boolean spotted = false;
-	Image airfield;
+	private static Image airfield = new Image("/res/buildings/airfield.png", 32, 32);
+	private static Image[] icons = {new Image("/res/air/fighter.png", 36, 35).resize(0.75f),new Image("/res/target.png", 32, 32).resize(0.75f)};
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
 		defense = 2;
 		id = UnitID.AIRFIELD;
-		airfield = new Image("/res/buildings/airfield.png", 32, 32).getScreenBlend(nation.color);
+		airfield = airfield.getScreenBlend(nation.color);
 	}
 
 	@Override
@@ -92,6 +93,9 @@ public class Airfield extends Industry {
 	@Override
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
+			if(d.buttonsHovered == 1) {
+				d.selectTabs(2);
+			}
 			if (d.buttonsHovered == 2) {
 				buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2, 5400);
 			} else if (d.buttonsHovered == 3) {
@@ -118,7 +122,7 @@ public class Airfield extends Industry {
 		dropDownHeight = getDropDownHeight();
 		d.setPosition(position);
 		if(getProduct() == UnitID.NONE)
-			d.drawOption("Upgrade 1m", 1, 32, 13, r);
+			d.drawTab(2, icons, r);
 		d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2, nation.getPlaneCost(), nation.getPlaneCost() / 2, this);
 	}
 
