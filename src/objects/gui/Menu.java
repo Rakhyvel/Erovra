@@ -1,5 +1,6 @@
 package objects.gui;
 
+import main.Main;
 import output.Render;
 
 /**
@@ -45,10 +46,14 @@ public abstract class Menu {
 	 */
 	void drawButton(String label, int x, int y, int buttonID, Render r) {
 		if (buttonsHovered == buttonID) {
-			r.drawRect(x - 110, y - 20, 220, 40, 128 << 24|200 << 16 | 200 << 8 | 200);
+			if(Main.mouse.getMouseLeftDown()) {
+				r.drawRectBorders(x - 110, y - 20, 220, 40, 180 << 24| 128 << 16 | 128 << 8 | 128, 15);
+			} else {
+				r.drawRectBorders(x - 110, y - 20, 220, 40, 180 << 24| 100 << 16 | 100 << 8 | 100, 15);
+			}
 			r.drawString(label, x, y, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
 		} else {
-			r.drawRect(x - 110, y - 20, 220, 40, 128 << 24);
+			r.drawRectBorders(x - 110, y - 20, 220, 40, 180 << 24| 28 << 16 | 30 << 8 | 32, 15);
 			r.drawString(label, x, y, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
 		}
 	}

@@ -154,6 +154,29 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	
+	public void drawRectBorders(int x, int y, int w, int h, int color, int borders) {
+		float alpha = ((color >> 24) & 255) / 255.0f;
+		for (int i = 0; i < w * h; i++) {
+			int x1 = i % w;
+			int y1 = i / w;
+			int id = (y1 + y) * (width + 1) + x1 + x;
+			if (x >= 0 && x < 1025 && id > 0 && id < 1025 * 513) {
+				int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
+				int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				r = (pixels[id] >> 16) & 255;
+				g = (pixels[id] >> 8) & 255;
+				b = pixels[id] & 255;
+				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+				// bottom | right | top | left
+				if((((borders & 1) == 1) && x1 == 0) || (((borders & 2) == 2) && y1 == 0) || (((borders & 4) == 4) && x1 == w-1) || (((borders & 8) == 8) && y1 == h-1)) {
+					pixels[id] = 230 << 16 | 230 << 8 | 230;
+				} else {
+					pixels[id] = newColor + newColor2;
+				}
+			}
+		}
+	}
 
 	/**
 	 * Draws an image
@@ -301,10 +324,10 @@ public class Render extends Canvas {
 	 */
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		int a = (r + g + b);
-		r = (a + r) >> 2;
-		g = (a + g) >> 2;
-		b = (a + b) >> 2;
+		int a = (r + g + b)/3;
+		r = (a + r) >> 1;
+		g = (a + g) >> 1;
+		b = (a + b) >> 1;
 		return r << 16 | g << 8 | b;
 	}
 
@@ -316,7 +339,7 @@ public class Render extends Canvas {
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = desaturate(image[i]);
+			image[i] = desaturate(desaturate(image[i]));
 		}
 		return image;
 	}

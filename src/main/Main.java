@@ -116,7 +116,7 @@ public class Main {
 	 * 41 for mac
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 30);
+		frame.setSize(width + 7, height + 41);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -136,6 +136,7 @@ public class Main {
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
 		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
 		sweden.setAIControlled(false);
+		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);

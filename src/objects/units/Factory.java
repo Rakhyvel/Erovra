@@ -156,14 +156,14 @@ public class Factory extends Industry {
 					nation.getCavalryCost(), nation.getCavalryCost() * 2, this);
 
 			if (getProduct() == UnitID.NONE) {
-				d.drawOption("[ Cavalry >", 4, 0.5f, r);
+				d.drawOption("[ Cavalry >", 4, 200, 15, r);
 			}
 		} else {
 			d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2,
 					nation.getArtilleryCost(), nation.getArtilleryCost() * 2, this);
 
 			if (getProduct() == UnitID.NONE) {
-				d.drawOption("< Artillery ]", 4, 0.5f, r);
+				d.drawOption("< Artillery ]", 4, 200, 15, r);
 			}
 		}
 	}

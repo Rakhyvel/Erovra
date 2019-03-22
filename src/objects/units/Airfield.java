@@ -92,20 +92,20 @@ public class Airfield extends Industry {
 	@Override
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
-			if (d.buttonsHovered == 1) {
+			if (d.buttonsHovered == 2) {
 				buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2, 5400);
-			} else if (d.buttonsHovered == 2) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
 			} else if (d.buttonsHovered == 3) {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
 			} else if (d.buttonsHovered == 4) {
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
+			} else if (d.buttonsHovered == 5) {
 				nation.unitArray.remove(this);
 				d.shouldClose();
 				nation.coins += 10;
 				nation.setAirfieldCost(nation.getAirfieldCost() / 2);
 			}
 		} else {
-			if (d.buttonsHovered == 2) {
+			if (d.buttonsHovered == 3) {
 				setProductWeight(UnitID.NONE);
 				setProduct(UnitID.NONE);
 				nation.coins += 10;
@@ -117,6 +117,8 @@ public class Airfield extends Industry {
 	public void dropDownRender(Render r, DropDown d) {
 		dropDownHeight = getDropDownHeight();
 		d.setPosition(position);
+		if(getProduct() == UnitID.NONE)
+			d.drawOption("Upgrade 1m", 1, 32, 13, r);
 		d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2, nation.getPlaneCost(), nation.getPlaneCost() / 2, this);
 	}
 
