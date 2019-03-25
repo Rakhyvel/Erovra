@@ -91,7 +91,7 @@ public class Infantry extends Unit {
 	public void dropDownRender(Render r, DropDown d) {
 		d.setPosition(position);
 		if (nation.getCoinAmount() >= nation.getCityCost()) {
-			d.drawOption("City (" + nation.getCityCost() + ")", 1, 16, 5, r);
+			d.drawOption("City (" + nation.getCityCost() + ")", 1, 32, 5, r);
 		} else {
 			d.drawOption("City (" + nation.getCityCost() + ")", 1, 0, 5, r);
 		}

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import main.Main;
+import main.UnitID;
 
 /**
  * Handles loading images and resizing images, in int array form.
@@ -20,6 +21,7 @@ public class Image {
 	private String path;
 	private int width;
 	int height;
+	float rotation = 0;
 
 	public Image(String path, int width, int height) {
 		this.setPath(path);
@@ -28,12 +30,13 @@ public class Image {
 		setPixels(loadImage(path, width, height));
 	}
 
-	public Image(String path, int width, int height, int[] pixels, float opacity) {
+	public Image(String path, int width, int height, int[] pixels, float opacity, float rotation) {
 		this.setPath(path);
 		this.setWidth(width);
 		this.height = height;
 		setPixels(pixels);
 		this.opacity = opacity;
+		this.rotation = rotation;
 	}
 
 	/**
@@ -81,7 +84,7 @@ public class Image {
 			int id = y * getWidth() + x;
 			if (id >= 0 && id < getPixels().length) img2[i] = getPixels()[y * getWidth() + x];
 		}
-		return new Image(getPath(), (int) (getWidth() * factor), (int)(img2.length/newWidth),img2, opacity);
+		return new Image(getPath(), (int) (getWidth() * factor), (int)(img2.length/newWidth),img2, opacity, rotation);
 	}
 
 	/**
@@ -116,7 +119,7 @@ public class Image {
 			id = (y * 2048 + x);
 			if (id >= 0 && id < getPixels().length && x >= 0 && x < 2048) img2[i] = getPixels()[id];
 		}
-		return new Image(getPath(), getWidth(), height, img2, opacity);
+		return new Image(getPath(), getWidth(), height, img2, opacity, rotation);
 	}
 
 	public Image getScreenBlend(int color) {
@@ -147,7 +150,7 @@ public class Image {
 				img2[i] = (255 << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			}
 		}
-		return new Image(getPath(), getWidth(), height, img2, opacity);
+		return new Image(getPath(), getWidth(), height, img2, opacity, rotation);
 	}
 
 	public int getWidth() {
@@ -180,5 +183,13 @@ public class Image {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public void setRotation(float pi) {
+		rotation = pi;
+	}
+
+	public float getRotate() {
+		return rotation;
 	}
 }

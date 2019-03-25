@@ -13,6 +13,7 @@ public abstract class Industry extends Unit {
 	protected float maxStart = 1;
 	protected UnitID product = UnitID.NONE;
 	protected UnitID productWeight = UnitID.NONE;
+	protected boolean upgrading = false;
 
 	public Industry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -60,6 +61,14 @@ public abstract class Industry extends Unit {
 		if(!nation.isAIControlled())
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		return false;
+	}
+	
+	public void upgrade() {
+		upgrading = true;
+		this.setProduct(id);
+		this.setProductWeight(weight);
+		setStart(3600);
+		maxStart = getStart();
 	}
 	
 	int getDropDownHeight() {

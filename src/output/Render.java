@@ -9,6 +9,7 @@ import java.awt.image.DataBufferInt;
 import main.Main;
 import main.SpriteSheet;
 import main.StateID;
+import main.UnitID;
 import main.World;
 import objects.gui.Font;
 import objects.gui.Image;
@@ -228,6 +229,49 @@ public class Render extends Canvas {
 			}
 		}
 	}
+	public void drawImage(int x, int y, Image img) {
+		float rotate = img.getRotate();
+		int w = img.getWidth();
+		int[] image = img.getPixels();
+		int h = 1, r, g, b;
+		if (w > 0) {
+			h = image.length / w;
+		}
+
+		for (float i = 0; i < image.length; i+=0.3333f) {
+			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f)*img.getOpacity();
+			double x1 = (i % w) - w / 2;
+			double y1 = i / w - h / 2;
+			double x2 = (int) (x1 + x);
+			double y2 = (int) (y1 + y);
+			if (alpha > 0) {
+				x1 = (i % w) - w / 2;
+				y1 = i / w - h / 2;
+				if (rotate != 0) {
+					x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
+					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
+				}
+				int id = (int) (x2 + y2 * (width + 1) + 0.5);
+				if (id > 0 && id < width * height){
+					// Finding alpha
+					r = ((image[(int)i] >> 16) & 255);
+					g = ((image[(int)i] >> 8) & 255);
+					b = (image[(int)i] & 255);
+					int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+
+					// Finding alpha
+					r = ((pixels[id] >> 16) & 255);
+					g = ((pixels[id] >> 8) & 255);
+					b = (pixels[id] & 255);
+					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8
+							| (int) (b * (1 - alpha));
+
+					// Finally adding colors to pixel array
+					pixels[id] = newColor + newColor2;
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Draws a string
@@ -247,9 +291,9 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(250 << 16 | 250 << 8);
 			} else {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(color);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(color);
 			}
 			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
 			carriage += font.getKern(letter);
@@ -263,9 +307,9 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(250 << 16 | 250 << 8);
 			} else {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f).getScreenBlend(color);
+				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(color);
 			}
 			if(centered) {
 				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
@@ -314,6 +358,16 @@ public class Render extends Canvas {
 			b *= 1.8;
 		}
 		return 255<<24 | r << 16 | g << 8 | b;
+	}
+
+	public static Image getWeighted(Image img, UnitID weight, int color) {
+		if (weight == UnitID.LIGHT) {
+			return img.getScreenBlend(lighten(color));
+		}
+		if (weight == UnitID.HEAVY) {
+			return img.getScreenBlend(darken(color));
+		}
+		return img.getScreenBlend(color);
 	}
 
 	/**

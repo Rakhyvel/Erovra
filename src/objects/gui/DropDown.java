@@ -58,12 +58,12 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
-					180 << 24| 64 << 16 | 64 << 8 | 64,15);
+					180 << 24 | 128 << 16 | 128 << 8 | 128, 15);
 			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 14,
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX()+1, (int) getPosition().getY() + 25, (int) (17.8 * unit.getHealth()),
+			r.drawRect((int) getPosition().getX() + 1, (int) getPosition().getY() + 25, (int) (17.8 * unit.getHealth()),
 					4, unit.nation.color);
 		}
 	}
@@ -80,38 +80,39 @@ public class DropDown extends Menu {
 	public void drawOption(String label, int buttonID, int rectColor, int borders, Render r) {
 		int x = (int) getPosition().getX();
 		int y = (int) getPosition().getY();
-		int textColor = 255<<24|250 << 16 | 250 << 8 | 250;
+		int textColor = 255 << 24 | 250 << 16 | 250 << 8 | 250;
 		if (rectColor == 0) {
-			textColor = 255<<24|255 << 16;
+			textColor = 255 << 24 | 250 << 16;
 		}
-		if(buttonID == 1 && unit.getID() != UnitID.INFANTRY)
+		if (buttonID == 1 && unit.getID() != UnitID.INFANTRY)
 			borders = 13;
 		if (buttonsHovered == buttonID) {
-			rectColor*=3.125;
-		} 
-		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180<<24|rectColor<<16|rectColor<<8|rectColor,borders);
+			rectColor *= 4;
+		}
+		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,
+				borders);
 		r.drawString(label, x + 7, y + 14 + buttonID * 30, r.font16, textColor, false);
 	}
-	
+
 	public void drawTab(int tabs, Image[] icons, Render r) {
 		for (int i = 0; i < tabs; i++) {
-			int x = (int) getPosition().getX() + 180/tabs * i;
-			int y = (int) getPosition().getY()+30;
-			int color = 180<<24;
+			int x = (int) getPosition().getX() + 180 / tabs * i;
+			int y = (int) getPosition().getY() + 30;
+			int color = 180 << 24;
 			int border = 12;
-			if(getTab() == i) {
-				color = 180<<24 | 32 << 16 | 32 << 8 | 32;
+			if (getTab() == i) {
+				color = 180 << 24 | 32 << 16 | 32 << 8 | 32;
 				border = 4;
 			}
-			if(i == 0)
+			if (i == 0)
 				border |= 1;
-			r.drawRectBorders(x, y, 180/tabs, 30, color, border);
-			r.drawImage(x+90/tabs, y+15, icons[i].getScreenBlend(Main.world.friendly.color), 0);
+			r.drawRectBorders(x, y, 180 / tabs, 30, color, border);
+			r.drawImage(x + 90 / tabs, y + 15, icons[i]);
 		}
 	}
-	
+
 	public void selectTabs(int tabs) {
-		setTab((int)((Main.mouse.getX()-position.getX())/(180/tabs)));
+		setTab((int) ((Main.mouse.getX() - position.getX()) / (180 / tabs)));
 	}
 
 	/**
@@ -237,10 +238,10 @@ public class DropDown extends Menu {
 				product += " " + seconds + "s";
 			}
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 180, 30,
-					180 << 24| 64 << 16 | 64 << 8 | 64,13);
+					180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
 			r.drawString(product, (int) getPosition().getX(), (int) getPosition().getY() + 44, r.font16,
 					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			drawOption("Cancel order (-10)", 2, 64, 13, r);
+			drawOption("Cancel order (-10)", 2, 32, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
 				drawOption(light + " (" + lightCost + ")", 2, 32, 5, r);
@@ -276,5 +277,23 @@ public class DropDown extends Menu {
 
 	public void setTab(int tab) {
 		this.tab = tab;
+	}
+	
+	public void drawUpgrading(Industry industry, Render r) {
+		int minutes = 0, seconds = 0;
+		String product = "Upgrading";
+		if (industry.getStart() > 0) {
+			minutes = industry.getStart() / 3600;
+			seconds = (industry.getStart() / 60) - minutes * 60;
+			if (minutes >= 1) {
+				product += " " + minutes + "m,";
+			}
+			product += " " + seconds + "s";
+		}
+		r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 180, 30,
+				180 << 24| 128 << 16 | 128 << 8 | 128, 13);
+		r.drawString(product, (int) getPosition().getX()+7, (int) getPosition().getY() + 44, r.font16,
+				255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+		drawOption("Cancel upgrade", 2, 32, 13, r);
 	}
 }
