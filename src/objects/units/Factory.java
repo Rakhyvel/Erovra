@@ -20,6 +20,8 @@ public class Factory extends Industry {
 	private boolean spotted = false;
 	private boolean cavalry = true;
 	Image factory;
+	private static Image[] icons = { new Image("/res/ground/cavalry.png", 32, 16),
+			new Image("/res/ground/artillery.png", 32, 16), new Image("/res/target.png", 32, 32).resize(0.75f) };
 
 	public Factory(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -36,7 +38,7 @@ public class Factory extends Industry {
 	@Override
 	public void tick(double t) {
 		detectHit();
-		if(health > 0) {
+		if (health > 0) {
 			if (engaged || hit > 0)
 				spotted = true;
 			engaged = false;
@@ -44,7 +46,7 @@ public class Factory extends Industry {
 			if (!nation.isAIControlled()) {
 				clickToDropDown();
 			}
-	
+
 			if (getStart() < 0) {
 				addProduct();
 				if (nation.isAIControlled())
@@ -107,7 +109,7 @@ public class Factory extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), factory,0);
+			r.drawImage((int) position.getX(), (int) position.getY(), factory, 0);
 			if (hit > 1 || isSelected()) {
 				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
 			}
@@ -117,32 +119,36 @@ public class Factory extends Industry {
 	@Override
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
-			if (cavalry) {
-				if (d.buttonsHovered == 1) {
+			if (d.buttonsHovered == 1) {
+				d.selectTabs(3);
+			}
+			if(d.getTab() == 0) {
+				cavalry = true;
+			} else if(d.getTab() == 1) {
+				cavalry = false;
+			}
+			if (d.getTab() == 0) {
+				if (d.buttonsHovered == 2) {
 					buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2, 7200);
-				} else if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost(), 10800);
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2, 21600);
+					buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost(), 10800);
 				} else if (d.buttonsHovered == 4) {
-					cavalry = !cavalry;
+					buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2, 21600);
 				}
 			} else {
-				if (d.buttonsHovered == 1) {
+				if (d.buttonsHovered == 2) {
 					buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2, 3600);
-				} else if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost(), 10800);
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2, 21600);
+					buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost(), 10800);
 				} else if (d.buttonsHovered == 4) {
-					cavalry = !cavalry;
+					buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2, 21600);
 				}
 			}
 		} else {
-			if(d.buttonsHovered == 2) {
+			if (d.buttonsHovered == 2) {
 				setProductWeight(UnitID.NONE);
 				setProduct(UnitID.NONE);
-				nation.coins+=10;
+				nation.coins += 10;
 			}
 		}
 	}
@@ -151,20 +157,14 @@ public class Factory extends Industry {
 	public void dropDownRender(Render r, DropDown d) {
 		dropDownHeight = getDropDownHeight();
 		d.setPosition(position);
-		if (cavalry) {
+		if (getProduct() == UnitID.NONE)
+			d.drawTab(3, icons, r);
+		if (d.getTab() == 0) {
 			d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", nation.getCavalryCost() / 2,
 					nation.getCavalryCost(), nation.getCavalryCost() * 2, this);
-
-			if (getProduct() == UnitID.NONE) {
-				d.drawOption("[ Cavalry >", 4, 200, 15, r);
-			}
 		} else {
 			d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2,
 					nation.getArtilleryCost(), nation.getArtilleryCost() * 2, this);
-
-			if (getProduct() == UnitID.NONE) {
-				d.drawOption("< Artillery ]", 4, 200, 15, r);
-			}
 		}
 	}
 }

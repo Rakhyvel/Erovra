@@ -58,12 +58,12 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
-					180 << 24| 64 << 16 | 64 << 8 | 64,7);
+					180 << 24| 64 << 16 | 64 << 8 | 64,15);
 			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 14,
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX()+1, (int) getPosition().getY() + 26, (int) (17.8 * unit.getHealth()),
+			r.drawRect((int) getPosition().getX()+1, (int) getPosition().getY() + 25, (int) (17.8 * unit.getHealth()),
 					4, unit.nation.color);
 		}
 	}
@@ -99,19 +99,19 @@ public class DropDown extends Menu {
 			int y = (int) getPosition().getY()+30;
 			int color = 180<<24;
 			int border = 12;
-			if(tab == i) {
+			if(getTab() == i) {
 				color = 180<<24 | 32 << 16 | 32 << 8 | 32;
 				border = 4;
 			}
 			if(i == 0)
 				border |= 1;
 			r.drawRectBorders(x, y, 180/tabs, 30, color, border);
-			r.drawImage(x+90/tabs, y+15, icons[i].getScreenBlend(Main.world.friendly.color), -(float)Math.PI/4);
+			r.drawImage(x+90/tabs, y+15, icons[i].getScreenBlend(Main.world.friendly.color), 0);
 		}
 	}
 	
 	public void selectTabs(int tabs) {
-		tab = (int)((Main.mouse.getX()-position.getX())/(180/tabs));
+		setTab((int)((Main.mouse.getX()-position.getX())/(180/tabs)));
 	}
 
 	/**
@@ -122,10 +122,10 @@ public class DropDown extends Menu {
 	 */
 	public void setPosition(Point p) {
 		if (p.getX() > 0) {
-			if (p.getX() < 855) {
+			if (p.getX() < 845) {
 				position.setX(p.getX());
 			} else {
-				position.setX(855);
+				position.setX(845);
 			}
 		} else {
 			position.setX(0);
@@ -151,6 +151,7 @@ public class DropDown extends Menu {
 		unit.setHit(3);
 		shown = true;
 		setPosition(unit.getPosition());
+		setTab(0);
 	}
 
 	/**
@@ -237,8 +238,8 @@ public class DropDown extends Menu {
 			}
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 180, 30,
 					180 << 24| 64 << 16 | 64 << 8 | 64,13);
-			r.drawString(product, (int) getPosition().getX() + 85, (int) getPosition().getY() + 40, r.font16,
-					255 << 24 | 250 << 16 | 250 << 8 | 250);
+			r.drawString(product, (int) getPosition().getX(), (int) getPosition().getY() + 44, r.font16,
+					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			drawOption("Cancel order (-10)", 2, 64, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
@@ -267,5 +268,13 @@ public class DropDown extends Menu {
 		if (unit != null)
 			return unit.dropDownHeight;
 		return 0;
+	}
+
+	public int getTab() {
+		return tab;
+	}
+
+	public void setTab(int tab) {
+		this.tab = tab;
 	}
 }
