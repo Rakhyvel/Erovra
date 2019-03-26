@@ -4,11 +4,6 @@
 	- Takes a minute to convert
 	- If not full health, should repair, taking longer the more damaged and higher it is
 - Repair function
-	- Name
-	- Health
-	- Repair/upgrade button
-	- Building list
-	- Decomission
 
 - Squad functions
 	- Patrol

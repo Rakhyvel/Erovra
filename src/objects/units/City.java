@@ -15,7 +15,7 @@ import utility.Point;
  * @author Rakhyvel
  * @see Unit
  */
-public class City extends Unit {
+public class City extends Industry {
 
 	private boolean spotted = false;
 	private static Image city = new Image("/res/buildings/city.png", 32, 32);
@@ -25,7 +25,7 @@ public class City extends Unit {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.CITY;
-		defense = 2;
+		defense = 1;
 		weight = UnitID.LIGHT;
 	}
 
@@ -45,6 +45,20 @@ public class City extends Unit {
 			}
 			if (!nation.isAIControlled()) {
 				clickToDropDown();
+			}
+			setStart(getStart() - 1);
+			if(upgrading && getStart() < 0) {
+				if (weight == UnitID.MEDIUM) {
+					weight = UnitID.HEAVY;
+					defense = 4;
+				} else if (weight == UnitID.LIGHT) {
+					weight = UnitID.MEDIUM;
+					defense = 2;
+				}
+				upgrading = false;
+				if (!nation.isAIControlled()) {
+					setProduct(UnitID.NONE);
+				}
 			}
 		}
 	}
@@ -69,10 +83,45 @@ public class City extends Unit {
 
 	@Override
 	public void dropDownDecide(DropDown d) {
+		if (getProduct() == UnitID.NONE) {
+			if (d.buttonsHovered == 1) {
+				upgrade();
+			} else if (d.buttonsHovered == 2) {
+				nation.unitArray.remove(this);
+				d.shouldClose();
+				nation.coins += 10;
+				nation.setCityCost(nation.getCityCost() / 2);
+			}
+		} else {
+			if (d.buttonsHovered == 2) {
+				setProductWeight(UnitID.NONE);
+				setProduct(UnitID.NONE);
+				nation.coins += 10;
+			}
+		}
 	}
 
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
+		dropDownHeight = getDropDownHeight();
+		d.setPosition(position);
+		if(!capital) {
+			if(!upgrading) {
+				d.drawOption("Upgrade", 1, 32, 5, r);
+				d.drawOption("Decommision", 2, 32, 5, r);
+				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 3, 180, 30, 180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
+			} else {
+				d.drawUpgrading(this,r);
+			}
+		}
+	}
+
+	@Override
+	public void addProduct() {
+	}
+
+	@Override
+	public void decideNewProduct() {
 	}
 
 }

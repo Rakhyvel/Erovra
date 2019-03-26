@@ -44,12 +44,12 @@ public abstract class Industry extends Unit {
 		this.productWeight = productWeight;
 	}
 
-	public boolean buyUnit(UnitID product, UnitID productWeight, int cost, int time) {
+	public boolean buyUnit(UnitID product, UnitID productWeight, int cost, double time) {
 		if (nation.coins >= cost) {
 			nation.coins -= cost;
 			this.setProduct(product);
 			this.setProductWeight(productWeight);
-			setStart(time);
+			setStart((int)time);
 			maxStart = getStart();
 			return true;
 		} else {

@@ -50,7 +50,7 @@ public class Main {
 	public static String os = getOperatingSystem();
 
 	// GitHub
-	public static String version = "Erovra 1.0.15";
+	public static String version = "Erovra 1.0.16";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -135,7 +135,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
 		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
-//		sweden.setAIControlled(false);
+		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);

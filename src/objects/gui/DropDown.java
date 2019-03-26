@@ -84,8 +84,6 @@ public class DropDown extends Menu {
 		if (rectColor == 0) {
 			textColor = 255 << 24 | 250 << 16;
 		}
-		if (buttonID == 1 && unit.getID() != UnitID.INFANTRY)
-			borders = 13;
 		if (buttonsHovered == buttonID) {
 			rectColor *= 4;
 		}

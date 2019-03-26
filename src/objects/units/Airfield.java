@@ -56,12 +56,26 @@ public class Airfield extends Industry {
 	 */
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
-			nation.addUnit(new Plane(position, nation, getProductWeight()));
-			if (getProductWeight() == UnitID.LIGHT)
-				nation.airSupremacy++;
-			setProductWeight(UnitID.NONE);
-			if (!nation.isAIControlled())
-				setProduct(UnitID.NONE);
+			if(getProduct() != UnitID.AIRFIELD) {
+				nation.addUnit(new Plane(position, nation, getProductWeight()));
+				if (getProductWeight() == UnitID.LIGHT)
+					nation.airSupremacy++;
+				setProductWeight(UnitID.NONE);
+				if (!nation.isAIControlled())
+					setProduct(UnitID.NONE);
+			} else {
+				if (weight == UnitID.MEDIUM) {
+					weight = UnitID.HEAVY;
+					defense = 4;
+				} else if (weight == UnitID.LIGHT) {
+					weight = UnitID.MEDIUM;
+					defense = 2;
+				}
+				upgrading = false;
+				if (!nation.isAIControlled()) {
+					setProduct(UnitID.NONE);
+				}
+			}
 		}
 	}
 
@@ -70,13 +84,13 @@ public class Airfield extends Industry {
 	 */
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 3200);
+			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 3200/defense);
 		} else {
 			if (nation.enemyNation.landSupremacy > nation.landSupremacy
 					&& nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 7200);
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 7200/defense);
 			} else {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 3200);
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 3200/defense);
 			}
 		}
 	}

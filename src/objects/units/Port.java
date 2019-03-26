@@ -59,14 +59,28 @@ public class Port extends Industry {
 	 */
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
-			nation.addUnit(new Ship(position, nation, getProductWeight()));
-			if (getProductWeight() == UnitID.MEDIUM)
-				nation.seaSupremacy++;
-			if (getProductWeight() == UnitID.HEAVY)
-				nation.seaSupremacy += 2;
-			setProductWeight(UnitID.NONE);
-			if (!nation.isAIControlled())
-				setProduct(UnitID.NONE);
+			if(getProduct() != UnitID.PORT) {
+				nation.addUnit(new Ship(position, nation, getProductWeight()));
+				if (getProductWeight() == UnitID.MEDIUM)
+					nation.seaSupremacy++;
+				if (getProductWeight() == UnitID.HEAVY)
+					nation.seaSupremacy += 2;
+				setProductWeight(UnitID.NONE);
+				if (!nation.isAIControlled())
+					setProduct(UnitID.NONE);
+			} else {
+				if (weight == UnitID.MEDIUM) {
+					weight = UnitID.HEAVY;
+					defense = 4;
+				} else if (weight == UnitID.LIGHT) {
+					weight = UnitID.MEDIUM;
+					defense = 2;
+				}
+				upgrading = false;
+				if (!nation.isAIControlled()) {
+					setProduct(UnitID.NONE);
+				}
+			}
 		}
 	}
 
@@ -102,15 +116,15 @@ public class Port extends Industry {
 					}
 				}
 				if (unitCount > 3 && smallestPoint.getX() != -1) {
-					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4, 3000);
+					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4, 3000/defense);
 				}
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy
 					|| nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800)) {
+				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2, 10800/defense)) {
 				} else {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 7200);
+					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost(), 7200/defense);
 				}
 			}
 		}
