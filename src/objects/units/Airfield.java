@@ -147,6 +147,7 @@ public class Airfield extends Industry {
 				setProductWeight(UnitID.NONE);
 				setProduct(UnitID.NONE);
 				nation.coins += 10;
+				upgrading = false;
 			}
 		}
 	}

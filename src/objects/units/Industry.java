@@ -73,6 +73,8 @@ public abstract class Industry extends Unit {
 	
 	int getDropDownHeight() {
 		if(getProduct() == UnitID.NONE) {
+			if(getID() == UnitID.CITY)
+				return 120;
 			return 150;
 		} 
 		return 90;
