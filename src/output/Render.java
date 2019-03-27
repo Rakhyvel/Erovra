@@ -170,7 +170,7 @@ public class Render extends Canvas {
 				b = pixels[id] & 255;
 				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 				// bottom | right | top | left
-				if((((borders & 1) == 1) && x1 == 0) || (((borders & 2) == 2) && y1 == 0) || (((borders & 4) == 4) && x1 == w-1) || (((borders & 8) == 8) && y1 == h-1)) {
+				if((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 <2) || (((borders & 4) == 4) && x1 > w-3) || (((borders & 8) == 8) && y1 > h-3)) {
 					pixels[id] = 230 << 16 | 230 << 8 | 230;
 				} else {
 					pixels[id] = newColor + newColor2;

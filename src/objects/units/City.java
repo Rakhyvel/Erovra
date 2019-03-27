@@ -36,7 +36,7 @@ public class City extends Industry {
 			if (engaged || hit > 0)
 				spotted = true;
 			engaged = false;
-			if ((Main.ticks - born) % 320 == 0) {
+			if ((Main.ticks - born) % (640/defense) == 0 && !upgrading) {
 				nation.addCoin(position);
 			}
 			if (Main.ticks % 6000 == 0 && capital) {
@@ -73,6 +73,11 @@ public class City extends Industry {
 						(int) (28.0 * (Main.ticks % 6000) / 6000), 2, nation.color);
 				r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(capitalImg, UnitID.MEDIUM, nation.color), 0);
 			} else {
+				if (getProduct() != UnitID.NONE && getStart() > 1) {
+					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
+					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+							(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
+				}
 				r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(city, weight, nation.color), 0);
 			}
 			if (hit > 1) {
@@ -85,7 +90,11 @@ public class City extends Industry {
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
 			if (d.buttonsHovered == 1) {
-				upgrade();
+				if (nation.getCoinAmount() >= nation.getCityCost()/2) {
+					upgrade(nation.getCityCost()/2);
+				} else {
+					Main.world.errorMessage.showErrorMessage("Insufficient funds!");
+				}
 			} else if (d.buttonsHovered == 2) {
 				nation.unitArray.remove(this);
 				d.shouldClose();
@@ -108,7 +117,11 @@ public class City extends Industry {
 		d.setPosition(position);
 		if(!capital) {
 			if(!upgrading) {
-				d.drawOption("Upgrade", 1, 32, 5, r);
+				if (nation.getCoinAmount() >= nation.getCityCost()/2) {
+					d.drawOption("Upgrade (" + nation.getCityCost()/2 + ")", 1, 32, 5, r);
+				} else {
+					d.drawOption("Upgrade (" + nation.getCityCost()/2 + ")", 1, 0, 5, r);
+				}
 				d.drawOption("Decommision", 2, 32, 5, r);
 				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 3, 180, 30, 180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
 			} else {

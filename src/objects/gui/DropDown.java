@@ -63,7 +63,7 @@ public class DropDown extends Menu {
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX() + 1, (int) getPosition().getY() + 25, (int) (17.8 * unit.getHealth()),
+			r.drawRect((int) getPosition().getX() + 2, (int) getPosition().getY() + 24, (int) (17.6 * unit.getHealth()),
 					4, unit.nation.color);
 		}
 	}
@@ -215,8 +215,8 @@ public class DropDown extends Menu {
 	 * @param medCost   The cost of a medium unit
 	 * @param heavyCost The cost of a heavy unit
 	 */
-	public void drawIndustry(Render r, String light, String medium, String heavy, int lightCost, int medCost,
-			int heavyCost, Industry industry) {
+	public void drawIndustry(Render r, String light, String medium, String heavy, double lightCost, double medCost,
+			double heavyCost, Industry industry) {
 		if (industry.getProduct() != UnitID.NONE) {
 			int minutes = 0, seconds = 0;
 			String product = " ";
@@ -242,19 +242,19 @@ public class DropDown extends Menu {
 			drawOption("Cancel order (-10)", 2, 32, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
-				drawOption(light + " (" + lightCost + ")", 2, 32, 5, r);
+				drawOption(light + " (" + (int)lightCost + ")", 2, 32, 5, r);
 			} else {
-				drawOption(light + " (" + lightCost + ")", 2, 0, 5, r);
+				drawOption(light + " (" + (int)lightCost + ")", 2, 0, 5, r);
 			}
 			if (unit.nation.getCoinAmount() >= medCost) {
-				drawOption(medium + " (" + medCost + ")", 3, 32, 5, r);
+				drawOption(medium + " (" + (int)medCost + ")", 3, 32, 5, r);
 			} else {
-				drawOption(medium + " (" + medCost + ")", 3, 0, 5, r);
+				drawOption(medium + " (" + (int)medCost + ")", 3, 0, 5, r);
 			}
 			if (unit.nation.getCoinAmount() >= heavyCost) {
-				drawOption(heavy + " (" + heavyCost + ")", 4, 32, 13, r);
+				drawOption(heavy + " (" + (int)heavyCost + ")", 4, 32, 13, r);
 			} else {
-				drawOption(heavy + " (" + heavyCost + ")", 4, 0, 13, r);
+				drawOption(heavy + " (" + (int)heavyCost + ")", 4, 0, 13, r);
 			}
 		}
 	}

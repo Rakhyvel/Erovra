@@ -44,7 +44,7 @@ public abstract class Industry extends Unit {
 		this.productWeight = productWeight;
 	}
 
-	public boolean buyUnit(UnitID product, UnitID productWeight, int cost, double time) {
+	public boolean buyUnit(UnitID product, UnitID productWeight, double cost, double time) {
 		if (nation.coins >= cost) {
 			nation.coins -= cost;
 			this.setProduct(product);
@@ -63,12 +63,13 @@ public abstract class Industry extends Unit {
 		return false;
 	}
 	
-	public void upgrade() {
+	public void upgrade(int cost) {
 		upgrading = true;
 		this.setProduct(id);
 		this.setProductWeight(weight);
 		setStart(3600);
 		maxStart = getStart();
+		nation.coins -= cost;
 	}
 	
 	int getDropDownHeight() {
