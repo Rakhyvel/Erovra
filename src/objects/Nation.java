@@ -100,6 +100,7 @@ public class Nation {
 	public void setCaptial(int id) {
 		getUnit(id).capital = true;
 		capital = getUnit(id);
+		capital.setWeight(UnitID.HEAVY);
 	}
 
 	/**

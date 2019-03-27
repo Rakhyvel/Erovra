@@ -58,13 +58,13 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
-					180 << 24 | 128 << 16 | 128 << 8 | 128, 15);
-			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 14,
+					180 << 24 | 128 << 16 | 128 << 8 | 128, 7);
+			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 12,
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			unit.dropDownRender(r, this);
 
-			r.drawRect((int) getPosition().getX() + 2, (int) getPosition().getY() + 24, (int) (17.6 * unit.getHealth()),
-					4, unit.nation.color);
+			r.drawRectBorders((int) getPosition().getX() + 2, (int) getPosition().getY() + 22, (int) (17.6 * unit.getHealth()),
+					8, unit.nation.color,10);
 		}
 	}
 
@@ -84,8 +84,9 @@ public class DropDown extends Menu {
 		if (rectColor == 0) {
 			textColor = 255 << 24 | 250 << 16;
 		}
-		if (buttonsHovered == buttonID) {
+		if (buttonsHovered == buttonID && rectColor > 0) {
 			rectColor *= 4;
+			borders = 15;
 		}
 		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,
 				borders);

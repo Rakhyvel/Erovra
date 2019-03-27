@@ -29,6 +29,7 @@ public class Airfield extends Industry {
 		defense = 2;
 		id = UnitID.AIRFIELD;
 		airfield = airfield.getScreenBlend(nation.color);
+		weight = UnitID.LIGHT;
 	}
 
 	@Override
@@ -56,13 +57,10 @@ public class Airfield extends Industry {
 	 */
 	public void addProduct() {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
-			if(getProduct() != UnitID.AIRFIELD) {
+			if (getProduct() != UnitID.AIRFIELD) {
 				nation.addUnit(new Plane(position, nation, getProductWeight()));
 				if (getProductWeight() == UnitID.LIGHT)
 					nation.airSupremacy++;
-				setProductWeight(UnitID.NONE);
-				if (!nation.isAIControlled())
-					setProduct(UnitID.NONE);
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
@@ -72,11 +70,10 @@ public class Airfield extends Industry {
 					defense = 2;
 				}
 				upgrading = false;
-				if (!nation.isAIControlled()) {
-					setProduct(UnitID.NONE);
-				}
 			}
 		}
+		setProductWeight(UnitID.NONE);
+		setProduct(UnitID.NONE);
 	}
 
 	/**
@@ -84,13 +81,13 @@ public class Airfield extends Industry {
 	 */
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2, 3200/defense);
+			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * defense, 3200 / defense);
 		} else {
 			if (nation.enemyNation.landSupremacy > nation.landSupremacy
 					&& nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 7200/defense);
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * defense, 7200 / defense);
 			} else {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 3200/defense);
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * defense, 3200 / defense);
 			}
 		}
 	}
@@ -118,23 +115,20 @@ public class Airfield extends Industry {
 				d.selectTabs(2);
 			}
 			if (d.getTab() == 0) {
-				if (d.buttonsHovered == 1) {
-					d.selectTabs(2);
-				} else if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2, 5400);
+				if (d.buttonsHovered == 2) {
+					buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2 * defense, 5400 / defense);
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost(), 10800);
+					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * defense, 10800 / defense);
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2, 7200);
-				} else if (d.buttonsHovered == 5) {
-					nation.unitArray.remove(this);
-					d.shouldClose();
-					nation.coins += 10;
-					nation.setAirfieldCost(nation.getAirfieldCost() / 2);
+					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * defense, 7200 / defense);
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {
-
+					if (nation.getCoinAmount() >= nation.getAirfieldCost() / 2) {
+						upgrade(nation.getAirfieldCost() / 2);
+					} else {
+						Main.world.errorMessage.showErrorMessage("Insufficient funds!");
+					}
 				} else if (d.buttonsHovered == 3) {
 					nation.unitArray.remove(this);
 					d.shouldClose();
@@ -156,17 +150,24 @@ public class Airfield extends Industry {
 	public void dropDownRender(Render r, DropDown d) {
 		dropDownHeight = getDropDownHeight();
 		d.setPosition(position);
-		if (getProduct() == UnitID.NONE)
-			d.drawTab(2, icons, r);
-		if (d.getTab() == 0) {
-			d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2, nation.getPlaneCost(),
-					nation.getPlaneCost() / 2, this);
-		} else if (d.getTab() == 1) {
-			d.drawOption("Upgrade", 2, 32, 5, r);
-			d.drawOption("Decommision", 3, 32, 5, r);
-			r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 4, 180, 30,
-					180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
+		if (!upgrading) {
+			if (getProduct() == UnitID.NONE)
+				d.drawTab(2, icons, r);
+			if (d.getTab() == 0) {
+				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * defense,
+						nation.getPlaneCost() * defense, nation.getPlaneCost() / 2 * defense, this);
+			} else if (d.getTab() == 1) {
+				if (nation.getCoinAmount() >= nation.getPortCost() / 2) {
+					d.drawOption("Upgrade (" + nation.getAirfieldCost() / 2 + ")", 2, 32, 5, r);
+				} else {
+					d.drawOption("Upgrade (" + nation.getAirfieldCost() / 2 + ")", 2, 0, 5, r);
+				}
+				d.drawOption("Decommision", 3, 32, 5, r);
+				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 4, 180, 30,
+						180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
+			}
+		} else {
+			d.drawUpgrading(this, r);
 		}
 	}
-
 }

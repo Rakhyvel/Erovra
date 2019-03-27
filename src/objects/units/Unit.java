@@ -169,7 +169,7 @@ public abstract class Unit {
 	 * @param weight
 	 *            The weight class
 	 */
-	protected void setWeight(UnitID weight) {
+	public void setWeight(UnitID weight) {
 		this.weight = weight;
 	}
 
