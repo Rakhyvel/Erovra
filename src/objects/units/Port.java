@@ -26,7 +26,7 @@ public class Port extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.PORT;
-		defense = 2;
+		defense = 1;
 		setProductWeight(UnitID.NONE);
 		icons[0].setRotation(-(float) Math.PI / 2);
 		weight = UnitID.LIGHT;

@@ -26,7 +26,7 @@ public class Airfield extends Industry {
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
-		defense = 2;
+		defense = 1;
 		id = UnitID.AIRFIELD;
 		airfield = airfield.getScreenBlend(nation.color);
 		weight = UnitID.LIGHT;
