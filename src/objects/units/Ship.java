@@ -31,7 +31,7 @@ public class Ship extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			defense = 1f;
+			setDefense(1f);
 			if (nation.isAIControlled()) {
 				decideTarget();
 			}
@@ -43,13 +43,13 @@ public class Ship extends Unit {
 			shipHit = new Image("/res/water/landingHit.png", 17, 36).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
-			defense = 2;
+			setDefense(2);
 			weightColor = nation.color;
 			ship = new Image("/res/water/destroyer.png", 13, 45).getScreenBlend(weightColor);
 			shipHit = new Image("/res/water/destroyerHit.png", 17, 49).getScreenBlend(weightColor);
 		} else {
 			speed = .075f;
-			defense = 6;
+			setDefense(6);
 			weightColor = Render.darken(nation.color);
 			ship = new Image("/res/water/cruiser.png", 14, 61).getScreenBlend(weightColor);
 			shipHit = new Image("/res/water/cruiserHit.png", 18, 65).getScreenBlend(weightColor);

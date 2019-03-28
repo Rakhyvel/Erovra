@@ -25,19 +25,19 @@ public class Cavalry extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			defense = 2;
+			setDefense(2);
 			cal = 0.5f;
 			weightColor = Render.lighten(nation.color);
 			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
-			defense = 2;
+			setDefense(2);
 			cal = 2f;
 			weightColor = nation.color;
 			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else {
 			speed = .05f;
-			defense = 2.5f;
+			setDefense(2.5f);
 			cal = 2.5f;
 			weightColor = Render.darken(nation.color);
 			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);

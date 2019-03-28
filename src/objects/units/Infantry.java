@@ -23,7 +23,7 @@ public class Infantry extends Unit {
 	public Infantry(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
 		speed = .1f;
-		defense = 1;
+		setDefense(1);
 		id = UnitID.INFANTRY;
 		dropDownHeight = 150;
 		weightColor = nation.color;

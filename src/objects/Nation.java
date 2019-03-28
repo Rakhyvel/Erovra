@@ -101,6 +101,7 @@ public class Nation {
 		getUnit(id).capital = true;
 		capital = getUnit(id);
 		capital.setWeight(UnitID.HEAVY);
+		capital.setDefense(4);
 	}
 
 	/**

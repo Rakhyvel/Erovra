@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import main.Main;
-import main.UnitID;
 
 /**
  * Handles loading images and resizing images, in int array form.

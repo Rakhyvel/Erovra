@@ -26,7 +26,7 @@ public class Airfield extends Industry {
 
 	public Airfield(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
-		defense = 1;
+		setDefense(1);
 		id = UnitID.AIRFIELD;
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getAirfieldCost()/2;
@@ -74,10 +74,10 @@ public class Airfield extends Industry {
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
-					defense = 4;
+					setDefense(4);
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
-					defense = 2;
+					setDefense(2);
 				}
 				upgrading = false;
 			}
@@ -91,12 +91,12 @@ public class Airfield extends Industry {
 	 */
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * defense * 0.5, 2 * 3200 / defense);
+			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * getDefense() * 0.5, 2 * 3200 / getDefense());
 		} else {
 			if (nation.enemyNation.landSupremacy > nation.landSupremacy && nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * defense * 0.5, 2 * 7200 / defense);
+				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, 2 * 7200 / getDefense());
 			} else {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * defense * 0.5, 2 * 3200 / defense);
+				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * getDefense() * 0.5, 2 * 3200 / getDefense());
 			}
 		}
 	}
@@ -123,11 +123,11 @@ public class Airfield extends Industry {
 			}
 			if (d.getTab() == 0) {
 				if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2 * defense * 0.5, 2 * 5400 / defense);
+					buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5, 2 * 5400 / getDefense());
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * defense * 0.5, 2 * 10800 / defense);
+					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, 2 * 10800 / getDefense());
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * defense * 0.5, 2 * 7200 / defense);
+					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * getDefense() * 0.5, 2 * 7200 / getDefense());
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {
@@ -140,7 +140,7 @@ public class Airfield extends Industry {
 					nation.unitArray.remove(this);
 					d.shouldClose();
 					nation.coins += 10;
-					nation.setPortCost(nation.getPortCost() / 2);
+					nation.setAirfieldCost(nation.getAirfieldCost() / 2);
 				}
 			}
 		} else {
@@ -160,7 +160,7 @@ public class Airfield extends Industry {
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE) d.drawTab(2, icons, r);
 			if (d.getTab() == 0) {
-				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * defense, nation.getPlaneCost() * defense, nation.getPlaneCost() / 2 * defense, this);
+				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * getDefense(), nation.getPlaneCost() * getDefense(), nation.getPlaneCost() / 2 * getDefense(), this);
 			} else if (d.getTab() == 1) {
 				if (nation.getCoinAmount() >= nation.getAirfieldCost() / 2) {
 					d.drawOption("Upgrade (" + nation.getAirfieldCost() / 2 + ")", 2, 32, 5, r);

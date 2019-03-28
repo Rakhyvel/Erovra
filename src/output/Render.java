@@ -171,7 +171,7 @@ public class Render extends Canvas {
 				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 				// bottom | right | top | left
 				if((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 <2) || (((borders & 4) == 4) && x1 > w-3) || (((borders & 8) == 8) && y1 > h-3)) {
-					pixels[id] = 230 << 16 | 230 << 8 | 230;
+					pixels[id] = (int) 230 << 16 | (int) 230 << 8 | (int) 230;
 				} else {
 					pixels[id] = newColor + newColor2;
 				}
@@ -405,7 +405,8 @@ public class Render extends Canvas {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
 			int y = i / 1025;
-			image[i] = 100 - (y / 6) << 16 | 100 - (int) (y / 6) << 8 | 100 - (int) (y / 6);
+			int value = (int)-(0.4*y) + 230;
+			image[i] = value << 16 | value << 8 | value;
 		}
 		return image;
 	}

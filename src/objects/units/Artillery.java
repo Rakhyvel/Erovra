@@ -24,17 +24,17 @@ public class Artillery extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .1f;
-			defense = 1;
+			setDefense(1);
 			weightColor = Render.lighten(nation.color);
 			artillery = artillery.getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = 0.1f;
-			defense = 2;
+			setDefense(2);
 			weightColor = nation.color;
 			artillery = artillery.getScreenBlend(weightColor);
 		} else {
 			speed = 0.05f;
-			defense = 1;
+			setDefense(1);
 			weightColor = Render.darken(nation.color);
 			artillery = artillery.getScreenBlend(weightColor);
 		}

@@ -37,7 +37,7 @@ public abstract class Unit {
 
 	protected int hit = 0;
 	protected int spotted = 0;
-	protected float defense;
+	private float defense;
 	protected float speed;
 	protected float health;
 
@@ -431,7 +431,7 @@ public abstract class Unit {
 			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0 && !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET)) && !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO) && !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL) && !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT) && tempProjectile.getID() == UnitID.ANTIPERSONEL) && !(tempProjectile.getID() == UnitID.BOMB && capital)) {
 				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL) tempProjectile.hit();
 				hit = 9;
-				health -= tempProjectile.getAttack() / defense;
+				health -= tempProjectile.getAttack() / getDefense();
 
 				if (health <= 0) {
 					if (capital) {
@@ -853,5 +853,9 @@ public abstract class Unit {
 			}
 		}
 		return ocean;
+	}
+
+	public void setDefense(float defense) {
+		this.defense = defense;
 	}
 }

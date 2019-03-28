@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Random;
-
 public enum MapID {
 	// Fully flat green
 	PLAINS,

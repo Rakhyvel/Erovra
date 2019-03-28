@@ -29,7 +29,7 @@ public class Factory extends Industry {
 		speed = 0;
 		id = UnitID.FACTORY;
 		weight = UnitID.LIGHT;
-		defense = 1;
+		setDefense(1);
 		if (nation.getFactoryCost() == 60 && nation.isAIControlled()) {
 			cavalry = false;
 		}
@@ -87,10 +87,10 @@ public class Factory extends Industry {
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
-					defense = 4;
+					setDefense(4);
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
-					defense = 2;
+					setDefense(2);
 				}
 				upgrading = false;
 				if (!nation.isAIControlled()) {
@@ -106,21 +106,21 @@ public class Factory extends Industry {
 	@Override
 	public void decideNewProduct() {
 		if (cavalry) {
-			if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * defense * 0.5, 2*21600 / defense)) {
+			if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5, 2*21600 / getDefense())) {
 				// Heavy cavalry
-			} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * defense * 0.5, 2*10800 / defense)) {
+			} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5, 2*10800 / getDefense())) {
 				// Medium cavalry
-			} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * defense * 0.5, 2*7200 / defense)) {
+			} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5, 2*7200 / getDefense())) {
 				// Light Cavalry
 			}
 
 		} else {
-			if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * defense * 0.5, 2*21600 / defense)) {
+			if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5, 2*21600 / getDefense())) {
 				// Heavy artillery
-			} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * defense * 0.5, 2*10800 / defense)) {
+			} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * getDefense() * 0.5, 2*10800 / getDefense())) {
 				// Medium artillery
-			} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * defense * 0.5,
-					2*7200 / defense)) {
+			} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * getDefense() * 0.5,
+					2*7200 / getDefense())) {
 				// Anti Air artillery
 			}
 		}
@@ -156,19 +156,19 @@ public class Factory extends Industry {
 			}
 			if (d.getTab() == 0) {
 				if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * defense * 0.5, 2*7200 / defense);
+					buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5, 2*7200 / getDefense());
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * defense * 0.5, 2*10800 / defense);
+					buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5, 2*10800 / getDefense());
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * defense * 0.5, 2*21600 / defense);
+					buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5, 2*21600 / getDefense());
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * defense * 0.5, 2*3600 / defense);
+					buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * getDefense() * 0.5, 2*3600 / getDefense());
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * defense * 0.5, 2*10800 / defense);
+					buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * getDefense() * 0.5, 2*10800 / getDefense());
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * defense * 0.5, 2*21600 / defense);
+					buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5, 2*21600 / getDefense());
 				}
 			} else if (d.getTab() == 2) {
 				if (d.buttonsHovered == 2) {
@@ -212,11 +212,11 @@ public class Factory extends Industry {
 						180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
 			} else {
 				if (cavalry || getProduct() == UnitID.CAVALRY) {
-					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", nation.getCavalryCost() / 2 * defense,
-							nation.getCavalryCost() * defense, nation.getCavalryCost() * 2 * defense, this);
+					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", nation.getCavalryCost() / 2 * getDefense(),
+							nation.getCavalryCost() * getDefense(), nation.getCavalryCost() * 2 * getDefense(), this);
 				} else if (!cavalry || getProduct() == UnitID.ARTILLERY) {
-					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2 * defense,
-							nation.getArtilleryCost() * defense, nation.getArtilleryCost() * 2 * defense, this);
+					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2 * getDefense(),
+							nation.getArtilleryCost() * getDefense(), nation.getArtilleryCost() * 2 * getDefense(), this);
 				}
 			}
 		} else {

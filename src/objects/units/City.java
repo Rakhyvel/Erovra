@@ -26,7 +26,7 @@ public class City extends Industry {
 		super(position, nation, UnitID.NONE);
 		speed = 0;
 		id = UnitID.CITY;
-		defense = 1;
+		setDefense(1);
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getCityCost()/2;
 	}
@@ -38,7 +38,7 @@ public class City extends Industry {
 			if (engaged || hit > 0)
 				spotted = true;
 			engaged = false;
-			if ((Main.ticks - born) % (640/defense) == 0 && !upgrading) {
+			if ((Main.ticks - born) % (640/getDefense()) == 0 && !upgrading) {
 				nation.addCoin(position);
 			}
 			if (Main.ticks % 6000 == 0 && capital) {
@@ -64,10 +64,10 @@ public class City extends Industry {
 			if(upgrading && getStart() < 0) {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
-					defense = 4;
+					setDefense(4);
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
-					defense = 2;
+					setDefense(2);
 				}
 				upgrading = false;
 				if (!nation.isAIControlled()) {

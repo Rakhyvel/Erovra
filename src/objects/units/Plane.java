@@ -32,7 +32,7 @@ public class Plane extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .9f;
-			defense = 1f;
+			setDefense(1f);
 			patrolPoint = new Point(nation.enemyNation.capital.getPosition())
 					.addPoint(new Point(rand.nextInt(192) - 96, rand.nextInt(192) - 96));
 			weightColor = Render.lighten(nation.color);
@@ -41,14 +41,14 @@ public class Plane extends Unit {
 			planeHit = new Image("/res/air/fighterHit.png", 40, 39);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .6f;
-			defense = 2f;
+			setDefense(2f);
 			weightColor = nation.color;
 			plane1 = new Image("/res/air/attack.png", 44, 33).getScreenBlend(weightColor);
 			plane2 = new Image("/res/air/attack1.png", 44, 33).getScreenBlend(weightColor);
 			planeHit = new Image("/res/air/attackHit.png", 48, 37);
 		} else {
 			speed = 0.3f;
-			defense = 2f;
+			setDefense(2f);
 			acquireTarget();
 			weightColor = Render.darken(nation.color);
 			plane1 = new Image("/res/air/bomber1.png", 68, 40).getScreenBlend(weightColor);
