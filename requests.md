@@ -4,6 +4,8 @@
 	- Takes a minute to convert
 	- If not full health, should repair, taking longer the more damaged and higher it is
 - Repair function
+- Bombers should target other buildings, target capital if nothing left
+- Infantry can target capital from farther away
 
 - Squad functions
 	- Patrol

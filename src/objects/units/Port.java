@@ -21,6 +21,7 @@ public class Port extends Industry {
 	Image port = new Image("/res/buildings/port.png", 32, 32);
 	private static Image[] icons = { new Image("/res/water/destroyer.png", 13, 45),
 			new Image("/res/target.png", 32, 32).resize(0.75f) };
+	int buyInCost = 0;
 
 	public Port(Point position, Nation nation) {
 		super(position, nation, UnitID.NONE);
@@ -30,6 +31,7 @@ public class Port extends Industry {
 		setProductWeight(UnitID.NONE);
 		icons[0].setRotation(-(float) Math.PI / 2);
 		weight = UnitID.LIGHT;
+		buyInCost = nation.getPortCost()/2;
 	}
 
 	@Override
@@ -45,8 +47,17 @@ public class Port extends Industry {
 				}
 				if (getStart() < 0) {
 					addProduct();
-					if (nation.isAIControlled())
-						decideNewProduct();
+					if (nation.isAIControlled()){
+						if(!upgrading){
+							if (weight == UnitID.LIGHT && buyInCost < nation.getPortCost()) {
+								upgrade(nation.getPortCost() / 2);
+							} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getPortCost()) {
+								upgrade(nation.getPortCost() / 2);
+							} else {
+								decideNewProduct();
+							}
+						}
+					}
 				} else {
 					setStart(getStart() - 1);
 				}
@@ -112,15 +123,15 @@ public class Port extends Industry {
 					}
 				}
 				if (unitCount > 3 && smallestPoint.getX() != -1) {
-					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * defense, 3000 / defense);
+					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * defense * 0.5, 2 * 3000 / defense);
 				}
 			}
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy
 					|| nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * defense, 10800 / defense)) {
+				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * defense * 0.5, 2 * 10800 / defense)) {
 				} else {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * defense, 7200 / defense);
+					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * defense * 0.5, 2 * 7200 / defense);
 				}
 			}
 		}
@@ -151,11 +162,11 @@ public class Port extends Industry {
 			}
 			if (d.getTab() == 0) {
 				if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * defense, 3600 / defense);
+					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * defense * 0.5, 2 * 3600 / defense);
 				} else if (d.buttonsHovered == 3) {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * defense, 10800 / defense);
+					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * defense * 0.5, 2 * 10800 / defense);
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * defense, 10800 / defense);
+					buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * defense * 0.5, 2 * 10800 / defense);
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {

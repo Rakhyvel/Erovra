@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.PLAINS;
 	private static double dt = 50 / 3.0;
 	static Random rand = new Random();
 
@@ -116,7 +116,7 @@ public class Main {
 	 * 41 for mac
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 41);
+		frame.setSize(width + 7, height + 30);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);

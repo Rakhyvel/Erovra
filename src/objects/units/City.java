@@ -20,6 +20,7 @@ public class City extends Industry {
 	private boolean spotted = false;
 	private static Image city = new Image("/res/buildings/city.png", 32, 32);
 	private static Image capitalImg = new Image("/res/buildings/capital.png", 32, 32);
+	int buyInCost = 0;
 
 	public City(Point position, Nation nation, int founded) {
 		super(position, nation, UnitID.NONE);
@@ -27,6 +28,7 @@ public class City extends Industry {
 		id = UnitID.CITY;
 		defense = 1;
 		weight = UnitID.LIGHT;
+		buyInCost = nation.getCityCost()/2;
 	}
 
 	@Override
@@ -46,7 +48,19 @@ public class City extends Industry {
 			if (!nation.isAIControlled()) {
 				clickToDropDown();
 			}
-			setStart(getStart() - 1);
+			if (getStart() < 0) {
+				addProduct();
+				if (nation.isAIControlled())
+					if(!upgrading){
+						if (weight == UnitID.LIGHT && buyInCost < nation.getCityCost()) {
+							upgrade(nation.getCityCost() / 2);
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getCityCost()) {
+							upgrade(nation.getCityCost() / 2);
+						}
+					}
+			} else {
+				setStart(getStart() - 1);
+			}
 			if(upgrading && getStart() < 0) {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;

@@ -64,12 +64,14 @@ public abstract class Industry extends Unit {
 	}
 	
 	public void upgrade(int cost) {
-		upgrading = true;
-		this.setProduct(id);
-		this.setProductWeight(weight);
-		setStart(3600);
-		maxStart = getStart();
-		nation.coins -= cost;
+		if(nation.coins > cost){
+			upgrading = true;
+			this.setProduct(id);
+			this.setProductWeight(weight);
+			setStart(3600);
+			maxStart = getStart();
+			nation.coins -= cost;
+		}
 	}
 	
 	int getDropDownHeight() {

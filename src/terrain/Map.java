@@ -41,7 +41,7 @@ public class Map {
 			if (id == MapID.SEA) {
 				mountain = perlinNoise(1, 1f);
 			} else if (id == MapID.MOUNTAIN) {
-				mountain = perlinNoise(2, 5f);
+				mountain = perlinNoise(2, .25f);
 			} else if (id == MapID.ISLANDS) {
 				for (int i = 0; i < 7; i++) {
 					points[i] = new Point(i % 7 * 170, rand.nextInt(512));
@@ -98,7 +98,7 @@ public class Map {
 					mountain[x][y] = islandMask[i];
 				}
 			} else {
-				mountain = perlinNoise(2, .5f);
+				mountain = perlinNoise(2, 25f);
 			}
 			for (int i2 = 3; i2 < 9; i2++) {
 				int denominator = 1 << (i2);
@@ -192,7 +192,7 @@ public class Map {
 	}
 
 	float generatePlains(float land) {
-		return land / 3.0f + 0.45f;
+		return (land*land) / 2.5f + 0.45f;
 	}
 
 	float generateIslands(float land) {
