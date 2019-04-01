@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.PLAINS;
 	private static double dt = 50 / 3.0;
 	static Random rand = new Random();
 
@@ -134,8 +134,8 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
-		sweden.setAIControlled(false);
+		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
+//		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
@@ -158,7 +158,7 @@ public class Main {
 			for (int i = 0; i < 6; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
-				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < 10000) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < 1) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -170,7 +170,7 @@ public class Main {
 			for (int i = 0; i < 6; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
-				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < 10000) {
+				if (Map.getArray(x, y) > 0.0f && Map.getArray(x, y) < 1) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;

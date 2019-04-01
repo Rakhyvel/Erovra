@@ -38,9 +38,7 @@ public class Map {
 		} else {
 			if (id == MapID.SEA) {
 				mountain = perlinNoise(1, 0.5f);
-			} else if (id == MapID.MOUNTAIN) {
-				mountain = perlinNoise(1, 0.5f);
-			} else if (id == MapID.ISLANDS) {
+			} else if (id == MapID.ISLANDS || id == MapID.MOUNTAIN) {
 				for (int i = 0; i < 7; i++) {
 					points[i] = new Point(i % 7 * 170, rand.nextInt(512));
 				}
@@ -59,7 +57,11 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = 1.25f*((1 - ((smallestDistance) / 255.0f) + 0.25f) / 2.5f);
+					if(id == MapID.ISLANDS){
+						islandMask[i] = 1.25f*((1 - ((smallestDistance) / 255.0f) + 0.25f) / 2.5f);
+					} else if (id == MapID.MOUNTAIN){
+						islandMask[i] = 1.6f*((1 - ((smallestDistance) / 255.0f) + 0.15f) / 2.5f);
+					}
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -68,14 +70,18 @@ public class Map {
 				}
 			} else if (id == MapID.RIVER) {
 				// n/sqrt(m^2+1)
-				points[0] = new Point(rand.nextInt(512) + 256, 0);
-				points[1024] = new Point(rand.nextInt(512) + 256, 512);
+				points[0] = new Point(rand.nextInt(512)+256, 0);
+				points[512] = new Point(512, 256);
+				points[1024] = new Point(rand.nextInt(512)+256, 512);
 				for (int n = 9; n >= 0; n--) {
 					int p = 1 << n;
 					for (int i = p; i < 1024; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
-						double offset = (512 * rand.nextFloat() - 256f) / (12 - n);
-						points[i].setX(points[i].getX() + offset);
+						double slope = -1*(points[i-p].getX()-points[i+p].getX())/(points[i-p].getY()-points[i+p].getY());
+						double dist = points[i-p].getDistSquared(points[i+p])/(600/points[i-p].getDistSquared(points[i+p]));
+						double displacement = (rand.nextDouble()*2*dist)-dist;
+						points[i].setX(points[i].getX() + (displacement/Math.sqrt(slope*slope+1)));
+						points[i].setY(points[i].getY() + (slope*displacement/Math.sqrt(slope*slope+1)));
 					}
 				}
 				for (int i = 0; i < 1025 * 513; i++) {
@@ -89,8 +95,8 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (float) Math.min((smallestDistance + 100) / 320.0f,
-							(smallestDistance + 900) / 2000.0f);
+					islandMask[i] = (float) Math.min((smallestDistance)/300.0+0.4,
+							.67);
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -106,7 +112,12 @@ public class Map {
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					mountain[x][y] = Math.abs(mountain[x][y]+tempMountain[x][y]);
+					mountain[x][y] = mountain[x][y]+tempMountain[x][y];
+					if(mountain[x][y] < 0){
+						mountain[x][y] = 0;
+					} else if(mountain[x][y]>1){
+						mountain[x][y] = 1;
+					}
 				}
 			}
 		}
@@ -119,10 +130,6 @@ public class Map {
 			if(id == MapID.PLAINS) {
 				mountain[x][y] = generatePlains(mountain[x][y]);
 			}
-			if (mountain[x][y] > 1.5)
-				mountain[x][y] = 1.5f;
-			if (mountain[x][y] < 0)
-				mountain[x][y] = 0f;
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
@@ -141,18 +148,14 @@ public class Map {
 			for (int i = 0; i < width * height; i++) {
 				int x = (i % width) * wavelength;
 				int y = (i / width) * wavelength;
-				if (amplitude == 0.5) {
+				if (frequency == 1) {
 					if (id == MapID.SEA) {
 						noise[x][y] = generateSea(amplitude, x);
 					} else {
 						noise[x][y] = ((2*rand.nextFloat() - 1f)*amplitude) + 0.25f;
 					}
 				} else {
-					if (id == MapID.SEA) {
-						noise[x][y] = rand.nextFloat() + (Math.abs(x - 512) * Math.abs(x - 512) / 500000.0f - 0.5f);
-					}else {
-						noise[x][y] = ((2*rand.nextFloat() - 1f)*amplitude);
-					}
+					noise[x][y] = ((2*rand.nextFloat() - 1f)*amplitude);
 				}
 			}
 			for (int i = 0; i < 1025 * 513; i++) {
@@ -190,11 +193,11 @@ public class Map {
 	}
 
 	float generateMountain(float land) {
-		return (float)(land+0.5f);
+		return land*(land+0.5f)+0.5f;
 	}
 
 	float generatePlains(float land) {
-		return land/2+0.5f;
+		return (land+1)/2;
 	}
 
 	float generateIslands(float land) {

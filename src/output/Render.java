@@ -60,7 +60,8 @@ public class Render extends Canvas {
 	}
 
 	/**
-	 * Calls all objects to render to pixels int array, draws pixel array to screen.
+	 * Calls all objects to render to pixels int array, draws pixel array to
+	 * screen.
 	 */
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
@@ -75,8 +76,7 @@ public class Render extends Canvas {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			drawLongLat();
 			captured = false;
-		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
-				|| Main.gameState == StateID.VICTORY) {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
@@ -89,8 +89,7 @@ public class Render extends Canvas {
 		// drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
 		// drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250
 		// << 8 | 250);
-		if (Main.gameState == StateID.ONGOING)
-			world.drawCoins(this);
+		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
 		bs.show();
@@ -131,12 +130,18 @@ public class Render extends Canvas {
 	/**
 	 * Draws a rectangle, with opacity
 	 * 
-	 * @param x     The x coordinate of the top left corner of the rectangle
-	 * @param y     The y coordinate of the top left corner of the rectangle
-	 * @param w     The width of the rectangle
-	 * @param h     The height of the rectangle
-	 * @param color The color of the rectangle
-	 * @param alpha The opacity of the rectangle
+	 * @param x
+	 *            The x coordinate of the top left corner of the rectangle
+	 * @param y
+	 *            The y coordinate of the top left corner of the rectangle
+	 * @param w
+	 *            The width of the rectangle
+	 * @param h
+	 *            The height of the rectangle
+	 * @param color
+	 *            The color of the rectangle
+	 * @param alpha
+	 *            The opacity of the rectangle
 	 */
 	public void drawRect(int x, int y, int w, int h, int color) {
 		float alpha = ((color >> 24) & 255) / 255.0f;
@@ -155,7 +160,7 @@ public class Render extends Canvas {
 			}
 		}
 	}
-	
+
 	public void drawRectBorders(int x, int y, int w, int h, int color, int borders) {
 		float alpha = ((color >> 24) & 255) / 255.0f;
 		for (int i = 0; i < w * h; i++) {
@@ -170,8 +175,8 @@ public class Render extends Canvas {
 				b = pixels[id] & 255;
 				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 				// bottom | right | top | left
-				if((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 <2) || (((borders & 4) == 4) && x1 > w-3) || (((borders & 8) == 8) && y1 > h-3)) {
-					pixels[id] = (int) 230 << 16 | (int) 230 << 8 | (int) 230;
+				if ((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 < 2) || (((borders & 4) == 4) && x1 > w - 3) || (((borders & 8) == 8) && y1 > h - 3)) {
+					pixels[id] = 230 << 16 | 230 << 8 | 230;
 				} else {
 					pixels[id] = newColor + newColor2;
 				}
@@ -182,10 +187,14 @@ public class Render extends Canvas {
 	/**
 	 * Draws an image
 	 * 
-	 * @param x     The x coordinate of the top left corner of the image
-	 * @param y     The y coordinate of the top right corner of the image
-	 * @param w     The width of the image
-	 * @param image The image
+	 * @param x
+	 *            The x coordinate of the top left corner of the image
+	 * @param y
+	 *            The y coordinate of the top right corner of the image
+	 * @param w
+	 *            The width of the image
+	 * @param image
+	 *            The image
 	 */
 	public void drawImage(int x, int y, Image img, float rotate) {
 		int w = img.getWidth();
@@ -195,8 +204,8 @@ public class Render extends Canvas {
 			h = image.length / w;
 		}
 
-		for (float i = 0; i < image.length; i+=0.3333f) {
-			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f)*img.getOpacity();
+		for (float i = 0; i < image.length; i += 0.3333f) {
+			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * img.getOpacity();
 			double x1 = (i % w) - w / 2;
 			double y1 = i / w - h / 2;
 			double x2 = (int) (x1 + x);
@@ -209,19 +218,18 @@ public class Render extends Canvas {
 					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
 				}
 				int id = (int) (x2 + y2 * (width + 1) + 0.5);
-				if (id > 0 && id < width * height){
+				if (id > 0 && id < width * height) {
 					// Finding alpha
-					r = ((image[(int)i] >> 16) & 255);
-					g = ((image[(int)i] >> 8) & 255);
-					b = (image[(int)i] & 255);
+					r = ((image[(int) i] >> 16) & 255);
+					g = ((image[(int) i] >> 8) & 255);
+					b = (image[(int) i] & 255);
 					int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 
 					// Finding alpha
 					r = ((pixels[id] >> 16) & 255);
 					g = ((pixels[id] >> 8) & 255);
 					b = (pixels[id] & 255);
-					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8
-							| (int) (b * (1 - alpha));
+					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 
 					// Finally adding colors to pixel array
 					pixels[id] = newColor + newColor2;
@@ -229,6 +237,7 @@ public class Render extends Canvas {
 			}
 		}
 	}
+
 	public void drawImage(int x, int y, Image img) {
 		float rotate = img.getRotate();
 		int w = img.getWidth();
@@ -238,8 +247,8 @@ public class Render extends Canvas {
 			h = image.length / w;
 		}
 
-		for (float i = 0; i < image.length; i+=0.3333f) {
-			float alpha = ((image[(int)i] >> 24 & 255) / 255.0f)*img.getOpacity();
+		for (float i = 0; i < image.length; i += 0.3333f) {
+			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * img.getOpacity();
 			double x1 = (i % w) - w / 2;
 			double y1 = i / w - h / 2;
 			double x2 = (int) (x1 + x);
@@ -252,19 +261,18 @@ public class Render extends Canvas {
 					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
 				}
 				int id = (int) (x2 + y2 * (width + 1) + 0.5);
-				if (id > 0 && id < width * height){
+				if (id > 0 && id < width * height) {
 					// Finding alpha
-					r = ((image[(int)i] >> 16) & 255);
-					g = ((image[(int)i] >> 8) & 255);
-					b = (image[(int)i] & 255);
+					r = ((image[(int) i] >> 16) & 255);
+					g = ((image[(int) i] >> 8) & 255);
+					b = (image[(int) i] & 255);
 					int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 
 					// Finding alpha
 					r = ((pixels[id] >> 16) & 255);
 					g = ((pixels[id] >> 8) & 255);
 					b = (pixels[id] & 255);
-					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8
-							| (int) (b * (1 - alpha));
+					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 
 					// Finally adding colors to pixel array
 					pixels[id] = newColor + newColor2;
@@ -272,15 +280,20 @@ public class Render extends Canvas {
 			}
 		}
 	}
-	
+
 	/**
 	 * Draws a string
 	 * 
-	 * @param label String to be drawn
-	 * @param x     coordinate value of the middle of the string
-	 * @param y     coordinate value of the string
-	 * @param font  Font to be used
-	 * @param color Color of the string
+	 * @param label
+	 *            String to be drawn
+	 * @param x
+	 *            coordinate value of the middle of the string
+	 * @param y
+	 *            coordinate value of the string
+	 * @param font
+	 *            Font to be used
+	 * @param color
+	 *            Color of the string
 	 */
 
 	public void drawString(String label, int x, int y, Font font, int color) {
@@ -291,14 +304,15 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(250 << 16 | 250 << 8);
 			} else {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(color);
+				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(color);
 			}
 			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
 			carriage += font.getKern(letter);
 		}
 	}
+
 	public void drawString(String label, int x, int y, Font font, int color, boolean centered) {
 		int carriage = 0;
 		int letter;
@@ -307,11 +321,11 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(250 << 16 | 250 << 8);
 			} else {
-				letterImage = new Image("",font.getSize(),font.getSize(),font.getLetter(letter),((color>>24)&255)/255.0f,0).getScreenBlend(color);
+				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(color);
 			}
-			if(centered) {
+			if (centered) {
 				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
 			} else {
 				drawImage(x + carriage + font.getSize() / 2, y, letterImage, 0);
@@ -323,7 +337,8 @@ public class Render extends Canvas {
 	/**
 	 * Returns a lighter color
 	 * 
-	 * @param color The original color
+	 * @param color
+	 *            The original color
 	 * @return A color 50% lighter
 	 */
 	public static int lighten(int color) {
@@ -338,13 +353,14 @@ public class Render extends Canvas {
 			b -= 30;
 			g += 30;
 		}
-		return 255<<24 | r << 16 | g << 8 | b;
+		return 255 << 24 | r << 16 | g << 8 | b;
 	}
 
 	/**
 	 * Returns a darker color
 	 * 
-	 * @param color The original color
+	 * @param color
+	 *            The original color
 	 * @return A new color, 50% darker
 	 */
 	public static int darken(int color) {
@@ -357,7 +373,7 @@ public class Render extends Canvas {
 		} else {
 			b *= 1.8;
 		}
-		return 255<<24 | r << 16 | g << 8 | b;
+		return 255 << 24 | r << 16 | g << 8 | b;
 	}
 
 	public static Image getWeighted(Image img, UnitID weight, int color) {
@@ -373,27 +389,144 @@ public class Render extends Canvas {
 	/**
 	 * Desaturates a given color
 	 * 
-	 * @param color Original color
+	 * @param color
+	 *            Original color
 	 * @return A less saturated color
 	 */
 	public int desaturate(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		int a = (r + g + b)/3;
-		r = (a + r) >> 1;
-		g = (a + g) >> 1;
-		b = (a + b) >> 1;
-		return r << 16 | g << 8 | b;
+		// int a = (r + g + b) / 3;
+		// r = (a + r) >> 1;
+		// g = (a + g) >> 1;
+		// b = (a + b) >> 1;
+		// int cMax = Math.max(r,Math.max(g,b));
+		int hue = getRGB(350,90,90);
+		return hue << 16 | hue << 8 | hue;
+	}
+
+	public double getValue(int r, int g, int b) {
+		double r1 = r / 255.0;
+		double g1 = g / 255.0;
+		double b1 = b / 255.0;
+		return Math.max(r1, Math.max(g1, b1));
+	}
+
+	public double getSaturation(int r, int g, int b) {
+		double r1 = r / 255.0;
+		double g1 = g / 255.0;
+		double b1 = b / 255.0;
+		double cMax = Math.max(r1, Math.max(g1, b1));
+		double cMin = Math.min(r1, Math.min(g1, b1));
+		if (cMax == 0) return 0;
+		return ((cMax - cMin) / cMax);
+	}
+
+	public double getHue(int r, int g, int b) {
+		double r1 = r / 255.0;
+		double g1 = g / 255.0;
+		double b1 = b / 255.0;
+		double cMax = Math.max(r1, Math.max(g1, b1));
+		double cMin = Math.min(r1, Math.min(g1, b1));
+		double hue = 0;
+		if (cMax - cMin == 0) {
+			return 0;
+		}
+		if (cMax == r1) {
+			hue = 60 * (((g1 - b1) / (cMax - cMin)) % 6);
+		} else if (cMax == g1) {
+			hue = 60 * (((b1 - r1) / (cMax - cMin)) + 2);
+		} else {
+			hue = 60 * (((r1 - g1) / (cMax - cMin)) + 4);
+		}
+		if(hue < 0){
+			hue+=360;
+		}
+		return hue;
+	}
+	
+	public int getRGB(double hue, double saturation, double value){
+		if(hue < 0){
+			hue+=360;
+		}
+		double c = value * saturation;
+		double x = c*(1-Math.abs(((hue/60)%2)-1));
+		double m = value - c;
+		double r = 0;
+		double g = 0;
+		double b = 0;
+		
+		if(hue >= 0 && hue < 60){
+			r = c;
+			g = x;
+			b = 0;
+		} else if(hue >= 60 && hue < 120){
+			r = x;
+			g = c;
+			b = 0;
+		} else if(hue >= 120 && hue < 180){
+			r = 0;
+			g = c;
+			b = x;
+		} else if(hue >= 180 && hue < 240){
+			r = 0;
+			g = x;
+			b = c;
+		} else if(hue >= 240 && hue < 300){
+			r = x;
+			g = 0;
+			b = c;
+		} else if(hue >= 300 && hue < 360){
+			r = c;
+			g = 0;
+			b = x;
+		}
+		return (int)((r+m)*255)<<16|(int)((g+m)*255)<<8|(int)((b+m)*255);
+	}
+
+	public int dither(int x, int y, int value) {
+		int r = (value >> 16) & 255;
+		int g = (value >> 8) & 255;
+		int b = value & 255;
+		int cMax = Math.max(r, Math.max(g, b));
+		int white = 230 << 16 | 230 << 8 | 230;
+		if (x % 2 == 0) {
+			if (y % 2 == 0) {
+				if (cMax > 160) {
+					return white;
+				}
+			} else {
+				if (cMax > 224) {
+					return white;
+				}
+			}
+		} else {
+			if (y % 2 == 0) {
+				if (cMax > 192) {
+					return white;
+				}
+			} else {
+				if (cMax > 128) {
+					return white;
+				}
+			}
+		}
+		return 23 << 16 | 23 << 8 | 23;
 	}
 
 	/**
 	 * Takes an image and makes it darker and more desaturated
 	 * 
-	 * @param image Original image
+	 * @param image
+	 *            Original image
 	 * @return Darker and desaturated image
 	 */
 	public int[] darkenScreen(int[] image) {
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = desaturate(desaturate(image[i]));
+			int r = (int)(((image[i]>>16)&255)*(32/255.0));
+			int g = (int)(((image[i]>>8)&255)*(32/255.0));
+			int b = (int)(((image[i])&255)*(32/255.0));
+			
+			image[i] = r<<16|g<<8|b;
 		}
 		return image;
 	}
@@ -404,9 +537,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			int y = i / 1025;
-			int value = (int)-(0.4*y) + 230;
-			image[i] = value << 16 | value << 8 | value;
+			image[i] = 23<<16|23<<8|23;
 		}
 		return image;
 	}
@@ -519,11 +650,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian()+3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -636,11 +765,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian()+3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -648,8 +775,7 @@ public class Render extends Canvas {
 	public void drawLine(Point p1, Point p2, int color, int background) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
-		if (p1.getX() < 1021 && p1.getX() >= 4 && p1.getY() < 509 && p1.getY() >= 4 && p2.getX() < 1020
-				&& p2.getX() >= 4 && p2.getY() < 508 && p2.getY() >= 4 && p1.getDist(p2) > 32) {
+		if (p1.getX() < 1021 && p1.getX() >= 4 && p1.getY() < 509 && p1.getY() >= 4 && p2.getX() < 1020 && p2.getX() >= 4 && p2.getY() < 508 && p2.getY() >= 4 && p1.getDist(p2) > 32) {
 			if (slope < 1 && slope > -1) {
 				if (p2.getX() > p1.getX()) {
 					for (double i = p1.getX(); i < p2.getX(); i++) {
@@ -734,11 +860,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color),
-						p2.subVec(p1).getRadian()+3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
