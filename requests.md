@@ -18,6 +18,8 @@
 - Maybe make bombers 20 coins, and attackers 30?
 - Make a background for time, so it doesn't get washed out
 - Fix attackers so they target enemy capital
+- Make upgrade only 20 seconds long
+- Can still buy things even though we shouldnt be able to, indsitry doesn't take weight into account
 
 - Squad functions
 	- Patrol
