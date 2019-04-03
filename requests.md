@@ -16,13 +16,14 @@
 - ~~Tabs didn't align with what was displayed for factory~~
 - ~~Factory changes whats being produced based on tabs~~
 - ~~Maybe make bombers 30 coins, and attackers 20?~~
-- Make a background for time, so it doesn't get washed out
-- Fix attackers so they target enemy capital
-- Make upgrade only 20 seconds long
-- Can still buy things even though we shouldnt be able to, indsitry doesn't take weight into account
+- Make a background for time, so it doesn't get washed out ???
+- ~~Fix attackers so they target enemy capital~~
+- ~~Make upgrade only 20 seconds long~~
+- ~~Can still buy things even though we shouldnt be able to, indsitry doesn't take weight into account~~
 - ~~Bombers just sorta disappear when no more targets, should bomb capital and return~~
-- Bombers increase cost for enemy team, shouldn't
-- Dropdown stays visible even if you change maps
+- ~~Bombers increase cost for enemy team, shouldn't~~
+- ~~Dropdown stays visible even if you change maps~~
+- Ships probably don't escort right
 
 - Squad functions
 	- Patrol

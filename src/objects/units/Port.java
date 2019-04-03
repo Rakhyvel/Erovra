@@ -200,8 +200,8 @@ public class Port extends Industry {
 			if (getProduct() == UnitID.NONE)
 				d.drawTab(2, icons, r);
 			if (d.getTab() == 0) {
-				d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4 * getDefense(),
-						nation.getShipCost() * getDefense(), nation.getShipCost() * 2 * getDefense(), this);
+				d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser", nation.getShipCost() / 4 * (getDefense()/2),
+						nation.getShipCost() * (getDefense()/2), nation.getShipCost() * 2 * (getDefense()/2), this);
 			} else if (d.getTab() == 1) {
 				if (nation.getCoinAmount() >= nation.getPortCost() / 2) {
 					d.drawOption("Upgrade (" + nation.getPortCost() / 2 + ")", 2, 32, 5, r);

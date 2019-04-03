@@ -161,7 +161,7 @@ public class Factory extends Industry {
 			}
 			if (d.getTab() == 0) {
 				if (d.buttonsHovered == 2) {
-					buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5, 2*7200 / getDefense());
+					buyUnit(UnitID.CAVALRY, UnitID.LIGHT, (nation.getCavalryCost() / 2) * (getDefense() /2), 2*7200 / getDefense());
 				} else if (d.buttonsHovered == 3) {
 					buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5, 2*10800 / getDefense());
 				} else if (d.buttonsHovered == 4) {
@@ -223,11 +223,11 @@ public class Factory extends Industry {
 						180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
 			} else {
 				if(cavalry) {
-					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", nation.getCavalryCost() / 2 * getDefense(),
-							nation.getCavalryCost() * getDefense(), nation.getCavalryCost() * 2 * getDefense(), this);
+					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", (nation.getCavalryCost() / 2) * (getDefense() / 2),
+							(nation.getCavalryCost() / 2) * (getDefense() / 2), (nation.getCavalryCost() * 2) * (getDefense() / 2), this);
 				} else {	
-					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2 * getDefense(),
-						nation.getArtilleryCost() * getDefense(), nation.getArtilleryCost() * 2 * getDefense(), this);
+					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2 * (getDefense()/2),
+						nation.getArtilleryCost() * (getDefense()/2), nation.getArtilleryCost() * 2 * (getDefense()/2), this);
 				}
 			}
 		} else {

@@ -173,7 +173,7 @@ public class Airfield extends Industry {
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE) d.drawTab(2, icons, r);
 			if (d.getTab() == 0) {
-				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * getDefense(), nation.getPlaneCost() * getDefense(), nation.getPlaneCost() / 2 * getDefense(), this);
+				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * (getDefense()/2), nation.getPlaneCost() * (getDefense()/2), nation.getPlaneCost() * 1.5 * (getDefense()/2), this);
 			} else if (d.getTab() == 1) {
 				if (nation.getCoinAmount() >= nation.getAirfieldCost() / 2) {
 					d.drawOption("Upgrade (" + nation.getAirfieldCost() / 2 + ")", 2, 32, 5, r);

@@ -203,7 +203,7 @@ public class Map {
 	}
 
 	float generatePlains(float land) {
-		return land / 3.0f + 0.5f;
+		return land / 3.0f + 0.55f;
 	}
 
 	float generateIslands(float land) {
@@ -264,6 +264,14 @@ public class Map {
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
+		if(x > 1024)
+			x = 1024;
+		if (y > 512)
+			y = 512;
+		if (x < 0)
+			x = 0;
+		if(y<0)
+			y = 0;
 		return mountain[x][y];
 	}
 

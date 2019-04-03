@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.PLAINS;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -116,7 +116,7 @@ public class Main {
 	 * 41 for mac
 	 */
 	void window() {
-		frame.setSize(width + 7, height + 30);
+		frame.setSize(width + 7, height + 41);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -135,7 +135,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
 		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
-		sweden.setAIControlled(false);
+//		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
@@ -145,6 +145,7 @@ public class Main {
 		if(mapID == MapID.RANDOM)
 			id = MapID.values()[rand.nextInt(5)];
 		System.out.println(id);
+		world.getDropDown().shouldClose();
 
 		do {
 			// Generate a new map

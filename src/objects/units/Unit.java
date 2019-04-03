@@ -327,12 +327,12 @@ public abstract class Unit {
 				smallestPoint = new Point(-1, -1);
 				for (int i = 0; i < nation.unitSize(); i++) {
 					Unit tempUnit = nation.getUnit(i);
-					Point tempPoint = tempUnit.target.addPoint(tempUnit.getPosition()).multScalar(0.5);
+					Point tempPoint = tempUnit.target.addPoint(position).multScalar(0.5);
 					int tempDist = (int) position.getDist(tempPoint);
-					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0) {
+					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0 && Map.getArray((int)tempPoint.getX(), (int)tempPoint.getY()) < 0.4f) {
 						if (wetPath(tempPoint, 32)) {
 							smallestDistance = tempDist;
-							smallestPoint = tempUnit.target.addPoint(getLandingPoint(tempUnit.getPosition(),tempUnit.getTarget(),32)).multScalar(0.5);
+							smallestPoint = tempPoint;
 							smallestUnit = tempUnit;
 						}
 					}
@@ -447,20 +447,28 @@ public abstract class Unit {
 					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT) nation.seaSupremacy--;
 					if (id == UnitID.CITY) {
 						if (nation.getCityCost() >= 1) nation.setCityCost(nation.getCityCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
-						nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
+						if (tempProjectile.getID() != UnitID.BOMB) {
+							nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
+							nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
+						}
 					} else if (id == UnitID.FACTORY) {
 						if (nation.getFactoryCost() >= 30) nation.setFactoryCost(nation.getFactoryCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
-						nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
+						if (tempProjectile.getID() != UnitID.BOMB) {
+							nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
+							nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
+						}
 					} else if (id == UnitID.PORT) {
 						if (nation.getPortCost() > 20) nation.setPortCost(nation.getPortCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
-						nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
+						if (tempProjectile.getID() != UnitID.BOMB) {
+							nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
+							nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
+						}
 					} else if (id == UnitID.AIRFIELD) {
 						if (nation.getAirfieldCost() > 20) nation.setAirfieldCost(nation.getAirfieldCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
-						nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
+						if (tempProjectile.getID() != UnitID.BOMB) {
+							nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
+							nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
+						}
 					} else if (id == UnitID.INFANTRY) {
 						nation.setLandSupremacy(-1);
 					} else if (id == UnitID.CAVALRY) {

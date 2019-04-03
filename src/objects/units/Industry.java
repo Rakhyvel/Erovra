@@ -68,7 +68,7 @@ public abstract class Industry extends Unit {
 			upgrading = true;
 			this.setProduct(id);
 			this.setProductWeight(weight);
-			setStart(3600);
+			setStart(1200);
 			maxStart = getStart();
 			nation.coins -= cost;
 		}
