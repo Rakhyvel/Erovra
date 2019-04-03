@@ -6,15 +6,15 @@
 - Repair function
 - ~~Bombers should target other buildings, target capital if nothing left, and don't build bombers if theres no buildings except capital~~
 - ~~Infantry can target capital from farther away~~
-- Pop ups should ask if I really want to cancel or demolish
+- Pop ups should ask if I really want to cancel or demolish ???
 - ~~Cities should only have two drop down spaces~~
 - Industry should tell how long things will take ???
 - ~~Fix mountains so they don't get white-clipped~~
-- Display telling what capital is producing
+- ~~Display telling what capital is producing~~
 - Planes spaz at -45 degree angle
 - ~~Decommisioning an airfield doesn't lower the cost~~
-- Tabs didn't align with what was displayed for factory
-- Factory changes whats being produced based on tabs
+- ~~Tabs didn't align with what was displayed for factory~~
+- ~~Factory changes whats being produced based on tabs~~
 - ~~Maybe make bombers 30 coins, and attackers 20?~~
 - Make a background for time, so it doesn't get washed out
 - Fix attackers so they target enemy capital

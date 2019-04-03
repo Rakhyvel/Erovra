@@ -401,7 +401,7 @@ public class Render extends Canvas {
 		// b = (a + b) >> 1;
 		// int cMax = Math.max(r,Math.max(g,b));
 		// 76 127 178
-		int hue = getRGB(getHue(r,g,b),getSaturation(r,g,b)*0.4,getValue(r,g,b)*0.3);
+		int hue = getRGB(getHue(r,g,b),getSaturation(r,g,b)*0.4,getValue(r,g,b)*0.4);
 		return hue;
 	}
 
@@ -534,7 +534,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 23<<16|23<<8|23;
+			image[i] = 50<<16|50<<8|50;
 		}
 		return image;
 	}

@@ -203,7 +203,7 @@ public class Map {
 	}
 
 	float generatePlains(float land) {
-		return land / 2.0f + 0.5f;
+		return land / 3.0f + 0.5f;
 	}
 
 	float generateIslands(float land) {

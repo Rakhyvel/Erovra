@@ -25,7 +25,7 @@ public class DropDown extends Menu {
 	private boolean shouldClose = false;
 	private int closeTick;
 	private boolean leftClicked;
-	private int tab = 0;
+	private static int tab = 0;
 
 	@Override
 	public void tick() {

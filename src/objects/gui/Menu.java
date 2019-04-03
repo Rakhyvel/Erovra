@@ -48,7 +48,7 @@ public abstract class Menu {
 			r.drawRectBorders(x - 110, y - 20, 220, 40, 180 << 24| 128 << 16 | 128 << 8 | 128,15);
 			r.drawString(label, x, y, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
 		} else {
-			r.drawRect(x - 110, y - 20, 220, 40, 180 << 24| 50 << 16 | 50 << 8 | 50);
+			r.drawRect(x - 110, y - 20, 220, 40, 180 << 24| 20 << 16 | 20 << 8 | 20);
 			r.drawString(label, x, y, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
 		}
 	}

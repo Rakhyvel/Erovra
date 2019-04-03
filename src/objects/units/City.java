@@ -140,6 +140,21 @@ public class City extends Industry {
 			} else {
 				d.drawUpgrading(this,r);
 			}
+		} else {
+			int minutes = 0, seconds = 0;
+			String product = "Recruits";
+			if ((Main.ticks % 6000) > 0) {
+				minutes = (6000-Main.ticks % 6000) / 3600;
+				seconds = ((6000-Main.ticks % 6000) / 60) - minutes * 60;
+				if (minutes >= 1) {
+					product += " " + minutes + "m,";
+				}
+				product += " " + seconds + "s";
+			}
+			r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30, 180, 30,
+					180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
+			r.drawString(product, (int) d.getPosition().getX()+7, (int) d.getPosition().getY() + 44, r.font16,
+					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 		}
 	}
 
