@@ -30,9 +30,9 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.RANDOM;
 	private static double dt = 50 / 3.0;
-	static Random rand = new Random();
+	public static Random rand = new Random();
 
 	// Window
 	public static final int width = 1024;
@@ -144,6 +144,7 @@ public class Main {
 		MapID id = mapID;
 		if(mapID == MapID.RANDOM)
 			id = MapID.values()[rand.nextInt(5)];
+		System.out.println(id);
 
 		do {
 			// Generate a new map

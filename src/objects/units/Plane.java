@@ -215,11 +215,11 @@ public class Plane extends Unit {
 	 */
 	void acquireTarget() {
 		int smallestDistance = 1310720;
-		Point smallestPoint = new Point(-1, -1);
+		Point smallestPoint = nation.enemyNation.capital.getPosition();
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
-					|| tempUnit.id == UnitID.AIRFIELD)) {
+					|| tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempDist < smallestDistance) {

@@ -400,8 +400,9 @@ public class Render extends Canvas {
 		// g = (a + g) >> 1;
 		// b = (a + b) >> 1;
 		// int cMax = Math.max(r,Math.max(g,b));
-		int hue = getRGB(350,90,90);
-		return hue << 16 | hue << 8 | hue;
+		// 76 127 178
+		int hue = getRGB(getHue(r,g,b),getSaturation(r,g,b)*0.4,getValue(r,g,b)*0.3);
+		return hue;
 	}
 
 	public double getValue(int r, int g, int b) {
@@ -521,12 +522,8 @@ public class Render extends Canvas {
 	 * @return Darker and desaturated image
 	 */
 	public int[] darkenScreen(int[] image) {
-		for (int i = 0; i < 1025 * 513; i++) {
-			int r = (int)(((image[i]>>16)&255)*(32/255.0));
-			int g = (int)(((image[i]>>8)&255)*(32/255.0));
-			int b = (int)(((image[i])&255)*(32/255.0));
-			
-			image[i] = r<<16|g<<8|b;
+		for (int i = 0; i < 1025 * 513-4; i++) {
+			image[i] = desaturate(image[i]);
 		}
 		return image;
 	}

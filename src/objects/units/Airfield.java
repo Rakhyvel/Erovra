@@ -96,7 +96,20 @@ public class Airfield extends Industry {
 			if (nation.enemyNation.landSupremacy > nation.landSupremacy && nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
 				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, 2 * 7200 / getDefense());
 			} else {
-				buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * getDefense() * 0.5, 2 * 3200 / getDefense());
+				int smallestDistance = 1310720;
+				for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+					Unit tempUnit = nation.enemyNation.getUnit(i);
+					if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
+							|| tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
+						Point tempPoint = tempUnit.getPosition();
+						int tempDist = (int) position.getDist(tempPoint);
+						if (tempDist < smallestDistance) {
+							smallestDistance = tempDist;
+						}
+					}
+				}
+				if(smallestDistance < 1310720)
+					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 1.5 * getDefense() * 0.5, 2 * 3200 / getDefense());
 			}
 		}
 	}
@@ -127,7 +140,7 @@ public class Airfield extends Industry {
 				} else if (d.buttonsHovered == 3) {
 					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, 2 * 10800 / getDefense());
 				} else if (d.buttonsHovered == 4) {
-					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() / 2 * getDefense() * 0.5, 2 * 7200 / getDefense());
+					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 1.5 * getDefense() * 0.5, 2 * 7200 / getDefense());
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {

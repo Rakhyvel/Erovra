@@ -136,8 +136,7 @@ public class City extends Industry {
 				} else {
 					d.drawOption("Upgrade (" + nation.getCityCost()/2 + ")", 1, 0, 5, r);
 				}
-				d.drawOption("Decommision", 2, 32, 5, r);
-				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 3, 180, 30, 180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
+				d.drawOption("Decommision", 2, 32, 13, r);
 			} else {
 				d.drawUpgrading(this,r);
 			}

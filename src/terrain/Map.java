@@ -106,7 +106,7 @@ public class Map {
 				mountain = perlinNoise(1, 0.5f);
 			}
 			for (int i2 = 2; i2 < 9; i2++) {
-				int denominator = 1 << (i2 + 1);
+				int denominator = 1 << (i2+1);
 				float[][] tempMountain = perlinNoise(i2, 1f / denominator);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
@@ -134,6 +134,9 @@ public class Map {
 	}
 
 	float[][] perlinNoise(int frequency, float amplitude) {
+		if(id == MapID.PLAINS){
+			amplitude*=2;
+		}
 		float[][] noise = new float[1025][513];
 		if (frequency > 0 && frequency < 9) {
 			int wavelength = 1 << (-frequency + 9);
@@ -222,7 +225,7 @@ public class Map {
 	}
 
 	float generateSea(float amplitude, int x) {
-		return (Math.abs(x - 512)/(650.0f+rand.nextFloat()*600.0f));
+		return (Math.abs(x - 512)/(650.0f+rand.nextFloat()*700.0f))+0.1f;
 	}
 
 	float transform(float r) {

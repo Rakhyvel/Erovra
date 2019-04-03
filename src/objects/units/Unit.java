@@ -295,7 +295,7 @@ public abstract class Unit {
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize() && !(id == UnitID.ARTILLERY && weight == UnitID.LIGHT); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
-			if (tempUnit.engaged) {
+			if (tempUnit.engaged || tempUnit.capital) {
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
 				if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && (tempUnit.id != UnitID.PLANE) && !((id != UnitID.INFANTRY) && (tempUnit.capital)) && tempUnit.getID() != UnitID.NONE) {
