@@ -8,6 +8,7 @@ import objects.gui.Image;
 import objects.projectiles.Bomb;
 import objects.projectiles.Bullet;
 import output.Render;
+import terrain.Map;
 import utility.Point;
 import utility.Trig;
 import utility.Vector;
@@ -27,6 +28,7 @@ public class Plane extends Unit {
 	Image plane1;
 	Image plane2;
 	Image planeHit;
+	Image shadow;
 
 	public Plane(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -55,6 +57,9 @@ public class Plane extends Unit {
 			plane2 = new Image("/res/air/bomber2.png", 68, 40).getScreenBlend(weightColor);
 			planeHit = new Image("/res/air/bomberHit.png", 72, 44);
 		}
+		shadow = new Image(plane1);
+		shadow.setOpacity(0.1f);
+		shadow.shadowify();
 		id = UnitID.PLANE;
 	}
 
@@ -256,8 +261,9 @@ public class Plane extends Unit {
 				}
 			}
 		}
-
-		if (Main.ticks % 4 < 2) {
+		
+		r.drawImage((int) position.getX(), (int) (position.getY()+(-10*Math.max(Map.getArray((int)position.getX(),(int)position.getY()),0.5)+15)), shadow, direction);
+		if (Main.ticks % 4 <= 2) {
 			r.drawImage((int) position.getX(), (int) position.getY(), plane1, direction);
 		} else {
 			r.drawImage((int) position.getX(), (int) position.getY(), plane2, direction);

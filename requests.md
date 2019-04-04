@@ -24,6 +24,7 @@
 - ~~Bombers increase cost for enemy team, shouldn't~~
 - ~~Dropdown stays visible even if you change maps~~
 - ~~Ships probably don't escort right~~
+- Fighter planes can take damage from infantry bullets
 
 - Squad functions
 	- Patrol

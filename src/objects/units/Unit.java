@@ -328,7 +328,7 @@ public abstract class Unit {
 				for (int i = 0; i < nation.unitSize(); i++) {
 					Unit tempUnit = nation.getUnit(i);
 					Point tempPoint = tempUnit.target.addPoint(position).multScalar(0.5);
-					int tempDist = (int) position.getDist(tempPoint);
+					int tempDist = (int) (position.getDist(tempPoint)/nation.landSupremacy);
 					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0 && Map.getArray((int)tempPoint.getX(), (int)tempPoint.getY()) < 0.4f) {
 						if (wetPath(tempPoint, 32)) {
 							smallestDistance = tempDist;

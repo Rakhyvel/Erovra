@@ -37,6 +37,14 @@ public class Image {
 		this.opacity = opacity;
 		this.rotation = rotation;
 	}
+	public Image(Image img) {
+		this.setPath(img.getPath());
+		this.setWidth(img.width);
+		this.height = img.height;
+		this.setPixels(img.getPixels());
+		this.opacity = img.opacity;
+		this.rotation = img.rotation;
+	}
 
 	/**
 	 * Takes a path to an image, its width and height, and returns the image as
@@ -151,6 +159,16 @@ public class Image {
 		}
 		return new Image(getPath(), getWidth(), height, img2, opacity, rotation);
 	}
+	
+	public void shadowify() {
+		for(int i = 0; i < pixels.length; i++) {
+			if((pixels[i]>>24&255)>0) {
+				pixels[i] = 255<<24|0<<16|0<<8|0;
+			} else {
+				pixels[i] = 0;
+			}
+		}
+	}
 
 	public int getWidth() {
 		return width;
@@ -161,7 +179,9 @@ public class Image {
 	}
 
 	public int[] getPixels() {
-		return pixels;
+		int[] newPixels = new int[pixels.length];
+		System.arraycopy(pixels, 0, newPixels, 0, pixels.length);
+		return newPixels;
 	}
 
 	public void setPixels(int[] pixels) {
