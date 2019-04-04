@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.RANDOM;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -134,7 +134,7 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
+		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
 //		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);

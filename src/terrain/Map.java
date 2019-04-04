@@ -79,7 +79,7 @@ public class Map {
 						double slope = -1 * (points[i - p].getX() - points[i + p].getX())
 								/ (points[i - p].getY() - points[i + p].getY());
 						double dist = points[i - p].getDistSquared(points[i + p]);
-						double displacement = n/7.0*((rand.nextDouble() * dist) - dist / 2);
+						double displacement = ((rand.nextDouble() * dist) - dist / 2) * (n / 8.0) * (n / 8.0);
 						points[i].setX(points[i].getX() + (displacement / Math.sqrt(slope * slope + 1)));
 						points[i].setY(points[i].getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 					}
@@ -87,7 +87,7 @@ public class Map {
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					int smallestDistance = 1024;
+					int smallestDistance = 96;
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 1024; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
@@ -95,7 +95,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (float) Math.min((smallestDistance) / 300.0 + 0.4, .67);
+					islandMask[i] = (smallestDistance-96)/300.0f+0.75f;
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -134,8 +134,8 @@ public class Map {
 	}
 
 	float[][] perlinNoise(int frequency, float amplitude) {
-		if(id == MapID.PLAINS){
-			amplitude*=2;
+		if (id == MapID.PLAINS) {
+			amplitude *= 2;
 		}
 		float[][] noise = new float[1025][513];
 		if (frequency > 0 && frequency < 9) {
@@ -152,14 +152,9 @@ public class Map {
 						noise[x][y] = rand.nextFloat();
 					}
 				} else {
-					if (id == MapID.RIVER) {
-						if (islandMask[x + y * 1025] < 0.5) {
-							noise[x][y] = 0;
-						} else {
-							noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude);
-						}
-					} else {
-						noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude);
+					noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude);
+					if(id == MapID.RIVER && islandMask[x+y*1025]<0.6) {
+						noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude/2.0f);
 					}
 				}
 			}
@@ -225,7 +220,7 @@ public class Map {
 	}
 
 	float generateSea(float amplitude, int x) {
-		return (Math.abs(x - 512)/(650.0f+rand.nextFloat()*700.0f))+0.1f;
+		return (Math.abs(x - 512) / (650.0f + rand.nextFloat() * 700.0f)) + 0.1f;
 	}
 
 	float transform(float r) {
@@ -264,13 +259,13 @@ public class Map {
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
-		if(x > 1024)
+		if (x > 1024)
 			x = 1024;
 		if (y > 512)
 			y = 512;
 		if (x < 0)
 			x = 0;
-		if(y<0)
+		if (y < 0)
 			y = 0;
 		return mountain[x][y];
 	}

@@ -23,7 +23,7 @@
 - ~~Bombers just sorta disappear when no more targets, should bomb capital and return~~
 - ~~Bombers increase cost for enemy team, shouldn't~~
 - ~~Dropdown stays visible even if you change maps~~
-- Ships probably don't escort right
+- ~~Ships probably don't escort right~~
 
 - Squad functions
 	- Patrol

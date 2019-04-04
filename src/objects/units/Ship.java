@@ -168,9 +168,9 @@ public class Ship extends Unit {
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
 			if (tempUnit.weight == UnitID.HEAVY) {
-				tempDist /= 4;
+				tempDist /= 4.0;
 			} else if (tempUnit.weight == UnitID.MEDIUM) {
-				tempDist /= 2;
+				tempDist /= 2.0;
 			}
 			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY && tempUnit.weight != UnitID.LIGHT)) && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
