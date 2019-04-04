@@ -30,7 +30,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 

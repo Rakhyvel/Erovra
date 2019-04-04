@@ -160,8 +160,6 @@ public class Ship extends Unit {
 		int smallestDistance = 1310720;
 		Unit firstUnit = null;
 		Unit secondUnit = null;
-		setPassenger1(null);
-		setPassenger2(null);
 		int unitCount = 0;
 		for (int i = 0; i < nation.unitSize(); i++) {
 			Unit tempUnit = nation.getUnit(i);

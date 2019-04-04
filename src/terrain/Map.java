@@ -53,6 +53,7 @@ public class Map {
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 7; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
+						tempDist*=(-1/9.0f)*(i2)*(i2-6)+1;
 						if (tempDist < smallestDistance) {
 							smallestDistance = tempDist;
 						}
