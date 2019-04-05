@@ -614,7 +614,7 @@ public abstract class Unit {
 			if (nation.isAIControlled()) setTarget(position);
 			setFacing(smallestPoint);
 			engaged = true;
-			if (Main.ticks % 90 == 0) {
+			if ((Main.ticks-born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, nation, smallestPoint));
 			}
 			return true;

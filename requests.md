@@ -37,6 +37,10 @@
 - Plane shadows go crazy on edges
 - ~~Planes shadows should be on the ground, their sprite should be elevated
 - Landing craft need dropdown
+- Fix landing craft sprite
+- Infantry draw latlong, instead of always?
+- River unit circle
+- Fix landing craft not departing imediately
 
 - Squad functions
 	- Patrol

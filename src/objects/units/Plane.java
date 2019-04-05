@@ -91,7 +91,7 @@ public class Plane extends Unit {
 					}
 					if (position.getDist(getTarget()) < 1) {
 						setTarget(new Point(nation.capital.getPosition()));
-						nation.addProjectile(new Bomb(position, nation));
+						nation.addProjectile(new Bomb(position.addPoint(new Point(0,16)), nation));
 						bombsAway = true;
 						if (Main.world.selectedUnit != null) {
 							if (selected || Main.world.selectedUnit.equals(this))
@@ -233,7 +233,7 @@ public class Plane extends Unit {
 				}
 			}
 		}
-		setTarget(new Point(smallestPoint));
+		setTarget(new Point(smallestPoint).addPoint(new Point(0,-16)));
 	}
 
 	@Override
@@ -261,9 +261,10 @@ public class Plane extends Unit {
 				}
 			}
 		}
-		
-		r.drawImage((int) position.getX(), (int) (position.getY()+Math.min(-32*(Map.getArray((int)position.getX(),(int)position.getY())-0.5), 0)+32), shadow, direction);
-		if (Main.ticks % 4 <= 2) {
+		double distance = 32*Math.min(-Map.getArray((int)position.getX(), (int)position.getY()+16)+1.5,1);
+		double scale = Math.max(1/2*(Map.getArray((int)position.getX(), (int)position.getY()+16)-0.5)+0.75, 0.75);
+		r.drawImage((int) position.getX(), (int) (position.getY()+distance), shadow.resize((float)scale), direction);
+		if (Main.ticks % 4 < 2) {
 			r.drawImage((int) position.getX(), (int) position.getY(), plane1, direction);
 		} else {
 			r.drawImage((int) position.getX(), (int) position.getY(), plane2, direction);

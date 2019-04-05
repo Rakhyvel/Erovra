@@ -122,15 +122,15 @@ public class Port extends Industry {
 			}
 		}
 		if (unitCount > 3 && smallestPoint.getX() != -1 && nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
-			buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5, 2 * 3000 / getDefense());
+			buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5, getTime(weight,UnitID.LIGHT));
 		} else {
 			if (nation.enemyNation.landSupremacy >= nation.landSupremacy
 					|| nation.enemyNation.airSupremacy >= nation.airSupremacy) {
 				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
-						2 * 10800 / getDefense())) {
+						getTime(weight,UnitID.HEAVY))) {
 				} else {
 					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
-							2 * 7200 / getDefense());
+							getTime(weight,UnitID.MEDIUM));
 				}
 			}
 		}
@@ -162,13 +162,13 @@ public class Port extends Industry {
 			if (d.getTab() == 0) {
 				if (d.buttonsHovered == 2) {
 					buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5,
-							2 * 3600 / getDefense());
+							getTime(weight,UnitID.LIGHT));
 				} else if (d.buttonsHovered == 3) {
 					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
-							2 * 10800 / getDefense());
+							getTime(weight,UnitID.MEDIUM));
 				} else if (d.buttonsHovered == 4) {
 					buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
-							2 * 10800 / getDefense());
+							getTime(weight,UnitID.HEAVY));
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {

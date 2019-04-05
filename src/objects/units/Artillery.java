@@ -39,6 +39,7 @@ public class Artillery extends Unit {
 			artillery = artillery.getScreenBlend(weightColor);
 		}
 		id = UnitID.ARTILLERY;
+		System.out.println(born);
 	}
 
 	@Override

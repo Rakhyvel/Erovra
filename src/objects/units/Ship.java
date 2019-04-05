@@ -43,13 +43,13 @@ public class Ship extends Unit {
 			shipHit = new Image("/res/water/landingHit.png", 17, 36).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
-			setDefense(2);
+			setDefense(1.5f);
 			weightColor = nation.color;
 			ship = new Image("/res/water/destroyer.png", 13, 45).getScreenBlend(weightColor);
 			shipHit = new Image("/res/water/destroyerHit.png", 17, 49).getScreenBlend(weightColor);
 		} else {
 			speed = .075f;
-			setDefense(6);
+			setDefense(3f);
 			weightColor = Render.darken(nation.color);
 			ship = new Image("/res/water/cruiser.png", 14, 61).getScreenBlend(weightColor);
 			shipHit = new Image("/res/water/cruiserHit.png", 18, 65).getScreenBlend(weightColor);
@@ -158,8 +158,8 @@ public class Ship extends Unit {
 	void loadPassengers() {
 		decideTarget();
 		int smallestDistance = 1310720;
-		Unit firstUnit = null;
-		Unit secondUnit = null;
+		int firstUnit = -1;
+		int secondUnit = -1;
 		int unitCount = 0;
 		for (int i = 0; i < nation.unitSize(); i++) {
 			Unit tempUnit = nation.getUnit(i);
@@ -173,16 +173,16 @@ public class Ship extends Unit {
 			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY && tempUnit.weight != UnitID.LIGHT)) && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				secondUnit = firstUnit;
-				firstUnit = tempUnit;
+				firstUnit = i;
 				unitCount++;
 			}
 		}
-		if (firstUnit != null && unitCount > 2) {
-			setPassenger1(firstUnit);
+		if (firstUnit != -1 && unitCount > 2) {
+			setPassenger1(nation.getUnit(firstUnit));
 			getPassenger1().setBoarded(true);
 			getPassenger1().disengage();
-			if (secondUnit != null) {
-				setPassenger2(secondUnit);
+			if (secondUnit != -1) {
+				setPassenger2(nation.getUnit(secondUnit));
 				getPassenger2().setBoarded(true);
 				getPassenger2().disengage();
 			}

@@ -18,6 +18,7 @@ public class Bomb extends Projectile {
 
 	private int fall = 600;
 	Image bomb = new Image("/res/projectiles/bomb.png", 16, 8);
+	Image shadow;
 
 	public Bomb(Point position, Nation nation) {
 		super(position, nation);
@@ -25,6 +26,9 @@ public class Bomb extends Projectile {
 		setAttack(0);
 		this.velocity = velocity.normalize().scalar(getSpeed());
 		id = UnitID.BOMB;
+		shadow = new Image(bomb);
+		shadow.setOpacity(0.1f);
+		shadow.shadowify();
 	}
 
 	@Override
@@ -42,7 +46,8 @@ public class Bomb extends Projectile {
 	public void render(Render r) {
 		double scale = (-1/360000.0)*(600.0-fall)*(600.0-fall)+1.1;
 		if (fall > 1) {
-			r.drawImage((int) position.getX(), (int) position.getY(), bomb.resize((float)scale), 0);
+			r.drawImage((int) position.getX(), (int) position.getY(), shadow.resize(0.5f), 0);
+			r.drawImage((int) position.getX(), (int) (position.getY()-(16*scale)), bomb.resize((float)(scale/2.0+0.5f)), 0);
 		}
 	}
 }
