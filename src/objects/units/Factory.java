@@ -224,7 +224,7 @@ public class Factory extends Industry {
 			} else {
 				if(cavalry) {
 					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank", (nation.getCavalryCost() / 2) * (getDefense() / 2),
-							(nation.getCavalryCost() / 2) * (getDefense() / 2), (nation.getCavalryCost() * 2) * (getDefense() / 2), this);
+							nation.getCavalryCost() * (getDefense() / 2), (nation.getCavalryCost() * 2) * (getDefense() / 2), this);
 				} else {	
 					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer", nation.getArtilleryCost() / 2 * (getDefense()/2),
 						nation.getArtilleryCost() * (getDefense()/2), nation.getArtilleryCost() * 2 * (getDefense()/2), this);

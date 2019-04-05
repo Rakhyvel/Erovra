@@ -42,9 +42,9 @@ public class Map {
 				for (int i = 0; i < 7; i++) {
 					points[i] = new Point(i % 7 * 170, rand.nextInt(512));
 				}
-				points[0].setY(64 + rand.nextInt(100));
+				points[0].setY(rand.nextInt(512));
 				points[0].setX(64);
-				points[6].setY(rand.nextInt(448) + 32);
+				points[6].setY(rand.nextInt(512));
 				points[6].setX(960);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
@@ -53,7 +53,8 @@ public class Map {
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 7; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
-						tempDist*=(-1/9.0f)*(i2)*(i2-6)+1;
+						if(id == MapID.ISLANDS)
+							tempDist*=(-1/20.0f)*(i2)*(i2-6)+1;
 						if (tempDist < smallestDistance) {
 							smallestDistance = tempDist;
 						}
