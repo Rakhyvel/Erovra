@@ -32,13 +32,13 @@ public class Cavalry extends Unit {
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			setDefense(2);
-			cal = 2f;
+			cal = 1f;
 			weightColor = nation.color;
 			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else {
 			speed = .05f;
-			setDefense(2.5f);
-			cal = 2.5f;
+			setDefense(2f);
+			cal = 2f;
 			weightColor = Render.darken(nation.color);
 			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		}

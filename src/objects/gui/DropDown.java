@@ -237,7 +237,7 @@ public class DropDown extends Menu {
 					180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
 			r.drawString(product, (int) getPosition().getX(), (int) getPosition().getY() + 44, r.font16,
 					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			drawOption("Cancel order (-10)", 2, 32, 13, r);
+			drawOption("Cancel order (-"+(int)(industry.refund)+")", 2, 32, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
 				drawOption(light + " (" + (int)lightCost + ")", 2, 32, 5, r);

@@ -43,14 +43,14 @@ public class Plane extends Unit {
 			planeHit = new Image("/res/air/fighterHit.png", 40, 39);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .6f;
-			setDefense(2f);
+			setDefense(1f);
 			weightColor = nation.color;
 			plane1 = new Image("/res/air/attack.png", 44, 33).getScreenBlend(weightColor);
 			plane2 = new Image("/res/air/attack1.png", 44, 33).getScreenBlend(weightColor);
 			planeHit = new Image("/res/air/attackHit.png", 48, 37);
 		} else {
 			speed = 0.3f;
-			setDefense(2f);
+			setDefense(1f);
 			acquireTarget();
 			weightColor = Render.darken(nation.color);
 			plane1 = new Image("/res/air/bomber1.png", 68, 40).getScreenBlend(weightColor);
@@ -262,7 +262,7 @@ public class Plane extends Unit {
 			}
 		}
 		
-		r.drawImage((int) position.getX(), (int) (position.getY()+(-10*Math.max(Map.getArray((int)position.getX(),(int)position.getY()),0.5)+15)), shadow, direction);
+		r.drawImage((int) position.getX(), (int) (position.getY()+Math.min(-32*(Map.getArray((int)position.getX(),(int)position.getY())-0.5), 0)+32), shadow, direction);
 		if (Main.ticks % 4 <= 2) {
 			r.drawImage((int) position.getX(), (int) position.getY(), plane1, direction);
 		} else {

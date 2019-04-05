@@ -14,6 +14,7 @@ public abstract class Industry extends Unit {
 	protected UnitID product = UnitID.NONE;
 	protected UnitID productWeight = UnitID.NONE;
 	protected boolean upgrading = false;
+	public double refund = 0;
 
 	public Industry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -51,12 +52,14 @@ public abstract class Industry extends Unit {
 			this.setProductWeight(productWeight);
 			setStart((int)time);
 			maxStart = getStart();
+			refund = cost/2;
 			return true;
 		} else {
 			this.setProduct(UnitID.NONE);
 			this.setProductWeight(UnitID.NONE);
 			setStart(1);
 			maxStart = getStart();
+			refund = 0;
 		}
 		if(!nation.isAIControlled())
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
@@ -81,6 +84,22 @@ public abstract class Industry extends Unit {
 			return 150;
 		} 
 		return 90;
+	}
+	
+	int getTime(UnitID industryWeight, UnitID unitWeight) {
+		int baseTime = 3600;
+		if(industryWeight == UnitID.MEDIUM) {
+			baseTime+=20*60;
+		} else if(industryWeight == UnitID.LIGHT){
+			baseTime+=40*60;
+		}
+		
+		if(unitWeight == UnitID.MEDIUM) {
+			baseTime+=20*60;
+		} else if(unitWeight == UnitID.HEAVY){
+			baseTime+=40*60;
+		}
+		return baseTime;
 	}
 
 	@Override

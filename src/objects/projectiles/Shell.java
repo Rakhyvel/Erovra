@@ -31,7 +31,7 @@ public class Shell extends Projectile {
 	public void tick(double t) {
 		shellMove();
 		if (position.getDist(getTarget()) < 6) {
-			setAttack(1.5f);
+			setAttack(1f);
 		}
 	}
 

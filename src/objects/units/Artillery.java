@@ -34,7 +34,7 @@ public class Artillery extends Unit {
 			artillery = artillery.getScreenBlend(weightColor);
 		} else {
 			speed = 0.05f;
-			setDefense(1);
+			setDefense(2);
 			weightColor = Render.darken(nation.color);
 			artillery = artillery.getScreenBlend(weightColor);
 		}

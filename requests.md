@@ -28,13 +28,14 @@
 - Fighter planes can take damage from infantry bullets
 - Weird bug that makes it so you have to press multiple times to upgrade a brand new factory
 	- Also happens when you have a city upgrading and its drop down open, won't let you upgrade after its finished upgrading. Need to close out of 	drop down
-- Fighters cost 5 coins, but canceling the order gives back 10 coins
-- Drop down still doesn't open on the right tab for factories
-- Map out costs of things, make sure everything makes sense especially with time taken to build things
-	- Upgrading should give diminishing returns
-	- As of rn, upgrading fully and buying a unit there is faster than buying a unit on light upgrade. Shouldn't be the case
+	- Could not reproduce?
+- ~~Fighters cost 5 coins, but canceling the order gives back 10 coins~~
+- ~~Drop down still doesn't open on the right tab for factories~~
+- ~~Map out costs of things, make sure everything makes sense especially with time taken to build things~~
+	- ~~Upgrading should give diminishing returns~~
+	- ~~As of rn, upgrading fully and buying a unit there is faster than buying a unit on light upgrade. Shouldn't be the case~~
 - Plane shadows go crazy on edges
-- Planes shadows should be on the ground, their sprite should be elevated
+- ~~Planes shadows should be on the ground, their sprite should be elevated
 - Landing craft need dropdown
 
 - Squad functions

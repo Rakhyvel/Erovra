@@ -119,7 +119,7 @@ public class City extends Industry {
 			if (d.buttonsHovered == 2) {
 				setProductWeight(UnitID.NONE);
 				setProduct(UnitID.NONE);
-				nation.coins += 10;
+				nation.coins += refund;
 				upgrading = false;
 			}
 		}
