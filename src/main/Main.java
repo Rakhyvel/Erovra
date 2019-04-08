@@ -1,13 +1,15 @@
 package main;
 
+import input.Keyboard;
+import input.Mouse;
+
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import input.Keyboard;
-import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -30,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -123,6 +125,7 @@ public class Main {
 		frame.setTitle(Main.version);
 		frame.setLocationRelativeTo(null);
 		frame.add(render);
+		frame.setIconImage(new ImageIcon(getClass().getResource("/res/icon.png")).getImage());
 	}
 
 	/**

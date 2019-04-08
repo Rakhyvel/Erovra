@@ -34,13 +34,25 @@
 - ~~Map out costs of things, make sure everything makes sense especially with time taken to build things~~
 	- ~~Upgrading should give diminishing returns~~
 	- ~~As of rn, upgrading fully and buying a unit there is faster than buying a unit on light upgrade. Shouldn't be the case~~
-- Plane shadows go crazy on edges
+- Plane shadows go crazy on edges ??
+	- Never reproduced
 - ~~Planes shadows should be on the ground, their sprite should be elevated
-- Landing craft need dropdown
-- Fix landing craft sprite
-- Infantry draw latlong, instead of always?
-- River unit circle
-- Fix landing craft not departing imediately
+- ~~Landing craft need dropdown~~
+- ~~Fix landing craft sprite~~
+- ~~River unit circle~~
+- ~~Fix landing craft not departing imediately~~
+- landing craft need icons on their dropdown
+- Cruisers always show artillery radius
+- ~~Add icon~~
+- ~~Re-add for images~~
+	- ~~Screen overlay~~
+	- ~~dropdown tab icons~~
+	- ~~Bomb rescaling/resizing~~
+	- ~~Shadows~~
+	- ~~Weights~~
+- Add settings gear icon
+- Recolor targets for planes
+- Fix attacker logic for seasupremacy
 
 - Squad functions
 	- Patrol
@@ -49,11 +61,35 @@
 	- Box select
 	- Paths
 	- Pressing a key shows all units arrows
+	- Fight for air supremacy
+		- Build airfields
+		- Build fighters
+		- Bomb/ target enemy airfields if air supremacy is lowest
+			- Scout for them
+				- Go to empty squares
+	- Fight for water supremacy
+		- Build ports
+		- Build ships
+		- Bomb/ target enemy ports if sea supremacy is lowest
+			- Scout for them
+				- Go to empty squares
+	- If air and water are non-negative, fight for land supramacy
+		- Build factories
+		- Build units
+		- Maintain air/sea supremacy, do not go overboard
+		- Invade once land supremacy is acheived
+			- Scout for capital
+			- Make passes by gathering squads and invading
+	- AI should priorotize units instead of buildings
+		- Prioritize units with greatest value
+	- AI should only know about units its seen
+		- Only increase enemy supremacy if youve never seen the unit before
+	- Actually do artillery physics right
 
 ### Update 1.1:
 #### Instructions and menus
-- Instructions function
-- Settings function
+- Instructions screen
+- Settings screen
 - Map choose screen
 - Zoom function
 - When people first click start game, they don't really know what to do

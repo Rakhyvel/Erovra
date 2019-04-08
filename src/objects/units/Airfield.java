@@ -20,8 +20,6 @@ import utility.Point;
 public class Airfield extends Industry {
 
 	private boolean spotted = false;
-	private static Image airfield = new Image("/res/buildings/airfield.png", 32, 32);
-	private static Image[] icons = { new Image("/res/air/fighter.png", 36, 35).resize(0.75f), new Image("/res/target.png", 32, 32).resize(0.75f) };
 	int buyInCost = 0;
 
 	public Airfield(Point position, Nation nation) {
@@ -29,7 +27,7 @@ public class Airfield extends Industry {
 		setDefense(1);
 		id = UnitID.AIRFIELD;
 		weight = UnitID.LIGHT;
-		buyInCost = nation.getAirfieldCost()/2;
+		buyInCost = nation.getAirfieldCost() / 2;
 	}
 
 	@Override
@@ -49,7 +47,7 @@ public class Airfield extends Industry {
 			if (getStart() < 0) {
 				addProduct();
 				if (nation.isAIControlled()) {
-					if(!upgrading){
+					if (!upgrading) {
 						if (weight == UnitID.LIGHT && buyInCost < nation.getAirfieldCost()) {
 							upgrade(nation.getAirfieldCost() / 2);
 						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getAirfieldCost()) {
@@ -99,8 +97,7 @@ public class Airfield extends Industry {
 				int smallestDistance = 1310720;
 				for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 					Unit tempUnit = nation.enemyNation.getUnit(i);
-					if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT
-							|| tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
+					if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
 						Point tempPoint = tempUnit.getPosition();
 						int tempDist = (int) position.getDist(tempPoint);
 						if (tempDist < smallestDistance) {
@@ -108,8 +105,7 @@ public class Airfield extends Industry {
 						}
 					}
 				}
-				if(smallestDistance < 1310720)
-					buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 2.5 * getDefense() * 0.5, getTime(weight, UnitID.HEAVY));
+				if (smallestDistance < 1310720) buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 2.5 * getDefense() * 0.5, getTime(weight, UnitID.HEAVY));
 			}
 		}
 	}
@@ -121,9 +117,9 @@ public class Airfield extends Industry {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(airfield, weight, nation.color), 0);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32,r.getScreenBlend(r.getColor(weight,nation.color), r.airfield),1, 0);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.cityHit,1, 0);
 			}
 		}
 	}
@@ -171,9 +167,9 @@ public class Airfield extends Industry {
 		dropDownHeight = getDropDownHeight();
 		d.setPosition(position);
 		if (!upgrading) {
-			if (getProduct() == UnitID.NONE) d.drawTab(2, icons, r);
+			if (getProduct() == UnitID.NONE) d.drawTab(2,r.resize(r.fighter1,0.75,36,35),r.resize(r.target,0.5,32,32),null,27,16,0, r);
 			if (d.getTab() == 0) {
-				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * (getDefense()/2), nation.getPlaneCost() * (getDefense()/2), nation.getPlaneCost() * 2.5 * (getDefense()/2), this);
+				d.drawIndustry(r, "Fighter", "Attacker", "Bomber", nation.getPlaneCost() / 2 * (getDefense() / 2), nation.getPlaneCost() * (getDefense() / 2), nation.getPlaneCost() * 2.5 * (getDefense() / 2), this);
 			} else if (d.getTab() == 1) {
 				if (nation.getCoinAmount() >= nation.getAirfieldCost() / 2) {
 					d.drawOption("Upgrade (" + nation.getAirfieldCost() / 2 + ")", 2, 32, 5, r);

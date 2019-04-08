@@ -354,26 +354,32 @@ public abstract class Unit {
 	public void settle() {
 		nation.buyCity(position);
 		if(nation.getCityCost() > 30) {
-			Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-			Point smallestPoint = new Point(-1, -1);
-			int smallestDistance = 1310720;
-			for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-				Unit tempUnit = nation.enemyNation.getUnit(i);
-				Point tempPoint = tempUnit.getPosition();
-				int tempDist = (int) position.getDist(tempPoint);
-				if (tempDist < smallestDistance && (tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE)) {
-					if (wetLandingPath(tempPoint, portPoint, 64)) {
-						smallestPoint = tempPoint;
+			if(nation.airSupremacy <= nation.enemyNation.airSupremacy){
+				if (nation.getAirfieldCost() < nation.coins /2) nation.buyAirfield(position);
+			} else {
+				if(nation.seaSupremacy <= nation.enemyNation.seaSupremacy){
+					Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+					Point smallestPoint = new Point(-1, -1);
+					int smallestDistance = 1310720;
+					for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+						Unit tempUnit = nation.enemyNation.getUnit(i);
+						Point tempPoint = tempUnit.getPosition();
+						int tempDist = (int) position.getDist(tempPoint);
+						if (tempDist < smallestDistance && (tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE)) {
+							if (wetLandingPath(tempPoint, portPoint, 64)) {
+								smallestPoint = tempPoint;
+							}
+						}
 					}
+					if (smallestPoint.getX() != -1 && Map.getArray(portPoint) < .5f && nation.checkProximity(portPoint) && !engaged) {
+						nation.buyPort(position);
+						target = portPoint;
+						facing = target;
+					}
+				} else {
+					if (nation.getFactoryCost() < nation.coins /2) nation.buyFactory(position);
 				}
 			}
-			if (smallestPoint.getX() != -1 && Map.getArray(portPoint) < .5f && nation.checkProximity(portPoint) && !engaged) {
-				nation.buyPort(position);
-				target = portPoint;
-				facing = target;
-			}
-			if (nation.getAirfieldCost() < nation.coins /2) nation.buyAirfield(position);
-			if (nation.getFactoryCost() < nation.coins /2) nation.buyFactory(position);
 		}
 	}
 
@@ -527,7 +533,7 @@ public abstract class Unit {
 	 * @return True if enemy airplanes nearby, else false.
 	 */
 	boolean aaAim() {
-		int smallestDistance = 73728;
+		int smallestDistance = 7372;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {

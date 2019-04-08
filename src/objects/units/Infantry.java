@@ -18,16 +18,13 @@ import utility.Point;
 public class Infantry extends Unit {
 	
 	int weightColor = 255<<24;
-	Image infantry;
 
 	public Infantry(Point position, Nation nation) {
-		super(position, nation, UnitID.NONE);
+		super(position, nation, UnitID.MEDIUM);
 		speed = .1f;
 		setDefense(1);
 		id = UnitID.INFANTRY;
 		dropDownHeight = 150;
-		weightColor = nation.color;
-		infantry = new Image("/res/ground/infantry.png", 32, 16).getScreenBlend(weightColor);
 	}
 
 	@Override
@@ -67,9 +64,9 @@ public class Infantry extends Unit {
 				}
 			}
 
-			r.drawImage((int) position.getX(), (int) position.getY(), infantry, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.getColor(weight,nation.color),r.infantry),1, direction);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.hitSprite, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
 			}
 		}
 	}

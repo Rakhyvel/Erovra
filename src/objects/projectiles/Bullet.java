@@ -15,7 +15,6 @@ import utility.Vector;
  *
  */
 public class Bullet extends Projectile {
-	Image bullet = new Image("/res/projectiles/bullet.png", 2, 2);
 
 	public Bullet(Point position, Nation nation, Vector velocity, float cal, UnitID id) {
 		super(position, nation);
@@ -36,6 +35,6 @@ public class Bullet extends Projectile {
 
 	@Override
 	public void render(Render r) {
-		r.drawImage((int) position.getX(), (int) position.getY(), bullet.getScreenBlend(nation.color),0);
+		r.drawRect((int) position.getX(), (int) position.getY(), 2,2,255<<24|250<<16|255<<8|255);
 	}
 }

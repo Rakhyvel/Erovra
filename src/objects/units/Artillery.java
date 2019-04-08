@@ -17,29 +17,20 @@ import utility.Point;
  *
  */
 public class Artillery extends Unit {
-	int weightColor = 255<<24;
-	Image artillery = new Image("/res/ground/artillery.png", 32, 16);
 
 	public Artillery(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .1f;
-			setDefense(1);
-			weightColor = Render.lighten(nation.color);
-			artillery = artillery.getScreenBlend(weightColor);
+			setDefense(0.1f);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = 0.1f;
 			setDefense(2);
-			weightColor = nation.color;
-			artillery = artillery.getScreenBlend(weightColor);
 		} else {
 			speed = 0.05f;
 			setDefense(2);
-			weightColor = Render.darken(nation.color);
-			artillery = artillery.getScreenBlend(weightColor);
 		}
 		id = UnitID.ARTILLERY;
-		System.out.println(born);
 	}
 
 	@Override
@@ -77,14 +68,14 @@ public class Artillery extends Unit {
 					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
-					if(weight == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), r.medArtRange,0);
-					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), r.heavyArtRange,0);
+					if(weight == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange,1,0);
+					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(),256, r.heavyArtRange,1,0);
 				}
 			}
 
-			r.drawImage((int) position.getX(), (int) position.getY(), artillery, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(),32, r.getScreenBlend(r.getColor(weight,nation.color),r.artillery),1, direction);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.hitSprite, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
 			}
 		}
 	}

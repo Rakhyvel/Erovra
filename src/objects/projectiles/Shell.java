@@ -15,8 +15,6 @@ import utility.Point;
 public class Shell extends Projectile {
 	
 	float distance;
-	Image shell = new Image("/res/projectiles/shell.png", 4, 4);
-	Image shadow;
 
 	public Shell(Point position, Nation nation, Point target) {
 		super(position, nation);
@@ -26,9 +24,6 @@ public class Shell extends Projectile {
 		this.setTarget(target);
 		id = UnitID.SHELL;
 		distance = (float)position.getDistSquared(target);
-		shadow = new Image(shell);
-		shadow.setOpacity(0.1f);
-		shadow.shadowify();
 	}
 
 	@Override
@@ -43,7 +38,9 @@ public class Shell extends Projectile {
 	public void render(Render r) {
 		double scale = position.getDistSquared(target)/distance;
 		scale = (-3 * (scale-.5) * (scale-.5)) + 1.25f;
-		r.drawImage((int) position.getX(), (int) position.getY(), shadow.resize(0.5f), 0);
-		r.drawImage((int) position.getX(), (int) (position.getY()-(16*scale)), shell.resize((float)(scale/2.0+0.5f)),0);
+		//r.drawImage((int) position.getX(), (int) position.getY(), shadow.resize(0.5f), 0);
+		r.drawImage((int) position.getX(), (int) position.getY(), 4, r.shadowify(r.shell),1,0);
+		r.drawImage((int) position.getX(), (int) (position.getY()-(16*scale)), (int)((scale/2.0+0.5f)*4), r.resize(r.shell,(scale/2.0+0.5f),4,4),1,0);
+		//.resize((float)(scale/2.0+0.5f))
 	}
 }

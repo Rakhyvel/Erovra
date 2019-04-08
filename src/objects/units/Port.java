@@ -5,7 +5,6 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
-import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -18,9 +17,6 @@ import utility.Point;
 public class Port extends Industry {
 
 	private boolean spotted = false;
-	Image port = new Image("/res/buildings/port.png", 32, 32);
-	private static Image[] icons = { new Image("/res/water/destroyer.png", 13, 45),
-			new Image("/res/target.png", 32, 32).resize(0.75f) };
 	int buyInCost = 0;
 
 	public Port(Point position, Nation nation) {
@@ -29,7 +25,6 @@ public class Port extends Industry {
 		id = UnitID.PORT;
 		setDefense(1);
 		setProductWeight(UnitID.NONE);
-		icons[0].setRotation(-(float) Math.PI / 2);
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getPortCost() / 2;
 	}
@@ -75,7 +70,7 @@ public class Port extends Industry {
 				if (getProductWeight() == UnitID.MEDIUM)
 					nation.seaSupremacy++;
 				if (getProductWeight() == UnitID.HEAVY)
-					nation.seaSupremacy += 2;
+					nation.seaSupremacy++;
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
@@ -114,23 +109,24 @@ public class Port extends Industry {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if ((tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE
+			if (tempDist < smallestDistance && (tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE
 					&& tempUnit.getID() != UnitID.PORT)) {
 				if (wetLandingPath(tempPoint, 16) || tempDist < 16384 || tempUnit.capital) {
 					smallestPoint = tempPoint;
 				}
 			}
 		}
-		if (unitCount > 3 && smallestPoint.getX() != -1 && nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
-			buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5, getTime(weight,UnitID.LIGHT));
-		} else {
-			if (nation.enemyNation.landSupremacy >= nation.landSupremacy
-					|| nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
-						getTime(weight,UnitID.HEAVY))) {
-				} else {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
-							getTime(weight,UnitID.MEDIUM));
+		if(nation.airSupremacy > nation.enemyNation.airSupremacy){
+			if (unitCount > 3 && smallestPoint.getX() != -1 && nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
+				buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5, getTime(weight,UnitID.LIGHT));
+			} else {
+				if (nation.enemyNation.landSupremacy >= nation.landSupremacy) {
+					if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
+							getTime(weight,UnitID.HEAVY))) {
+					} else {
+						buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
+								getTime(weight,UnitID.MEDIUM));
+					}
 				}
 			}
 		}
@@ -145,10 +141,9 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(port, weight, nation.color),
-					0);
+			r.drawImage((int) position.getX(), (int) position.getY(),32,  r.getScreenBlend(r.getColor(weight,nation.color),r.port),1,0);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(),36, r.cityHit,1, 0);
 			}
 		}
 	}
@@ -200,7 +195,7 @@ public class Port extends Industry {
 		d.setPosition(position);
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE)
-				d.drawTab(2, icons, r);
+				d.drawTab(2, r.destroyer, r.resize(r.target,0.5,32,32), null,32,16,16, r);
 			if (d.getTab() == 0) {
 				d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser",
 						nation.getShipCost() / 4 * (getDefense() / 2), nation.getShipCost() * (getDefense() / 2),

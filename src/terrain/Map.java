@@ -14,8 +14,8 @@ public class Map {
 	public static int[] mapData = new int[1025 * 513];
 	public static float[] islandMask = new float[513 * 1025];
 	public static Point[] points = new Point[1025];
-	Image mapImg = new Image("/res/projectiles/bullet.png", 2, 2);
 	MapID id;
+	Image mapImg = new Image();
 
 	/**
 	 * Uses simplex noise and linear interpolation to render the terrain for the
@@ -25,7 +25,7 @@ public class Map {
 	 * @param id   Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID map) {
-		rand.setSeed(seed);
+		//rand.setSeed(seed);
 		id = map;
 
 		if (id == MapID.CUSTOM) {
@@ -40,12 +40,13 @@ public class Map {
 				mountain = perlinNoise(1, 0.5f);
 			} else if (id == MapID.ISLANDS || id == MapID.MOUNTAIN) {
 				for (int i = 0; i < 7; i++) {
-					points[i] = new Point(i % 7 * 170, rand.nextInt(512));
+					points[i] = new Point(i % 7 * 170, rand.nextInt(256)+128);
 				}
 				points[0].setY(rand.nextInt(512));
 				points[0].setX(64);
 				points[6].setY(rand.nextInt(512));
 				points[6].setX(960);
+				points[3].setY((points[0].getY()+points[6].getY())/2);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
@@ -54,16 +55,12 @@ public class Map {
 					for (int i2 = 0; i2 < 7; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
 						if(id == MapID.ISLANDS)
-							tempDist*=(-1/20.0f)*(i2)*(i2-6)+1;
+							tempDist*=(-1/10.0f)*(i2)*(i2-6)+1f;
 						if (tempDist < smallestDistance) {
 							smallestDistance = tempDist;
 						}
 					}
-					if (id == MapID.ISLANDS) {
-						islandMask[i] = 1.25f * ((1 - ((smallestDistance) / 255.0f) + 0.25f) / 2.5f);
-					} else if (id == MapID.MOUNTAIN) {
-						islandMask[i] = 1.6f * ((1 - ((smallestDistance) / 255.0f) + 0.15f) / 2.5f);
-					}
+					islandMask[i] = 1.6f * ((1 - ((smallestDistance) / 255.0f) + 0.1f) / 2.5f);
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -72,8 +69,34 @@ public class Map {
 				}
 			} else if (id == MapID.RIVER) {
 				// n/sqrt(m^2+1)
-				points[0] = new Point(rand.nextInt(512) + 256, 0);
-				points[1024] = new Point(rand.nextInt(512) + 256, 512);
+				double a = rand.nextFloat()*Math.PI;
+				Point b = new Point(512,Math.tan(a)*512).addPoint(new Point(512,256));
+				Point c = new Point(-512,Math.tan(a)*-512).addPoint(new Point(512,256));
+				Point e = new Point(256/Math.tan(a),256).addPoint(new Point(512,256));
+				Point f = new Point(-256/Math.tan(a),-256).addPoint(new Point(512,256));
+				if(a > Math.PI/2){
+					if(b.getDist(new Point(512,256))< f.getDist(new Point(512,256))){
+						points[0] = b;
+					} else {
+						points[0] = f;
+					}
+					if(c.getDist(new Point(512,256))< e.getDist(new Point(512,256))){
+						points[1024] = c;
+					} else {
+						points[1024] = e;
+					}
+				} else {
+					if(b.getDist(new Point(512,256))< e.getDist(new Point(512,256))){
+						points[0] = b;
+					} else {
+						points[0] = e;
+					}
+					if(f.getDist(new Point(512,256))< c.getDist(new Point(512,256))){
+						points[1024] = f;
+					} else {
+						points[1024] = c;
+					}
+				}
 				for (int n = 9; n >= 0; n--) {
 					int p = 1 << n;
 					for (int i = p; i < 1024; i += p * 2) {
@@ -81,7 +104,7 @@ public class Map {
 						double slope = -1 * (points[i - p].getX() - points[i + p].getX())
 								/ (points[i - p].getY() - points[i + p].getY());
 						double dist = points[i - p].getDistSquared(points[i + p]);
-						double displacement = ((rand.nextDouble() * dist) - dist / 2) * (n / 8.0) * (n / 8.0);
+						double displacement = ((rand.nextDouble() * 1) - 1 / 2.0f)*dist/2.0f;
 						points[i].setX(points[i].getX() + (displacement / Math.sqrt(slope * slope + 1)));
 						points[i].setY(points[i].getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 					}
@@ -89,7 +112,7 @@ public class Map {
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
-					int smallestDistance = 96;
+					int smallestDistance = 70;
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 1024; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
@@ -97,7 +120,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (smallestDistance-96)/300.0f+0.75f;
+					islandMask[i] = (smallestDistance-96)/250.0f+0.75f;
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -155,7 +178,7 @@ public class Map {
 					}
 				} else {
 					noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude);
-					if(id == MapID.RIVER && islandMask[x+y*1025]<0.6) {
+					if(id == MapID.RIVER && islandMask[x+y*1025]<0.5) {
 						noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude/2.0f);
 					}
 				}

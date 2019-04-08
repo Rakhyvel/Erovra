@@ -38,21 +38,12 @@ public class Ship extends Unit {
 			velocity.setX(0);
 			velocity.setY(0);
 			dropDownHeight = 90;
-			weightColor = Render.lighten(nation.color);
-			ship = new Image("/res/water/landing.png", 13, 32).getScreenBlend(weightColor);
-			shipHit = new Image("/res/water/landingHit.png", 17, 36).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			setDefense(1.5f);
-			weightColor = nation.color;
-			ship = new Image("/res/water/destroyer.png", 13, 45).getScreenBlend(weightColor);
-			shipHit = new Image("/res/water/destroyerHit.png", 17, 49).getScreenBlend(weightColor);
 		} else {
 			speed = .075f;
 			setDefense(3f);
-			weightColor = Render.darken(nation.color);
-			ship = new Image("/res/water/cruiser.png", 14, 61).getScreenBlend(weightColor);
-			shipHit = new Image("/res/water/cruiserHit.png", 18, 65).getScreenBlend(weightColor);
 		}
 		id = UnitID.SHIP;
 	}
@@ -196,7 +187,8 @@ public class Ship extends Unit {
 			if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
 
 			if (!nation.isAIControlled()) {
-				if (weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), r.medArtRange, 0);
+				// if (weight == UnitID.HEAVY) r.drawImage((int)
+				// position.getX(), (int) position.getY(), r.medArtRange, 0);
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
@@ -204,9 +196,13 @@ public class Ship extends Unit {
 				}
 			}
 
-			r.drawImage((int) position.getX(), (int) position.getY(), ship, direction);
+			if (getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 13,  r.getScreenBlend(r.getColor(weight,nation.color),r.landing), 1, direction);
+			if (getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 13,  r.getScreenBlend(r.getColor(weight,nation.color),r.destroyer), 1, direction);
+			if (getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 14,  r.getScreenBlend(r.getColor(weight,nation.color),r.cruiser), 1, direction);
 
-			if ((hit > 1)) r.drawImage((int) position.getX(), (int) position.getY(), shipHit, direction);
+			if ((hit > 1) && getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 17,  r.getScreenBlend(r.getColor(weight,nation.color),r.landingHit), 1, direction);
+			if ((hit > 1) && getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 17,  r.getScreenBlend(r.getColor(weight,nation.color),r.destroyerHit), 1, direction);
+			if ((hit > 1) && getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 18,  r.getScreenBlend(r.getColor(weight,nation.color),r.cruiserHit), 1, direction);
 		}
 	}
 
@@ -296,29 +292,43 @@ public class Ship extends Unit {
 				name = String.valueOf(getPassenger2().getID());
 			}
 		}
-		r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 250 << 16 | 250 << 8 | 250);
-
+		if (name.contains("-Empty") || name.contains("-Select-")) {
+			r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
+		} else {
+			r.drawString(name, x + 7, y + slotID * 30 + 13, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+		}
 	}
 
 	void drawOption(String label, int buttonID, float shade, Render r, DropDown d) {
 		int x = (int) d.getPosition().getX();
 		int y = (int) d.getPosition().getY();
-		int textColor = 250 << 16 | 250 << 8 | 250;
+		int textColor = 255 << 24 | 250 << 16 | 250 << 8 | 250;
 		if (shade == 0.7f) {
-			textColor = 255 << 16;
+			textColor = 255 << 24 | 255 << 16;
 		}
 		boolean hovered = buttonID == d.getButtonsHovered();
+		int rectColor = 32;
+		int borders = 32;
 		if (buttonID == 1) {
-			if (getPassenger1() != null) hovered = false;
+			if (getPassenger1() != null) {
+				hovered = false;
+				rectColor = 0;
+			}
 		} else if (buttonID == 2) {
-			if (getPassenger2() != null) hovered = false;
+			if (getPassenger2() != null) {
+				hovered = false;
+				rectColor = 0;
+			}
 		}
-		if ((hovered | passengers == buttonID) && shade != 0.7f) {
-			r.drawRect(x, y + buttonID * 30, 170, 30, 128 << 24 | 200 << 16 | 200 << 8 | 200);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, 250 << 16 | 250 << 8 | 250);
-		} else {
-			r.drawRect(x, y + buttonID * 30, 170, 30, (int) (shade * 255) << 24);
-			r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor);
+		if (buttonID == 1) {
+			borders = 5;
+		} else if (buttonID == 2) {
+			borders = 13;
 		}
+		if (hovered | passengers == buttonID) {
+			rectColor *= 2.7;
+		}
+		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor, borders);
+		r.drawString(label, x + 85, y + 13 + buttonID * 30, r.font16, textColor, false);
 	}
 }

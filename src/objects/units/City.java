@@ -18,8 +18,6 @@ import utility.Point;
 public class City extends Industry {
 
 	private boolean spotted = false;
-	private static Image city = new Image("/res/buildings/city.png", 32, 32);
-	private static Image capitalImg = new Image("/res/buildings/capital.png", 32, 32);
 	int buyInCost = 0;
 
 	public City(Point position, Nation nation, int founded) {
@@ -85,17 +83,17 @@ public class City extends Industry {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * (Main.ticks % 6000) / 6000), 2, nation.color);
-				r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(capitalImg, UnitID.MEDIUM, nation.color), 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 32,r.getScreenBlend(nation.color,r.capital),1, 0);
 			} else {
 				if (getProduct() != UnitID.NONE && getStart() > 1) {
 					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 							(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 				}
-				r.drawImage((int) position.getX(), (int) position.getY(), Render.getWeighted(city, weight, nation.color), 0);
+				r.drawImage((int) position.getX(), (int) position.getY(),32, r.getScreenBlend(r.getColor(weight,nation.color),r.city),1, 0);
 			}
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.cityHit, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.cityHit,1, 0);
 			}
 		}
 	}

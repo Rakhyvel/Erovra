@@ -8,7 +8,6 @@ public class Coin {
 	private Point position;
 	private Nation nation;
 	private double speed = 1;
-	Image coin = new Image("/res/coin.png", 16, 16).getScreenBlend(250<<16|250<<8);
 
 	public Coin(Point position, Nation nation) {
 		this.position = position;
@@ -35,7 +34,7 @@ public class Coin {
 	 */
 	public void render(Render r) {
 		if (nation.name.contains("Sweden")) {
-			r.drawImage((int) position.getX(), (int) position.getY(), coin,0);
+			r.drawImage((int) position.getX(), (int) position.getY(), 16,r.getScreenBlend(250<<16|250<<8, r.coin),1,0);
 		}
 	}
 

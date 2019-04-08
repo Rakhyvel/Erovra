@@ -233,7 +233,7 @@ public class Nation {
 	 * 
 	 * @param position  The position of the infantry unit buying
 	 */
-	public void buyPort(Point position) {
+	public boolean buyPort(Point position) {
 		if(coins >= portCost) {
 			Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
 			float land = Map.getArray(portPoint);
@@ -242,13 +242,17 @@ public class Nation {
 					coins -= getPortCost();
 					setPortCost(getPortCost() * 2);
 					addUnit(new Port(portPoint, this));
+					return true;
 				}
 			} else if(!isAIControlled()){
 				Main.world.errorMessage.showErrorMessage("Cannot build a port on a land tile!");
+				return false;
 			}
 		} else if(!isAIControlled()){
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
+			return false;
 		}
+		return false;
 	}
 
 	public void buyAirfield(Point position) {

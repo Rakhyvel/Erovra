@@ -18,8 +18,6 @@ import utility.Point;
 public class Cavalry extends Unit {
 
 	private float cal;
-	int weightColor = 255<<24;
-	Image cavalry;
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -27,20 +25,14 @@ public class Cavalry extends Unit {
 			speed = .3f;
 			setDefense(2);
 			cal = 0.5f;
-			weightColor = Render.lighten(nation.color);
-			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
 			setDefense(2);
 			cal = 1f;
-			weightColor = nation.color;
-			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		} else {
 			speed = .05f;
 			setDefense(2f);
 			cal = 2f;
-			weightColor = Render.darken(nation.color);
-			cavalry = new Image("/res/ground/cavalry.png", 32, 16).getScreenBlend(weightColor);
 		}
 		id = UnitID.CAVALRY;
 	}
@@ -81,9 +73,9 @@ public class Cavalry extends Unit {
 			}
 				
 
-			r.drawImage((int) position.getX(), (int) position.getY(), cavalry, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32,r.getScreenBlend(r.getColor(weight,nation.color),r.cavalry),1, direction);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), r.hitSprite, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
 			}
 		}
 	}

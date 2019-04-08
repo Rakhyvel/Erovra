@@ -91,7 +91,7 @@ public class DropDown extends Menu {
 		r.drawString(label, x + 7, y + 14 + buttonID * 30, r.font16, textColor, false);
 	}
 
-	public void drawTab(int tabs, Image[] icons, Render r) {
+	public void drawTab(int tabs, int[] tab1, int[] tab2, int[] tab3, int w1, int w2, int w3, Render r) {
 		for (int i = 0; i < tabs; i++) {
 			int x = (int) getPosition().getX() + 180 / tabs * i;
 			int y = (int) getPosition().getY() + 30;
@@ -103,7 +103,13 @@ public class DropDown extends Menu {
 			if (i == 0)
 				border |= 1;
 			r.drawRectBorders(x, y, 180 / tabs, 30, color, border);
-			r.drawImage(x + 90 / tabs, y + 15, icons[i]);
+			if(i == 0)
+				r.drawImage(x + 90 / tabs, y + 15,w1, tab1,1,0);
+			if(i == 1)
+				r.drawImage(x + 90 / tabs, y + 15,w2, tab2,1,0);
+			if(i == 2){
+				r.drawImage(x + 90 / tabs, y + 15,w3, tab3,1,0);
+			}
 		}
 	}
 

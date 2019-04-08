@@ -31,17 +31,58 @@ public class Render extends Canvas {
 	int[] newMap;
 	boolean captured = false;
 
+	Image image = new Image();
 	// Ground Units
-	public Image hitSprite = new Image("/res/ground/hit.png", 36, 20);
-	public Image medArtRange = new Image("/res/ground/medArtRange.png", 128, 128);
-	public Image heavyArtRange = new Image("/res/ground/heavyArtRange.png", 256, 256);
+	public int[] artillery = image.loadImage("/res/ground/artillery.png", 32, 16);
+	public int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
+	public int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
+	public int[] hitSprite = image.loadImage("/res/ground/hit.png", 36, 20);
+	public int[] medArtRange = image.loadImage("/res/ground/medArtRange.png", 128, 128);
+	public int[] heavyArtRange = image.loadImage("/res/ground/heavyArtRange.png", 256, 256);
+
+	// Water Units
+	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
+	public int[] destroyer = image.loadImage("/res/water/destroyer.png", 13, 45);
+	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 14, 61);
+	public int[] landingHit = image.loadImage("/res/water/landingHit.png", 17, 36);
+	public int[] destroyerHit = image.loadImage("/res/water/destroyerHit.png", 17, 49);
+	public int[] cruiserHit = image.loadImage("/res/water/cruiserHit.png", 18, 65);
+
+	// Air Units
+	public int[] fighter1 = image.loadImage("/res/air/fighter.png", 36, 35);
+	public int[] fighter2 = image.loadImage("/res/air/fighter1.png", 36, 35);
+	public int[] attacker1 = image.loadImage("/res/air/attack.png", 44, 33);
+	public int[] attacker2 = image.loadImage("/res/air/attack1.png", 44, 33);
+	public int[] bomber1 = image.loadImage("/res/air/bomber1.png", 68, 40);
+	public int[] bomber2 = image.loadImage("/res/air/bomber2.png", 68, 40);
+	public int[] fighterHit = image.loadImage("/res/air/fighterHit.png", 40, 39);
+	public int[] attackerHit = image.loadImage("/res/air/attackHit.png", 48, 37);
+	public int[] bomberHit = image.loadImage("/res/air/bomberHit.png", 72, 44);
+	public int[] fighterShadow = shadowify(fighter2);
+	public int[] attackerShadow = shadowify(attacker2);
+	public int[] bomberShadow = shadowify(bomber2);
 
 	// Buildings
-	public Image cityHit = new Image("/res/buildings/buildingHit.png", 36, 36);
+	public int[] city = image.loadImage("/res/buildings/city.png", 32, 32);
+	public int[] port = image.loadImage("/res/buildings/port.png", 32, 32);
+	public int[] factory = image.loadImage("/res/buildings/factory.png", 32, 32);
+	public int[] capital = image.loadImage("/res/buildings/capital.png", 32, 32);
+	public int[] airfield = image.loadImage("/res/buildings/airfield.png", 32, 32);
+	public int[] cityHit = image.loadImage("/res/buildings/buildingHit.png", 36, 36);
+
+	// Projectiles
+	public int[] shell = image.loadImage("/res/projectiles/shell.png", 4, 4);
+	public int[] torpedo = image.loadImage("/res/projectiles/torpedo.png", 3, 14);
+	public int[] torpedo1 = image.loadImage("/res/projectiles/torpedo1.png", 1, 14);
+	public int[] bullet = image.loadImage("/res/projectiles/bullet.png", 2, 2);
+	public int[] bomb = image.loadImage("/res/projectiles/bomb.png", 16, 8);
 
 	// Misc
-	public Image arrow = new Image("/res/arrow.png", 18, 9);
-	public Image target = new Image("/res/target.png", 32, 32);
+	public int[] coin = image.loadImage("/res/coin.png", 16, 16);
+	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
+	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
+	public int[] target = image.loadImage("/res/target.png", 32, 32);
+
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -74,7 +115,7 @@ public class Render extends Canvas {
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
-			//drawLongLat();
+			drawLongLat();
 			captured = false;
 		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
@@ -86,9 +127,8 @@ public class Render extends Canvas {
 			System.arraycopy(menu, 0, pixels, 0, 1025 * 513);
 		}
 		world.render(this);
-		// drawString("FPS:", 22, 10, font16, 250 << 16 | 250 << 8 | 250);
-		// drawString(String.valueOf(Main.fps), 55, 10, font16, 250 << 16 | 250
-		// << 8 | 250);
+		drawString("FPS:", 22, 10, font16,255<<24 | 250 << 16 | 250 << 8 | 250);
+		drawString(String.valueOf(Main.fps), 55, 10, font16, 244<<24|250 << 16 | 250 << 8 | 250);
 		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
@@ -196,59 +236,14 @@ public class Render extends Canvas {
 	 * @param image
 	 *            The image
 	 */
-	public void drawImage(int x, int y, Image img, float rotate) {
-		int w = img.getWidth();
-		int[] image = img.getPixels();
+	public void drawImage(int x, int y, int w, int[] image, float opacity, float rotate) {
 		int h = 1, r, g, b;
 		if (w > 0) {
 			h = image.length / w;
 		}
 
 		for (float i = 0; i < image.length; i += 0.3333f) {
-			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * img.getOpacity();
-			double x1 = (i % w) - w / 2;
-			double y1 = i / w - h / 2;
-			double x2 = (int) (x1 + x);
-			double y2 = (int) (y1 + y);
-			if (alpha > 0) {
-				x1 = (i % w) - w / 2;
-				y1 = i / w - h / 2;
-				if (rotate != 0) {
-					x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
-					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
-				}
-				int id = (int) (x2 + y2 * (width + 1) + 0.5);
-				if (id > 0 && id < width * height) {
-					// Finding alpha
-					r = ((image[(int) i] >> 16) & 255);
-					g = ((image[(int) i] >> 8) & 255);
-					b = (image[(int) i] & 255);
-					int newColor = (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
-
-					// Finding alpha
-					r = ((pixels[id] >> 16) & 255);
-					g = ((pixels[id] >> 8) & 255);
-					b = (pixels[id] & 255);
-					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
-
-					// Finally adding colors to pixel array
-					pixels[id] = newColor + newColor2;
-				}
-			}
-		}
-	}
-
-	public void drawImage(int x, int y, Image img) {
-		float rotate = img.getRotate();
-		int w = img.getWidth();
-		int[] image = img.getPixels();
-		int h = 1, r, g, b;
-		if (w > 0) {
-			h = image.length / w;
-		}
-
-		for (float i = 0; i < image.length; i += 0.3333f) {
-			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * img.getOpacity();
+			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * opacity;
 			double x1 = (i % w) - w / 2;
 			double y1 = i / w - h / 2;
 			double x2 = (int) (x1 + x);
@@ -300,15 +295,16 @@ public class Render extends Canvas {
 		int carriage = 0;
 		int letter;
 		int length = font.getStringWidth(label);
-		Image letterImage;
+		int[] letterImage;
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage = getScreenBlend(250 << 16 | 250 << 8,font.getLetter(letter));
+				//.getScreenBlend()
 			} else {
-				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(color);
+				letterImage = getScreenBlend(color,font.getLetter(letter));
 			}
-			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
+			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(), letterImage, 1, 0);
 			carriage += font.getKern(letter);
 		}
 	}
@@ -317,21 +313,127 @@ public class Render extends Canvas {
 		int carriage = 0;
 		int letter;
 		int length = font.getStringWidth(label);
-		Image letterImage;
+		int[] letterImage;
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(250 << 16 | 250 << 8);
+				letterImage =  getScreenBlend(250 << 16 | 250 << 8,font.getLetter(letter));
 			} else {
-				letterImage = new Image("", font.getSize(), font.getSize(), font.getLetter(letter), ((color >> 24) & 255) / 255.0f, 0).getScreenBlend(color);
+				letterImage = getScreenBlend(color,font.getLetter(letter));
 			}
 			if (centered) {
-				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, letterImage, 0);
+				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(), letterImage, 1, 0);
 			} else {
-				drawImage(x + carriage + font.getSize() / 2, y, letterImage, 0);
+				drawImage(x + carriage + font.getSize() / 2, y, font.getSize(), letterImage, 1, 0);
 			}
 			carriage += font.getKern(letter);
 		}
+	}
+	public int[] getScreenBlend(int color, int[] img) {
+		int r, g, b;
+		float screen, alpha;
+		int[] img2 = new int[img.length];
+		for (int i = 0; i < img.length; i++) {
+			alpha = ((img[i] >> 24 & 255) / 255.0f);
+			if (alpha > 0.9f) {
+				// Finding and splitting starting colors
+				screen = (img[i] & 255) / 255.0f;
+				r = ((color >> 16) & 255);
+				g = ((color >> 8) & 255);
+				b = (color & 255);
+
+				// Setting new colors
+				if (screen <= 0.5f) {
+					screen *= 2;
+					r = (int) (r * screen);
+					g = (int) (g * screen);
+					b = (int) (b * screen);
+				} else {
+					r = (int) (255 - 2 * (255 - r) * (1 - screen));
+					g = (int) (255 - 2 * (255 - g) * (1 - screen));
+					b = (int) (255 - 2 * (255 - b) * (1 - screen));
+				}
+				// Recombining colors
+				img2[i] = (255 << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+			}
+		}
+		return img2;
+	}
+	public int[] shadowify(int[] img){
+		int[] img2 = new int[img.length];
+		for(int i = 0; i < img.length;i++){
+			if((img[i]>>24&255)>0)
+				img2[i] = 26<<24;
+		}
+		return img2;
+	}
+
+	/**
+	 * Takes an integer array and returns a resized integer array by the factor
+	 * given. The returned array will have a different size for factors != 1
+	 * 
+	 * @param img
+	 *            The image to be resized
+	 * @param width
+	 *            The width of the original image
+	 * @param factor
+	 *            The factor to be scaled
+	 * @return The resized image
+	 */
+	public int[] resize(int[] img, double factor, int width, int height) {
+		double invFactor = 1 / factor;
+		int newWidth = (int)(factor * width);
+		int[] img2 = new int[(int) (width * factor * height * factor)];
+		for (int i = 0; i < img2.length; i++) {
+			int x = (int) ((i % newWidth) * invFactor);
+			int y = (int) ((i / newWidth) * invFactor);
+			int id = y * width + x;
+			if (id >= 0 && id < img.length) img2[i] = img[y * width + x];
+		}
+		return img2;
+	}
+
+	/**
+	 * Takes an integer array and scales it up by a given factor. The size of
+	 * the returned integer array is the same as the original, and the null
+	 * point is at the center of the image. Therefore, for factors greater than
+	 * 1, there will be clipping, and less than 1 there will be empty space.
+	 * 
+	 * @param img
+	 *            The image to be reszied
+	 * @param width
+	 *            The width of the original image
+	 * @param d
+	 *            The factor to be scaled up
+	 * @return An integer array of the scaled up image, with the same length as
+	 *         the original
+	 */
+	public int[] rescale(int[] img, double d, int width, int height) {
+		// Set up the new variables
+		int[] img2 = new int[img.length];
+		int xCenter = (int) (512 * Main.zoom) - 512;
+		int yCenter = (int) (256 * Main.zoom) - 256;
+		int x, y, id;
+		// Walk through the new image
+		for (int i = 0; i < 1025 * 513; i++) {
+
+			// Find the new coordinates
+			x = (int) (i % width * Main.zoom - xCenter);
+			y = (int) (i / width * Main.zoom - yCenter);
+
+			// If the new coordinates are on screen, print them
+			id = (y * 2048 + x);
+			if (id >= 0 && id < img.length && x >= 0 && x < 2048) img2[i] = img[id];
+		}
+		return img2;
+	}
+	public int getColor(UnitID weight, int color){
+		if(weight == UnitID.MEDIUM){
+			return color;
+		} else if (weight == UnitID.LIGHT){
+			return lighten(color);
+		}
+		return darken(color);
 	}
 
 	/**
@@ -374,16 +476,6 @@ public class Render extends Canvas {
 			b *= 1.8;
 		}
 		return 255 << 24 | r << 16 | g << 8 | b;
-	}
-
-	public static Image getWeighted(Image img, UnitID weight, int color) {
-		if (weight == UnitID.LIGHT) {
-			return img.getScreenBlend(lighten(color));
-		}
-		if (weight == UnitID.HEAVY) {
-			return img.getScreenBlend(darken(color));
-		}
-		return img.getScreenBlend(color);
 	}
 
 	/**
@@ -647,9 +739,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -762,9 +854,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -857,9 +949,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), arrow.getScreenBlend(color), p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
