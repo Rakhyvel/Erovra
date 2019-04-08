@@ -26,6 +26,8 @@ public class Ship extends Unit {
 	int weightColor = 255 << 24;
 	Image ship;
 	Image shipHit;
+	int[] icon1;
+	int[] icon2;
 
 	public Ship(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -106,9 +108,11 @@ public class Ship extends Unit {
 									Main.world.selectedUnit = null;
 									if (passengers == 1 && getPassenger1() == null) {
 										setPassenger1(nation.getUnit(i));
+										setIcon(1, nation.getUnit(i).id, nation.getUnit(i).weight);
 										break;
 									} else if (passengers == 2 && getPassenger2() == null) {
 										setPassenger2(nation.getUnit(i));
+										setIcon(2, nation.getUnit(i).id, nation.getUnit(i).weight);
 										break;
 									}
 								}
@@ -137,6 +141,26 @@ public class Ship extends Unit {
 				spotted = (int) (60 / speed);
 			}
 			if (spotted > 0) spotted--;
+		}
+	}
+
+	private void setIcon(int i, UnitID id, UnitID weight) {
+		if (i == 1) {
+			if (id == UnitID.CAVALRY) {
+				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.cavalry);
+			} else if (id == UnitID.INFANTRY) {
+				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.infantry);
+			} else if (id == UnitID.ARTILLERY) {
+				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.artillery);
+			}
+		} else {
+			if (id == UnitID.CAVALRY) {
+				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.cavalry);
+			} else if (id == UnitID.INFANTRY) {
+				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.infantry);
+			} else if (id == UnitID.ARTILLERY) {
+				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.artillery);
+			}
 		}
 	}
 
@@ -187,22 +211,22 @@ public class Ship extends Unit {
 			if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
 
 			if (!nation.isAIControlled()) {
-				// if (weight == UnitID.HEAVY) r.drawImage((int)
-				// position.getX(), (int) position.getY(), r.medArtRange, 0);
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
+					if (weight == UnitID.HEAVY) 
+						r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange, 0.5f, 0);
+					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255<<24|220 << 16 | 220 << 8 | 220);
 				}
 			}
 
-			if (getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 13,  r.getScreenBlend(r.getColor(weight,nation.color),r.landing), 1, direction);
-			if (getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 13,  r.getScreenBlend(r.getColor(weight,nation.color),r.destroyer), 1, direction);
-			if (getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 14,  r.getScreenBlend(r.getColor(weight,nation.color),r.cruiser), 1, direction);
+			if (getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landing), 1, direction);
+			if (getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyer), 1, direction);
+			if (getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 14, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiser), 1, direction);
 
-			if ((hit > 1) && getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 17,  r.getScreenBlend(r.getColor(weight,nation.color),r.landingHit), 1, direction);
-			if ((hit > 1) && getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 17,  r.getScreenBlend(r.getColor(weight,nation.color),r.destroyerHit), 1, direction);
-			if ((hit > 1) && getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 18,  r.getScreenBlend(r.getColor(weight,nation.color),r.cruiserHit), 1, direction);
+			if ((hit > 1) && getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landingHit), 1, direction);
+			if ((hit > 1) && getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyerHit), 1, direction);
+			if ((hit > 1) && getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 18, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiserHit), 1, direction);
 		}
 	}
 
@@ -213,7 +237,9 @@ public class Ship extends Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			double tempDist = tempPoint.getDist(position);
-			if ((tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE && tempUnit.getID() != UnitID.PORT)) {
+			if ((nation.airSupremacy < nation.enemyNation.airSupremacy && tempUnit.id == UnitID.AIRFIELD) ||
+					(nation.landSupremacy < nation.enemyNation.landSupremacy && tempUnit.id == UnitID.FACTORY) ||
+					(nation.airSupremacy >= nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaSupremacy && nation.landSupremacy >= nation.enemyNation.landSupremacy)) {
 				if (smallestDist > tempDist) {
 					smallestPoint = tempPoint;
 					smallestDist = tempDist;
@@ -293,9 +319,18 @@ public class Ship extends Unit {
 			}
 		}
 		if (name.contains("-Empty") || name.contains("-Select-")) {
-			r.drawString(name, x + 85, y + slotID * 30 + 13, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
+			r.drawString(name, x + 85, y + slotID * 30 + 15, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
 		} else {
-			r.drawString(name, x + 7, y + slotID * 30 + 13, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+			r.drawString(name, x + 7, y + slotID * 30 + 15, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+			if(slotID == 1 && icon1 != null){
+				r.drawImage(x+157,y + slotID * 30+15,32,icon1,1,0);
+				r.drawRectBorders(x+133,y+slotID*30,3,30,0,4);
+			}
+			if(slotID == 2 && icon2 != null){
+				r.drawImage(x+157,y + slotID * 30+15,32,icon2,1,0);
+				r.drawRectBorders(x+133,y+slotID*30,3,30,0,4);
+			}
+			
 		}
 	}
 

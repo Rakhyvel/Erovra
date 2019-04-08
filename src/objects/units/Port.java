@@ -118,7 +118,7 @@ public class Port extends Industry {
 		}
 		if(nation.airSupremacy > nation.enemyNation.airSupremacy){
 			if (unitCount > 3 && smallestPoint.getX() != -1 && nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
-				buyUnit(UnitID.SHIP, UnitID.LIGHT, nation.getShipCost() / 4 * getDefense() * 0.5, getTime(weight,UnitID.LIGHT));
+				buyUnit(UnitID.SHIP, UnitID.LIGHT, (int)(nation.getShipCost() / 4 * getDefense() * 0.5), getTime(weight,UnitID.LIGHT));
 			} else {
 				if (nation.enemyNation.landSupremacy >= nation.landSupremacy) {
 					if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
@@ -141,7 +141,7 @@ public class Port extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(),32,  r.getScreenBlend(r.getColor(weight,nation.color),r.port),1,0);
+			r.drawImage((int) position.getX(), (int) position.getY(),32,  Render.getScreenBlend(Render.getColor(weight,nation.color),r.port),1,0);
 			if (hit > 1) {
 				r.drawImage((int) position.getX(), (int) position.getY(),36, r.cityHit,1, 0);
 			}
@@ -195,10 +195,10 @@ public class Port extends Industry {
 		d.setPosition(position);
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE)
-				d.drawTab(2, r.destroyer, r.resize(r.target,0.5,32,32), null,32,16,16, r);
+				d.drawTab(2, r.destroyer, r.settings, null,32,25,16, r);
 			if (d.getTab() == 0) {
 				d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser",
-						nation.getShipCost() / 4 * (getDefense() / 2), nation.getShipCost() * (getDefense() / 2),
+						(int)(nation.getShipCost() / 4 * (getDefense() / 2)), nation.getShipCost() * (getDefense() / 2),
 						nation.getShipCost() * 2 * (getDefense() / 2), this);
 			} else if (d.getTab() == 1) {
 				if (nation.getCoinAmount() >= nation.getPortCost() / 2) {

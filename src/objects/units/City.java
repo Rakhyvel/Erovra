@@ -5,7 +5,6 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
-import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -83,14 +82,14 @@ public class City extends Industry {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * (Main.ticks % 6000) / 6000), 2, nation.color);
-				r.drawImage((int) position.getX(), (int) position.getY(), 32,r.getScreenBlend(nation.color,r.capital),1, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 32,Render.getScreenBlend(nation.color,r.capital),1, 0);
 			} else {
 				if (getProduct() != UnitID.NONE && getStart() > 1) {
 					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 							(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 				}
-				r.drawImage((int) position.getX(), (int) position.getY(),32, r.getScreenBlend(r.getColor(weight,nation.color),r.city),1, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(),32, Render.getScreenBlend(Render.getColor(weight,nation.color),r.city),1, 0);
 			}
 			if (hit > 1) {
 				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.cityHit,1, 0);

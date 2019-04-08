@@ -31,11 +31,11 @@ public class Render extends Canvas {
 	int[] newMap;
 	boolean captured = false;
 
-	Image image = new Image();
+	static Image image = new Image();
 	// Ground Units
-	public int[] artillery = image.loadImage("/res/ground/artillery.png", 32, 16);
-	public int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
-	public int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
+	public static int[] artillery = image.loadImage("/res/ground/artillery.png", 32, 16);
+	public static int[] infantry = image.loadImage("/res/ground/infantry.png", 32, 16);
+	public static int[] cavalry = image.loadImage("/res/ground/cavalry.png", 32, 16);
 	public int[] hitSprite = image.loadImage("/res/ground/hit.png", 36, 20);
 	public int[] medArtRange = image.loadImage("/res/ground/medArtRange.png", 128, 128);
 	public int[] heavyArtRange = image.loadImage("/res/ground/heavyArtRange.png", 256, 256);
@@ -82,6 +82,7 @@ public class Render extends Canvas {
 	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
 	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
 	public int[] target = image.loadImage("/res/target.png", 32, 32);
+	public int[] settings = image.loadImage("/res/settings.png",25, 25);
 
 
 	// Fonts
@@ -329,7 +330,7 @@ public class Render extends Canvas {
 			carriage += font.getKern(letter);
 		}
 	}
-	public int[] getScreenBlend(int color, int[] img) {
+	public static int[] getScreenBlend(int color, int[] img) {
 		int r, g, b;
 		float screen, alpha;
 		int[] img2 = new int[img.length];
@@ -427,7 +428,7 @@ public class Render extends Canvas {
 		}
 		return img2;
 	}
-	public int getColor(UnitID weight, int color){
+	public static int getColor(UnitID weight, int color){
 		if(weight == UnitID.MEDIUM){
 			return color;
 		} else if (weight == UnitID.LIGHT){

@@ -2,7 +2,6 @@ package objects.projectiles;
 
 import main.UnitID;
 import objects.Nation;
-import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -16,7 +15,7 @@ public class Shell extends Projectile {
 	
 	float distance;
 
-	public Shell(Point position, Nation nation, Point target) {
+	public Shell(Point position, Nation nation, Point target) {	
 		super(position, nation);
 		speed = 1.5f;
 		setAttack(0);

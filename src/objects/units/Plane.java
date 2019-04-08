@@ -4,7 +4,6 @@ import main.Main;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
-import objects.gui.Image;
 import objects.projectiles.Bomb;
 import objects.projectiles.Bullet;
 import output.Render;
@@ -226,7 +225,7 @@ public class Plane extends Unit {
 		if (!nation.isAIControlled()) {
 			if (weight == UnitID.HEAVY && !bombsAway) {
 				if (isSelected()) {
-					r.drawImage((int) target.getX(), (int) target.getY(), 32,r.target,1, 0);
+					r.drawImage((int) target.getX(), (int) target.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
@@ -234,43 +233,42 @@ public class Plane extends Unit {
 				}
 			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
 				if (isSelected()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,r.target,1, 0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,r.target,1, 0);
+					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 				}
 			}
 		}
 		double distance = 32*Math.min(-Map.getArray((int)position.getX(), (int)position.getY()+16)+1.5,1);
 		double scale = Math.max(1/2*(Map.getArray((int)position.getX(), (int)position.getY()+16)-0.5)+0.75, 0.75);
-		//r.drawImage((int) position.getX(), (int) (position.getY()+distance), shadow.resize((float)scale), direction);
 		if(weight == UnitID.LIGHT){
 			r.drawImage((int) position.getX(), (int) (position.getY()+distance), (int)(scale*36), r.resize(r.fighterShadow, scale, 36, 35),1, direction);
 			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.getScreenBlend(r.getColor(weight,nation.color),r.fighter1),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, Render.getScreenBlend(Render.getColor(weight,nation.color),r.fighter1),1, direction);
 			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.getScreenBlend(r.getColor(weight,nation.color),r.fighter2),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, Render.getScreenBlend(Render.getColor(weight,nation.color),r.fighter2),1, direction);
 			}
 			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 40, r.getScreenBlend(r.getColor(weight,nation.color),r.fighterHit),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 40, Render.getScreenBlend(Render.getColor(weight,nation.color),r.fighterHit),1, direction);
 		} else if(weight == UnitID.MEDIUM){
 			r.drawImage((int) position.getX(), (int) (position.getY()+distance), (int)(scale*44), r.resize(r.attackerShadow, scale, 44, 33),1, direction);
 			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 44, r.getScreenBlend(r.getColor(weight,nation.color),r.attacker1),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 44, Render.getScreenBlend(Render.getColor(weight,nation.color),r.attacker1),1, direction);
 			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 44, r.getScreenBlend(r.getColor(weight,nation.color),r.attacker2),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 44, Render.getScreenBlend(Render.getColor(weight,nation.color),r.attacker2),1, direction);
 			}
 			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 48, r.getScreenBlend(r.getColor(weight,nation.color),r.attackerHit),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 48, Render.getScreenBlend(Render.getColor(weight,nation.color),r.attackerHit),1, direction);
 		} else {
 			r.drawImage((int) position.getX(), (int) (position.getY()+distance), (int)(scale*68), r.resize(r.bomberShadow, scale, 68, 40),1, direction);
 			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 68, r.getScreenBlend(r.getColor(weight,nation.color),r.bomber1),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 68, Render.getScreenBlend(Render.getColor(weight,nation.color),r.bomber1),1, direction);
 			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 68, r.getScreenBlend(r.getColor(weight,nation.color),r.bomber2),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 68, Render.getScreenBlend(Render.getColor(weight,nation.color),r.bomber2),1, direction);
 			}
 			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 72, r.getScreenBlend(r.getColor(weight,nation.color),r.bomberHit),1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 72, Render.getScreenBlend(Render.getColor(weight,nation.color),r.bomberHit),1, direction);
 		}
 	}
 

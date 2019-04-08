@@ -1,4 +1,21 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.16
+- Upgrading function!
+- Bombers now target buildings strategically
+- Boosted AI infantry's will to target capitals
+- Updated mountain terrain generation so that its a bit more realistic looking
+- Added dropdown to capital
+- Added tabs, reworked GUI
+- Balanced game to work with upgrades
+- Canceling now gives back half of what was paid, instead of a flat 10 coins
+- Added shadows to planes, bombs, and artillery shells
+- Artillery shells now curve
+- Rivers flow at random angles
+- Fixed some stuff with AI landing craft not sending craft after building them
+- Added window icon
+- Updated how images were drawn, was using too much memory
+- Landing craft now have an icon of whats boarded
+
 ### Erovra 1.0.15
 - Added cancel feature to industry
 - Fixed shells lingering after they hit

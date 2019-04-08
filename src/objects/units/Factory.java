@@ -5,7 +5,6 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
-import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -139,7 +138,7 @@ public class Factory extends Industry {
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, r.getScreenBlend(r.getColor(weight,nation.color),r.factory),1,
+			r.drawImage((int) position.getX(), (int) position.getY(), 32, Render.getScreenBlend(Render.getColor(weight,nation.color),r.factory),1,
 					0);
 			if (hit > 1 || isSelected()) {
 				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.cityHit,1, 0);
@@ -218,7 +217,7 @@ public class Factory extends Industry {
 		d.setPosition(position);
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE)
-				d.drawTab(3, r.cavalry, r.artillery, r.resize(r.target,0.5,32,32),32,32,16, r);
+				d.drawTab(3, Render.cavalry, Render.artillery, r.settings,32,32,25, r);
 			if (d.getTab() == 2) {
 				if (nation.getCoinAmount() >= nation.getFactoryCost() / 2) {
 					d.drawOption("Upgrade (" + nation.getFactoryCost() / 2 + ")", 2, 32, 5, r);

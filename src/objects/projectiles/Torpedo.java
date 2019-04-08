@@ -3,7 +3,6 @@ package objects.projectiles;
 import main.Main;
 import main.UnitID;
 import objects.Nation;
-import objects.gui.Image;
 import output.Render;
 import terrain.Map;
 import utility.Point;

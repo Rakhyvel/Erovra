@@ -5,7 +5,6 @@ import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
-import objects.gui.Image;
 import output.Render;
 import utility.Point;
 
@@ -73,7 +72,7 @@ public class Cavalry extends Unit {
 			}
 				
 
-			r.drawImage((int) position.getX(), (int) position.getY(), 32,r.getScreenBlend(r.getColor(weight,nation.color),r.cavalry),1, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32,Render.getScreenBlend(Render.getColor(weight,nation.color),Render.cavalry),1, direction);
 			if (hit > 1) {
 				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
 			}

@@ -41,8 +41,7 @@
 - ~~Fix landing craft sprite~~
 - ~~River unit circle~~
 - ~~Fix landing craft not departing imediately~~
-- landing craft need icons on their dropdown
-- Cruisers always show artillery radius
+- ~~Cruisers always show artillery radius~~
 - ~~Add icon~~
 - ~~Re-add for images~~
 	- ~~Screen overlay~~
@@ -50,9 +49,11 @@
 	- ~~Bomb rescaling/resizing~~
 	- ~~Shadows~~
 	- ~~Weights~~
-- Add settings gear icon
-- Recolor targets for planes
-- Fix attacker logic for seasupremacy
+- ~~landing craft need icons on their dropdown~~
+- ~~Add settings gear icon~~
+- ~~Recolor targets for planes~~
+- Fix attacker logic for seasupremacy meh
+- ~~Boats don't have arrows :(~~
 
 - Squad functions
 	- Patrol

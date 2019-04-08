@@ -277,8 +277,8 @@ public class DropDown extends Menu {
 		return tab;
 	}
 
-	public void setTab(int tab) {
-		this.tab = tab;
+	public void setTab(int t) {
+		tab = t;
 	}
 	
 	public void drawUpgrading(Industry industry, Render r) {
