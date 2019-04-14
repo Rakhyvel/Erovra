@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.PLAINS;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -52,7 +52,7 @@ public class Main {
 	public static String os = getOperatingSystem();
 
 	// GitHub
-	public static String version = "Erovra 1.0.16";
+	public static String version = "Erovra 1.0.17";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -138,7 +138,7 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
 		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
-		sweden.setAIControlled(false);
+//		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);

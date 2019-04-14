@@ -48,9 +48,14 @@ public class Cavalry extends Unit {
 			engaged = autoAim(cal);
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
+				if(!nation.engagedUnits.contains(this))
+					nation.engagedUnits.add(this);
 			}
-			if (spotted > 0)
+			if (spotted != 0){
 				spotted--;
+			} else {
+				nation.engagedUnits.remove(this);
+			}
 			targetMove();
 		}
 	}

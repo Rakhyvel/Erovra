@@ -37,8 +37,11 @@ public class Factory extends Industry {
 	public void tick(double t) {
 		detectHit();
 		if (health > 0) {
-			if (engaged || hit > 0)
+			if (engaged || hit > 0){
 				spotted = true;
+				if(!nation.engagedUnits.contains(this))
+					nation.engagedUnits.add(this);
+			}
 			engaged = false;
 			if (!nation.isAIControlled()) {
 				clickToDropDown();

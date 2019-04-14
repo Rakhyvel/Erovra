@@ -242,8 +242,8 @@ public abstract class Unit {
 	 *            The point the unit should face
 	 */
 	public void setFacing(Point facing) {
-		if(facing != null) {
-		this.facing = new Point(facing);
+		if (facing != null) {
+			this.facing = new Point(facing);
 		} else {
 			this.facing = facing;
 		}
@@ -268,7 +268,7 @@ public abstract class Unit {
 	Point getNextStep(Point target) {
 		return position.addVector(position.getTargetVector(target).normalize().scalar(speed));
 	}
-	
+
 	Point getLandingPoint(Point point1, Point point2, int depth) {
 		boolean ocean = true;
 		Point testPoint = new Point(-1, -1);
@@ -284,40 +284,104 @@ public abstract class Unit {
 		return new Point(position);
 	}
 
+	Point pathfind(Point enemy) {
+		Point beginPoint = getObstacle(position, enemy)[0];
+		Point endPoint = getObstacle(position, enemy)[1];
+
+		if (beginPoint != null && endPoint != null) {
+			return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position);
+		}
+		return enemy;
+	}
+
+	boolean clearPath(Point start, Point end) {
+		Vector march = start.subVec(end).normalize();
+		Point step = new Point(start);
+		boolean clear = true;
+		for (int i = 0; i < start.getDistSquared(end); i++) {
+			clear &= Map.getArray(step) < 0.4;
+			step = step.addVector(march);
+		}
+		return clear;
+	}
+
+	Point[] getObstacle(Point start, Point end) {
+		Point[] obstacle = new Point[2];
+		Vector march = start.subVec(end).normalize();
+		Point step = new Point(start);
+		boolean clear = true;
+		for (int i = 0; i < start.getDistSquared(end); i++) {
+			if (clear && Map.getArray(step) > 0.5) {
+				obstacle[0] = new Point(step);
+			}
+			if (Map.getArray(step) < 0.5 && obstacle[0] != null) {
+				obstacle[1] = step;
+				return obstacle;
+			}
+			clear &= Map.getArray(step) < 0.5;
+			step = step.addVector(march);
+		}
+		return obstacle;
+	}
+
+	Point perpendicularize(Point midPoint, Point start) {
+		double slope = -1 * (midPoint.getX() - start.getX()) / (midPoint.getY() - start.getY());
+		double displacement = 1;
+		while (displacement > 0) {
+			Point a = new Point(midPoint);
+			Point b = new Point(midPoint);
+			a.setX(a.getX() + (displacement / Math.sqrt(slope * slope + 1)));
+			a.setY(a.getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
+			b.setX(b.getX() + (-displacement / Math.sqrt(slope * slope + 1)));
+			b.setY(b.getY() + (slope * -displacement / Math.sqrt(slope * slope + 1)));
+			if (clearPath(start, a)) {
+				return a;
+			}
+			if (clearPath(start, b)) {
+				return b;
+			}
+			displacement += 1;
+			if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
+				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
+					break;
+				}
+			}
+
+		}
+		return start;
+	}
+
 	/**
 	 * Finds the closest spotted enemy, if there are any, moves the unit to
 	 * engage. If there are no spotted enemy, moves around randomly
 	 */
 	public void wander() {
-		int smallestDistance = 327680;
-		if (id == UnitID.SHIP) smallestDistance = 1310720;
+		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize() && !(id == UnitID.ARTILLERY && weight == UnitID.LIGHT); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
-			if (tempUnit.engaged || tempUnit.capital) {
-				Point tempPoint = tempUnit.getPosition();
-				int tempDist = (int) position.getDist(tempPoint);
-				if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && (tempUnit.id != UnitID.PLANE) && !((id != UnitID.INFANTRY) && (tempUnit.capital)) && tempUnit.getID() != UnitID.NONE) {
-					if (id != UnitID.SHIP) {
-						if (clearPath(tempPoint, 32)) {
-							smallestDistance = tempDist;
-							smallestPoint = tempPoint;
-							smallestUnit = tempUnit;
-						}
-					} else {
-						if (wetPath(tempPoint, 32)) {
-							smallestDistance = tempDist;
-							smallestPoint = tempPoint;
-							smallestUnit = tempUnit;
-						}
-					}
-				}
+		for (int i = 0; i < nation.enemyNation.engagedUnits.size() && !(id == UnitID.ARTILLERY && weight == UnitID.LIGHT); i++) {
+			Unit tempUnit = nation.enemyNation.engagedUnits.get(i);
+			Point tempPoint = tempUnit.getPosition();
+			int tempDist = (int) position.getDist(tempPoint);
+			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && (tempUnit.id != UnitID.PLANE) && !((id != UnitID.INFANTRY) && (tempUnit.capital)) && tempUnit.getID() != UnitID.NONE) {
+				smallestDistance = tempDist;
+				smallestPoint = tempPoint;
+				smallestUnit = tempUnit;
 			}
 		}
 		if (smallestUnit != null) {
-			setTarget(smallestPoint);
-			setFacing(smallestPoint);
+			if (id != UnitID.SHIP) {
+				setTarget(smallestPoint);
+				setFacing(smallestPoint);
+			} else {
+				if (position.getDist(getTarget()) < 1) {
+					setTarget(pathfind(smallestPoint));
+					if (target == position) {
+						retarget();
+					}
+					setFacing(new Point(target));
+				}
+			}
 		} else {
 			if (position.getDist(getTarget()) < 1) retarget();
 			if (id == UnitID.INFANTRY) settle();
@@ -328,8 +392,8 @@ public abstract class Unit {
 				for (int i = 0; i < nation.unitSize(); i++) {
 					Unit tempUnit = nation.getUnit(i);
 					Point tempPoint = tempUnit.target.addPoint(position).multScalar(0.5);
-					int tempDist = (int) (position.getDist(tempPoint)/nation.landSupremacy);
-					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0 && Map.getArray((int)tempPoint.getX(), (int)tempPoint.getY()) < 0.4f) {
+					int tempDist = (int) (position.getDist(tempPoint) / nation.landSupremacy);
+					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0 && Map.getArray((int) tempPoint.getX(), (int) tempPoint.getY()) < 0.4f) {
 						if (wetPath(tempPoint, 32)) {
 							smallestDistance = tempDist;
 							smallestPoint = tempPoint;
@@ -353,31 +417,14 @@ public abstract class Unit {
 	 */
 	public void settle() {
 		nation.buyCity(position);
-		if(nation.getCityCost() > 30) {
-			if(nation.airSupremacy <= nation.enemyNation.airSupremacy){
-				if (nation.getAirfieldCost() < nation.coins /2) nation.buyAirfield(position);
+		if (nation.getCityCost() > 30) {
+			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
+				if (nation.getAirfieldCost() < nation.coins / 2) nation.buyAirfield(position);
 			} else {
-				if(nation.seaSupremacy <= nation.enemyNation.seaSupremacy){
-					Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
-					Point smallestPoint = new Point(-1, -1);
-					int smallestDistance = 1310720;
-					for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-						Unit tempUnit = nation.enemyNation.getUnit(i);
-						Point tempPoint = tempUnit.getPosition();
-						int tempDist = (int) position.getDist(tempPoint);
-						if (tempDist < smallestDistance && (tempUnit.getID() != UnitID.SHIP && tempUnit.getID() != UnitID.PLANE)) {
-							if (wetLandingPath(tempPoint, portPoint, 64)) {
-								smallestPoint = tempPoint;
-							}
-						}
-					}
-					if (smallestPoint.getX() != -1 && Map.getArray(portPoint) < .5f && nation.checkProximity(portPoint) && !engaged) {
-						nation.buyPort(position);
-						target = portPoint;
-						facing = target;
-					}
+				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy) {
+					nation.buyPort(position);
 				} else {
-					if (nation.getFactoryCost() < nation.coins /2) nation.buyFactory(position);
+					if (nation.getFactoryCost() < nation.coins / 2) nation.buyFactory(position);
 				}
 			}
 		}
@@ -448,7 +495,7 @@ public abstract class Unit {
 					if (Main.world.selectedUnit != null) {
 						if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
 					}
-					health = 100;
+					health = 0;
 					if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT) nation.airSupremacy--;
 					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT) nation.seaSupremacy--;
 					if (id == UnitID.CITY) {
@@ -483,6 +530,7 @@ public abstract class Unit {
 						nation.setLandSupremacy(-1);
 					}
 					nation.unitArray.remove(this);
+					nation.engagedUnits.remove(this);
 				}
 			}
 		}
@@ -515,7 +563,6 @@ public abstract class Unit {
 			}
 		}
 		if (smallestUnit != null) {
-			smallestUnit.engaged = true;
 			if (id != UnitID.SHIP && smallestUnit.id != UnitID.PLANE) if (nation.isAIControlled()) setTarget(position);
 			setFacing(new Point(smallestPoint));
 			if ((Main.ticks - born) % 60 == 0) {
@@ -620,7 +667,7 @@ public abstract class Unit {
 			if (nation.isAIControlled()) setTarget(position);
 			setFacing(smallestPoint);
 			engaged = true;
-			if ((Main.ticks-born) % 90 == 0) {
+			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, nation, smallestPoint));
 			}
 			return true;

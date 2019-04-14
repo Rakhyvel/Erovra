@@ -33,6 +33,7 @@ public class World {
 	private boolean nullifySelected = false;
 	Point mouseStartPoint = new Point(-1, -1);
 	public String defeatedName = "";
+	boolean showPaths = false;
 
 	public World() {
 		menuArray.add(errorMessage);
@@ -165,7 +166,8 @@ public class World {
 					hostile.getUnit(i2).render(r);
 			}
 
-			r.drawRect(1024-128, 0, 128, 20, 128 << 24);
+			r.drawRect(1024-64, 0, 64, 20, 128 << 24);
+			r.drawRectBorders(1024-94,0,30,30,128<<24,15);
 			
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
 				friendly.getCoin(i2).render(r);
@@ -217,5 +219,12 @@ public class World {
 
 	public void nullifySelected() {
 		nullifySelected = true;
+	}
+	
+	public void setShowPaths(boolean showPaths){
+		this.showPaths = showPaths;
+	}
+	public boolean getShowPaths(){
+		return showPaths;
 	}
 }

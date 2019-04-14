@@ -40,6 +40,7 @@ public class Nation {
 
 	public String name;
 	public ArrayList<Unit> unitArray = new ArrayList<Unit>(20);
+	public ArrayList<Unit> engagedUnits = new ArrayList<Unit>();
 	public ArrayList<Projectile> projectileArray = new ArrayList<Projectile>();
 	public ArrayList<Coin> coinArray = new ArrayList<Coin>();
 	public Nation enemyNation;

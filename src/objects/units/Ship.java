@@ -84,6 +84,9 @@ public class Ship extends Unit {
 
 				if (nation.isAIControlled()) {
 					if (getPassenger1() != null) {
+						Point pathfind = pathfind(getTarget());
+						setFacing(pathfind);
+						velocity = position.subVec(pathfind).normalize().scalar(speed);
 						position = position.addVector(velocity);
 						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 							nation.unitArray.remove(getPassenger1());
@@ -139,27 +142,33 @@ public class Ship extends Unit {
 			}
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60 / speed);
+				if(!nation.engagedUnits.contains(this))
+					nation.engagedUnits.add(this);
 			}
-			if (spotted > 0) spotted--;
+			if (spotted != 0){
+				spotted--;
+			} else {
+				nation.engagedUnits.remove(this);
+			}
 		}
 	}
 
 	private void setIcon(int i, UnitID id, UnitID weight) {
 		if (i == 1) {
 			if (id == UnitID.CAVALRY) {
-				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.cavalry);
+				icon1 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.cavalry);
 			} else if (id == UnitID.INFANTRY) {
-				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.infantry);
+				icon1 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.infantry);
 			} else if (id == UnitID.ARTILLERY) {
-				icon1 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.artillery);
+				icon1 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.artillery);
 			}
 		} else {
 			if (id == UnitID.CAVALRY) {
-				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.cavalry);
+				icon2 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.cavalry);
 			} else if (id == UnitID.INFANTRY) {
-				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.infantry);
+				icon2 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.infantry);
 			} else if (id == UnitID.ARTILLERY) {
-				icon2 = Render.getScreenBlend(Render.getColor(weight,nation.color), Render.artillery);
+				icon2 = Render.getScreenBlend(Render.getColor(weight, nation.color), Render.artillery);
 			}
 		}
 	}
@@ -214,9 +223,8 @@ public class Ship extends Unit {
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					if (weight == UnitID.HEAVY) 
-						r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange, 0.5f, 0);
-					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255<<24|220 << 16 | 220 << 8 | 220);
+					if (weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange, 0.5f, 0);
+					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255 << 24 | 220 << 16 | 220 << 8 | 220);
 				}
 			}
 
@@ -237,9 +245,7 @@ public class Ship extends Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			double tempDist = tempPoint.getDist(position);
-			if ((nation.airSupremacy < nation.enemyNation.airSupremacy && tempUnit.id == UnitID.AIRFIELD) ||
-					(nation.landSupremacy < nation.enemyNation.landSupremacy && tempUnit.id == UnitID.FACTORY) ||
-					(nation.airSupremacy >= nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaSupremacy && nation.landSupremacy >= nation.enemyNation.landSupremacy)) {
+			if (tempUnit.id != UnitID.PORT && (nation.airSupremacy < nation.enemyNation.airSupremacy && tempUnit.id == UnitID.AIRFIELD) || (nation.landSupremacy < nation.enemyNation.landSupremacy && tempUnit.id == UnitID.FACTORY) || (nation.airSupremacy >= nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaSupremacy && nation.landSupremacy >= nation.enemyNation.landSupremacy)) {
 				if (smallestDist > tempDist) {
 					smallestPoint = tempPoint;
 					smallestDist = tempDist;
@@ -248,7 +254,7 @@ public class Ship extends Unit {
 		}
 		setTarget(smallestPoint);
 		setFacing(getTarget());
-		velocity = position.subVec(getTarget()).normalize().scalar(speed);
+		velocity = position.subVec(pathfind(getTarget())).normalize().scalar(speed);
 	}
 
 	@Override
@@ -322,15 +328,15 @@ public class Ship extends Unit {
 			r.drawString(name, x + 85, y + slotID * 30 + 15, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
 		} else {
 			r.drawString(name, x + 7, y + slotID * 30 + 15, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			if(slotID == 1 && icon1 != null){
-				r.drawImage(x+157,y + slotID * 30+15,32,icon1,1,0);
-				r.drawRectBorders(x+133,y+slotID*30,3,30,0,4);
+			if (slotID == 1 && icon1 != null) {
+				r.drawImage(x + 157, y + slotID * 30 + 15, 32, icon1, 1, 0);
+				r.drawRectBorders(x + 133, y + slotID * 30, 3, 30, 0, 4);
 			}
-			if(slotID == 2 && icon2 != null){
-				r.drawImage(x+157,y + slotID * 30+15,32,icon2,1,0);
-				r.drawRectBorders(x+133,y+slotID*30,3,30,0,4);
+			if (slotID == 2 && icon2 != null) {
+				r.drawImage(x + 157, y + slotID * 30 + 15, 32, icon2, 1, 0);
+				r.drawRectBorders(x + 133, y + slotID * 30, 3, 30, 0, 4);
 			}
-			
+
 		}
 	}
 
