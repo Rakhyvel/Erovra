@@ -73,6 +73,7 @@ public class GameMenu extends Menu {
 		if (Main.gameState == StateID.VICTORY || Main.gameState == StateID.DEFEAT) {
 			if (buttonsHovered == 2) {
 				Main.setState(StateID.MENU);
+				System.gc();
 			} else if (buttonsHovered == 3) {
 				Main.endGame();
 			}

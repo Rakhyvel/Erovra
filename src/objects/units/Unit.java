@@ -285,13 +285,14 @@ public abstract class Unit {
 	}
 
 	Point pathfind(Point enemy) {
+		if(clearPath(position,enemy))
+			return enemy;
 		Point beginPoint = getObstacle(position, enemy)[0];
 		Point endPoint = getObstacle(position, enemy)[1];
-
-		if (beginPoint != null && endPoint != null) {
-			return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position);
+		if(beginPoint == null || endPoint == null){
+			return enemy;
 		}
-		return enemy;
+		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position);
 	}
 
 	boolean clearPath(Point start, Point end) {
@@ -307,7 +308,7 @@ public abstract class Unit {
 
 	Point[] getObstacle(Point start, Point end) {
 		Point[] obstacle = new Point[2];
-		Vector march = start.subVec(end).normalize();
+		Vector march = start.subVec(end).normalize().scalar(10);
 		Point step = new Point(start);
 		boolean clear = true;
 		for (int i = 0; i < start.getDistSquared(end); i++) {
@@ -340,7 +341,7 @@ public abstract class Unit {
 			if (clearPath(start, b)) {
 				return b;
 			}
-			displacement += 1;
+			displacement += 10;
 			if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
 				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
 					break;
@@ -348,7 +349,8 @@ public abstract class Unit {
 			}
 
 		}
-		return start;
+		// If in shadow, return null
+		return null;
 	}
 
 	/**
@@ -375,11 +377,13 @@ public abstract class Unit {
 				setFacing(smallestPoint);
 			} else {
 				if (position.getDist(getTarget()) < 1) {
-					setTarget(pathfind(smallestPoint));
-					if (target == position) {
+					Point pathfind = pathfind(smallestPoint);
+					if(pathfind != null){
+						setTarget(pathfind);
+						setFacing(pathfind);
+					} else {
 						retarget();
 					}
-					setFacing(new Point(target));
 				}
 			}
 		} else {

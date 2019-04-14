@@ -84,9 +84,6 @@ public class Ship extends Unit {
 
 				if (nation.isAIControlled()) {
 					if (getPassenger1() != null) {
-						Point pathfind = pathfind(getTarget());
-						setFacing(pathfind);
-						velocity = position.subVec(pathfind).normalize().scalar(speed);
 						position = position.addVector(velocity);
 						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 							nation.unitArray.remove(getPassenger1());
@@ -254,7 +251,7 @@ public class Ship extends Unit {
 		}
 		setTarget(smallestPoint);
 		setFacing(getTarget());
-		velocity = position.subVec(pathfind(getTarget())).normalize().scalar(speed);
+		velocity = position.subVec(target).normalize().scalar(speed);
 	}
 
 	@Override
