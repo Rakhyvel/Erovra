@@ -151,6 +151,7 @@ public abstract class Unit {
 	 */
 	public void disengage() {
 		engaged = false;
+		nation.engagedUnits.remove(this);
 	}
 
 	/**
@@ -284,48 +285,60 @@ public abstract class Unit {
 		return new Point(position);
 	}
 
-	Point pathfind(Point enemy) {
-		if(clearPath(position,enemy))
-			return enemy;
-		Point beginPoint = getObstacle(position, enemy)[0];
-		Point endPoint = getObstacle(position, enemy)[1];
-		if(beginPoint == null || endPoint == null){
+	public Point pathfind(Point enemy, float lowerLimit) {
+		if (clearPath(position, enemy, lowerLimit)) return enemy;
+		Point beginPoint = getObstacle(position, enemy, lowerLimit)[0];
+		Point endPoint = getObstacle(position, enemy, lowerLimit)[1];
+		if (beginPoint == null || endPoint == null || endPoint == enemy) {
 			return enemy;
 		}
-		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position);
+		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position, lowerLimit);
 	}
 
-	boolean clearPath(Point start, Point end) {
+	public Point pathfind(Point friendly, Point enemy, float lowerLimit) {
+		if (clearPath(friendly, enemy, lowerLimit)) return enemy;
+		Point beginPoint = getObstacle(friendly, enemy, lowerLimit)[0];
+		Point endPoint = getObstacle(friendly, enemy, lowerLimit)[1];
+		if (beginPoint == null || endPoint == null || endPoint == enemy) {
+			return enemy;
+		}
+		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), friendly, lowerLimit);
+	}
+
+	public boolean clearPath(Point start, Point end, float lowerLimit) {
 		Vector march = start.subVec(end).normalize();
 		Point step = new Point(start);
 		boolean clear = true;
 		for (int i = 0; i < start.getDistSquared(end); i++) {
-			clear &= Map.getArray(step) < 0.4;
+			clear &= Map.getArray(step) < lowerLimit + 0.45 && Map.getArray(step) >= lowerLimit;
 			step = step.addVector(march);
+			if(!clear)
+				return false;
 		}
 		return clear;
 	}
 
-	Point[] getObstacle(Point start, Point end) {
+	Point[] getObstacle(Point start, Point end, float lowerLimit) {
 		Point[] obstacle = new Point[2];
 		Vector march = start.subVec(end).normalize().scalar(10);
 		Point step = new Point(start);
 		boolean clear = true;
-		for (int i = 0; i < start.getDistSquared(end); i++) {
-			if (clear && Map.getArray(step) > 0.5) {
+		while(step.getDistSquared(end) > 30) {
+			if (clear && (Map.getArray(step) < lowerLimit || Map.getArray(step) > lowerLimit + 0.5)) {
 				obstacle[0] = new Point(step);
 			}
-			if (Map.getArray(step) < 0.5 && obstacle[0] != null) {
+			if (Map.getArray(step) > lowerLimit && Map.getArray(step) < lowerLimit + 0.5 && obstacle[0] != null) {
 				obstacle[1] = step;
 				return obstacle;
 			}
-			clear &= Map.getArray(step) < 0.5;
+			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
 			step = step.addVector(march);
 		}
+		obstacle[1] = end;
 		return obstacle;
 	}
 
-	Point perpendicularize(Point midPoint, Point start) {
+	Point perpendicularize(Point midPoint, Point start, float lowerLimit) {
 		double slope = -1 * (midPoint.getX() - start.getX()) / (midPoint.getY() - start.getY());
 		double displacement = 1;
 		while (displacement > 0) {
@@ -335,16 +348,16 @@ public abstract class Unit {
 			a.setY(a.getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 			b.setX(b.getX() + (-displacement / Math.sqrt(slope * slope + 1)));
 			b.setY(b.getY() + (slope * -displacement / Math.sqrt(slope * slope + 1)));
-			if (clearPath(start, a)) {
+			if (clearPath(start, a, lowerLimit)) {
 				return a;
 			}
-			if (clearPath(start, b)) {
+			if (clearPath(start, b, lowerLimit)) {
 				return b;
 			}
-			displacement += 10;
+			displacement += 1;
 			if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
 				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
-					break;
+					return null;
 				}
 			}
 
@@ -372,46 +385,24 @@ public abstract class Unit {
 			}
 		}
 		if (smallestUnit != null) {
-			if (id != UnitID.SHIP) {
-				setTarget(smallestPoint);
-				setFacing(smallestPoint);
-			} else {
-				if (position.getDist(getTarget()) < 1) {
-					Point pathfind = pathfind(smallestPoint);
-					if(pathfind != null){
-						setTarget(pathfind);
-						setFacing(pathfind);
-					} else {
-						retarget();
-					}
+			Point pathfind = null;
+			if (position.getDist(getTarget()) < 1) {
+				if (id != UnitID.SHIP) {
+					pathfind = pathfind(smallestPoint, 0.5f);
+				} else {
+					pathfind = pathfind(smallestPoint, 0);
+				}
+				if (pathfind != null) {
+					setTarget(pathfind);
+					setFacing(pathfind);
+				} else {
+					retarget();
 				}
 			}
 		} else {
 			if (position.getDist(getTarget()) < 1) retarget();
 			if (id == UnitID.INFANTRY) settle();
 
-			if (id == UnitID.SHIP && weight != UnitID.LIGHT) {
-				smallestDistance = 327680;
-				smallestPoint = new Point(-1, -1);
-				for (int i = 0; i < nation.unitSize(); i++) {
-					Unit tempUnit = nation.getUnit(i);
-					Point tempPoint = tempUnit.target.addPoint(position).multScalar(0.5);
-					int tempDist = (int) (position.getDist(tempPoint) / nation.landSupremacy);
-					if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP && tempUnit.weight == UnitID.LIGHT && tempUnit.velocity.magnitude() > 0 && Map.getArray((int) tempPoint.getX(), (int) tempPoint.getY()) < 0.4f) {
-						if (wetPath(tempPoint, 32)) {
-							smallestDistance = tempDist;
-							smallestPoint = tempPoint;
-							smallestUnit = tempUnit;
-						}
-					}
-				}
-				if (smallestUnit != null && target.getDist(smallestPoint) > 9400) {
-					setTarget(smallestPoint);
-					setFacing(getTarget());
-				} else {
-					if (position.getDist(getTarget()) < 1) retarget();
-				}
-			}
 		}
 	}
 
@@ -425,9 +416,7 @@ public abstract class Unit {
 			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
 				if (nation.getAirfieldCost() < nation.coins / 2) nation.buyAirfield(position);
 			} else {
-				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy) {
-					nation.buyPort(position);
-				} else {
+				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.buyPort(position)) {} else {
 					if (nation.getFactoryCost() < nation.coins / 2) nation.buyFactory(position);
 				}
 			}
@@ -558,7 +547,6 @@ public abstract class Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempUnit.id == UnitID.PLANE) tempDist /= 36;
 			if (tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.AIRFIELD || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.FACTORY) tempDist *= 2;
 			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && !(id != UnitID.INFANTRY && tempUnit.capital) && tempUnit.id != UnitID.PLANE && !tempUnit.isBoarded() && tempUnit.getID() != UnitID.NONE) {
 				smallestDistance = tempDist;
@@ -630,7 +618,7 @@ public abstract class Unit {
 				smallestUnit = tempUnit;
 			}
 		}
-		if (smallestUnit != null && wetPath(smallestPoint, 32)) {
+		if (smallestUnit != null && clearPath(smallestPoint, position, 0)) {
 			smallestUnit.engage();
 			if (nation.isAIControlled()) {
 				if (smallestDistance < 9000) setTarget(position);
@@ -835,59 +823,6 @@ public abstract class Unit {
 				velocityMove();
 			}
 		}
-	}
-
-	public boolean clearPath(Point point, double depth) {
-		boolean land = true;
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-
-			float height = Map.getArray((int) ((point.getX() - position.getX()) * invDepth + position.getX()), (int) ((point.getY() - position.getY()) * invDepth + position.getY()));
-			land &= (height > .5 && height < 1);
-			if (!land) return land;
-		}
-		return land;
-	}
-
-	public boolean clearPath(Point point, Point point2, double depth) {
-		boolean land = true;
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-			float height = Map.getArray((int) ((point.getX() - point2.getX()) * invDepth + point2.getX()), (int) ((point.getY() - point2.getY()) * invDepth + point2.getY()));
-			land &= (height > .5 && height < 1);
-			if (!land) return land;
-		}
-		return land;
-	}
-
-	public boolean wetPath(Point point, double depth) {
-		boolean ocean = true;
-		Point testPoint = new Point(-1, -1);
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-			testPoint.setX((point.getX() - position.getX()) * invDepth + position.getX());
-			testPoint.setY((point.getY() - position.getY()) * invDepth + position.getY());
-			ocean &= (Map.getArray((int) testPoint.getX(), (int) testPoint.getY()) < .5);
-			if (!ocean) {
-				return ocean;
-			}
-		}
-		return ocean;
-	}
-
-	public boolean wetPath(Point point, Point point2, double depth) {
-		boolean ocean = true;
-		Point testPoint = new Point(-1, -1);
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-			testPoint.setX((point.getX() - point2.getX()) * invDepth + point2.getX());
-			testPoint.setY((point.getY() - point2.getY()) * invDepth + point2.getY());
-			ocean &= (Map.getArray((int) testPoint.getX(), (int) testPoint.getY()) < .5);
-			if (!ocean) {
-				return ocean;
-			}
-		}
-		return ocean;
 	}
 
 	public boolean wetLandingPath(Point point, double depth) {

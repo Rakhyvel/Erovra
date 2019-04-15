@@ -103,20 +103,20 @@ public class City extends Industry {
 	@Override
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
-			if (d.buttonsHovered == 1) {
+			if (d.buttonsHovered == 1 && !capital) {
 				if (nation.getCoinAmount() >= nation.getCityCost()/2) {
 					upgrade(nation.getCityCost()/2);
 				} else {
 					Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 				}
-			} else if (d.buttonsHovered == 2) {
+			} else if (d.buttonsHovered == 2 && !capital) {
 				nation.unitArray.remove(this);
 				d.shouldClose();
 				nation.coins += 10;
 				nation.setCityCost(nation.getCityCost() / 2);
 			}
 		} else {
-			if (d.buttonsHovered == 2) {
+			if (d.buttonsHovered == 2 && !capital) {
 				setProductWeight(UnitID.NONE);
 				setProduct(UnitID.NONE);
 				nation.coins += refund;

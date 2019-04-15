@@ -28,6 +28,8 @@ public class Ship extends Unit {
 	Image shipHit;
 	int[] icon1;
 	int[] icon2;
+	boolean passed = false;
+	Point pathfind;
 
 	public Ship(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -80,15 +82,31 @@ public class Ship extends Unit {
 						}
 					}
 					nation.unitArray.remove(this);
+					nation.engagedUnits.remove(this);
 				}
 
 				if (nation.isAIControlled()) {
 					if (getPassenger1() != null) {
+						if(!passed){
+							if (pathfind != null) {
+								velocity = position.getTargetVector(pathfind).normalize().scalar(speed);
+								setFacing(pathfind);
+								if (position.getDist(pathfind) < 1)
+									pathfind = pathfind(target, 0f);
+							} else {
+								velocity = position.getTargetVector(target).normalize().scalar(speed);
+								setFacing(target);
+							}
+						}
 						position = position.addVector(velocity);
+						if(!passed)
+							if(position.getDist(target) < 1)
+								passed = true;
 						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
 							nation.unitArray.remove(getPassenger1());
 							nation.unitArray.remove(getPassenger2());
 							nation.unitArray.remove(this);
+							nation.engagedUnits.remove(this);
 						}
 					} else {
 						velocity.setX(0);
@@ -139,10 +157,9 @@ public class Ship extends Unit {
 			}
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60 / speed);
-				if(!nation.engagedUnits.contains(this))
-					nation.engagedUnits.add(this);
+				if (!nation.engagedUnits.contains(this)) nation.engagedUnits.add(this);
 			}
-			if (spotted != 0){
+			if (spotted != 0) {
 				spotted--;
 			} else {
 				nation.engagedUnits.remove(this);
@@ -177,7 +194,6 @@ public class Ship extends Unit {
 	}
 
 	void loadPassengers() {
-		decideTarget();
 		int smallestDistance = 1310720;
 		int firstUnit = -1;
 		int secondUnit = -1;
@@ -240,18 +256,20 @@ public class Ship extends Unit {
 		double smallestDist = 1310720;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Point tempPoint = tempUnit.getPosition();
-			double tempDist = tempPoint.getDist(position);
 			if (tempUnit.id != UnitID.PORT && (nation.airSupremacy < nation.enemyNation.airSupremacy && tempUnit.id == UnitID.AIRFIELD) || (nation.landSupremacy < nation.enemyNation.landSupremacy && tempUnit.id == UnitID.FACTORY) || (nation.airSupremacy >= nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaSupremacy && nation.landSupremacy >= nation.enemyNation.landSupremacy)) {
+				Point tempPoint = tempUnit.getPosition();
+				double tempDist = tempPoint.getDist(position);
 				if (smallestDist > tempDist) {
 					smallestPoint = tempPoint;
 					smallestDist = tempDist;
 				}
 			}
 		}
-		setTarget(smallestPoint);
-		setFacing(getTarget());
-		velocity = position.subVec(target).normalize().scalar(speed);
+		if (smallestPoint.getX() != -1) {
+			setTarget(smallestPoint);
+			setFacing(smallestPoint);
+			pathfind = pathfind(target, 0f);
+		}
 	}
 
 	@Override
