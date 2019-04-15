@@ -190,7 +190,7 @@ public class Ship extends Unit {
 	// isLander(): checks to see if the boat has reached land, used for landind
 	// craft
 	boolean isLanded() {
-		return Map.getArray(position) > 0.5f;
+		return Map.getArray(position) > 0.51f;
 	}
 
 	void loadPassengers() {

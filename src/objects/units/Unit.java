@@ -295,22 +295,12 @@ public abstract class Unit {
 		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position, lowerLimit);
 	}
 
-	public Point pathfind(Point friendly, Point enemy, float lowerLimit) {
-		if (clearPath(friendly, enemy, lowerLimit)) return enemy;
-		Point beginPoint = getObstacle(friendly, enemy, lowerLimit)[0];
-		Point endPoint = getObstacle(friendly, enemy, lowerLimit)[1];
-		if (beginPoint == null || endPoint == null || endPoint == enemy) {
-			return enemy;
-		}
-		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), friendly, lowerLimit);
-	}
-
 	public boolean clearPath(Point start, Point end, float lowerLimit) {
 		Vector march = start.subVec(end).normalize();
 		Point step = new Point(start);
 		boolean clear = true;
 		for (int i = 0; i < start.getDistSquared(end); i++) {
-			clear &= Map.getArray(step) < lowerLimit + 0.45 && Map.getArray(step) >= lowerLimit;
+			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
 			step = step.addVector(march);
 			if(!clear)
 				return false;
@@ -348,6 +338,11 @@ public abstract class Unit {
 			a.setY(a.getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 			b.setX(b.getX() + (-displacement / Math.sqrt(slope * slope + 1)));
 			b.setY(b.getY() + (slope * -displacement / Math.sqrt(slope * slope + 1)));
+			if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
+				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
+					return null;
+				}
+			}
 			if (clearPath(start, a, lowerLimit)) {
 				return a;
 			}
@@ -355,12 +350,6 @@ public abstract class Unit {
 				return b;
 			}
 			displacement += 1;
-			if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
-				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
-					return null;
-				}
-			}
-
 		}
 		// If in shadow, return null
 		return null;
@@ -557,6 +546,8 @@ public abstract class Unit {
 		if (smallestUnit != null) {
 			if (id != UnitID.SHIP && smallestUnit.id != UnitID.PLANE) if (nation.isAIControlled()) setTarget(position);
 			setFacing(new Point(smallestPoint));
+			if(!smallestUnit.engaged)
+				smallestUnit.engage();
 			if ((Main.ticks - born) % 60 == 0) {
 				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint), cal * (health / 10), UnitID.BULLET));
 			}
@@ -586,7 +577,8 @@ public abstract class Unit {
 			}
 		}
 		if (smallestUnit != null) {
-			smallestUnit.engaged = true;
+			if(!smallestUnit.engaged)
+				smallestUnit.engage();
 			if ((Main.ticks - born) % 20 == 0) {
 				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint.addVector(smallestUnit.velocity.scalar(Math.sqrt(smallestDistance) / 4))), .1f, UnitID.AIRBULLET));
 			}
@@ -619,10 +611,11 @@ public abstract class Unit {
 			}
 		}
 		if (smallestUnit != null && clearPath(smallestPoint, position, 0)) {
-			smallestUnit.engage();
 			if (nation.isAIControlled()) {
 				if (smallestDistance < 9000) setTarget(position);
 			}
+			if(!smallestUnit.engaged)
+				smallestUnit.engage();
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(smallestPoint)));
 			}
@@ -655,10 +648,10 @@ public abstract class Unit {
 			}
 		}
 		if (smallestPoint.getX() != -1) {
-			smallestUnit.engage();
 			if (nation.isAIControlled()) setTarget(position);
 			setFacing(smallestPoint);
-			engaged = true;
+			if(!smallestUnit.engaged)
+				smallestUnit.engage();
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, nation, smallestPoint));
 			}
