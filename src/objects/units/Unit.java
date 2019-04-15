@@ -290,7 +290,7 @@ public abstract class Unit {
 		Point beginPoint = getObstacle(position, enemy, lowerLimit)[0];
 		Point endPoint = getObstacle(position, enemy, lowerLimit)[1];
 		if (beginPoint == null || endPoint == null || endPoint == enemy) {
-			return enemy;
+			return null;
 		}
 		return perpendicularize(beginPoint.addPoint(endPoint).multScalar(0.5), position, lowerLimit);
 	}
