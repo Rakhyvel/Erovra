@@ -39,7 +39,7 @@ public class Artillery extends Unit {
 			if (!nation.isAIControlled()) {
 				clickToMove();
 			} else {
-				wander();
+				wander(0.5f);
 			}
 			if (getWeight() == UnitID.LIGHT) {
 				engaged = aaAim();

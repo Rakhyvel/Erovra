@@ -31,17 +31,14 @@ public class Infantry extends Unit {
 		detectHit();
 		if (!isBoarded() && health > 0) {
 			if (nation.isAIControlled()) {
-				wander();
+				autoAim(2048,1);
+				settle();
 			} else {
 				clickToMove();
 				clickToDropDown();
 			}
-			engaged = autoAim(1);
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
-				if(!nation.engagedUnits.contains(this)){
-					nation.engagedUnits.add(this);
-				}
 			}
 			if (spotted > 0){
 				spotted--;
@@ -111,6 +108,26 @@ public class Infantry extends Unit {
 			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 32, 13, r);
 		} else {
 			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0, 13, r);
+		}
+	}
+	
+	/**
+	 * If the unit is far enough away other ports and cities, builds either a city,
+	 * port, or factory. Only builds max 2 airfields and 3 factories
+	 */
+	public void settle() {
+		nation.buyCity(position);
+		if (nation.getCityCost() > 30) {
+			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
+				if (nation.getAirfieldCost() < nation.coins / 2)
+					nation.buyAirfield(position);
+			} else {
+				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.buyPort(position)) {
+				} else {
+					if (nation.getFactoryCost() < nation.coins / 2)
+						nation.buyFactory(position);
+				}
+			}
 		}
 	}
 }

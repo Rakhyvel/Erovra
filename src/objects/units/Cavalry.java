@@ -41,11 +41,10 @@ public class Cavalry extends Unit {
 		detectHit();
 		if (!isBoarded() && health > 0) {
 			if (nation.isAIControlled()) {
-				wander();
+				autoAim(2048,cal);
 			} else {
 				clickToMove();
 			}
-			engaged = autoAim(cal);
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
 				if(!nation.engagedUnits.contains(this))

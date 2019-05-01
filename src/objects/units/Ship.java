@@ -58,7 +58,7 @@ public class Ship extends Unit {
 		if (!(nation.defeated || nation.enemyNation.defeated) && health > 0) {
 			if (getWeight() != UnitID.LIGHT) {
 				if (nation.isAIControlled()) {
-					wander();
+					wander(0);
 				} else {
 					clickToMove();
 				}
@@ -101,7 +101,7 @@ public class Ship extends Unit {
 						if(!passed)
 							if(position.getDist(target) < 1)
 								passed = true;
-						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+						if (position.getX() < 0 || position.getX() > 1024 || position.getY() < 0 || position.getY() > 512) {
 							nation.removeUnit(getPassenger1());
 							nation.removeUnit(getPassenger2());
 							nation.removeUnit(this);
@@ -241,7 +241,7 @@ public class Ship extends Unit {
 			if (getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landing), 1, direction);
 			if (getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyer), 1, direction);
 			if (getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 14, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiser), 1, direction);
-
+			
 			if ((hit > 1) && getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landingHit), 1, direction);
 			if ((hit > 1) && getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyerHit), 1, direction);
 			if ((hit > 1) && getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 18, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiserHit), 1, direction);

@@ -141,16 +141,20 @@ public abstract class Unit {
 	 * Engages unit
 	 */
 	public void engage() {
-		engaged = true;
-		spotted = (int) (60 / speed);
+		if (!engaged) {
+			engaged = true;
+			nation.engagedUnits.add(this);
+		}
 	}
 
 	/**
 	 * Disengages unit
 	 */
 	public void disengage() {
-		engaged = false;
-		nation.engagedUnits.remove(this);
+		if (engaged) {
+			engaged = false;
+			nation.engagedUnits.remove(this);
+		}
 	}
 
 	/**
@@ -258,8 +262,8 @@ public abstract class Unit {
 	 * @param target The position the unit should go to
 	 * @return The position will be at next tick
 	 */
-	Point getNextStep(Point target) {
-		return position.addVector(position.getTargetVector(target).normalize().scalar(speed));
+	Point getNextStep(Point goal) {
+		return position.addVector(position.getTargetVector(goal).normalize().scalar(speed));
 	}
 
 	Point getLandingPoint(Point point1, Point point2, int depth) {
@@ -307,11 +311,13 @@ public abstract class Unit {
 		boolean clear = true;
 		while (step.getDistSquared(end) > 1) {
 			if (clear && (Map.getArray(step) < lowerLimit || Map.getArray(step) > lowerLimit + 0.5)) {
-				// If previous was clear, and this step is not, this must be the begining of the first obstacle
+				// If previous was clear, and this step is not, this must be the begining of the
+				// first obstacle
 				start = new Point(step);
 			}
 			if (Map.getArray(step) > lowerLimit && Map.getArray(step) < lowerLimit + 0.5 && start != null) {
-				// If ray was inside an obstacle, but is now free, this must be the end of the obstacle. Return midpoint.
+				// If ray was inside an obstacle, but is now free, this must be the end of the
+				// obstacle. Return midpoint.
 				return step.getMidPoint(start);
 			}
 			// Check clarity, advance step
@@ -354,7 +360,7 @@ public abstract class Unit {
 					return b;
 				}
 			}
-			if(aTooFar & bTooFar) {
+			if (aTooFar & bTooFar) {
 				// If both probes are out of bounds, return false
 				return null;
 			}
@@ -364,110 +370,56 @@ public abstract class Unit {
 		return null;
 	}
 
-	/**
-	 * Finds the closest spotted enemy, if there are any, moves the unit to engage.
-	 * If there are no spotted enemy, moves around randomly
-	 */
-	public void wander() {
+	public boolean findTarget(float baseline, int range) {
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.engagedUnits.size()
-				&& !(id == UnitID.ARTILLERY && weight == UnitID.LIGHT); i++) {
-			Unit tempUnit = nation.enemyNation.engagedUnits.get(i);
-			Point tempPoint = tempUnit.getPosition();
-			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))
-					&& (tempUnit.id != UnitID.PLANE) && !((id != UnitID.INFANTRY) && (tempUnit.capital))
-					&& tempUnit.getID() != UnitID.NONE) {
-				smallestDistance = tempDist;
-				smallestPoint = tempPoint;
-				smallestUnit = tempUnit;
+		if (id != UnitID.ARTILLERY && weight != UnitID.LIGHT) {
+			for (int i = 0; i < nation.enemyNation.engagedUnits.size(); i++) {
+				Unit tempUnit = nation.enemyNation.engagedUnits.get(i);
+				Point tempPoint = tempUnit.getPosition();
+				int tempDist = (int) position.getDist(tempPoint);
+				if (tempDist < smallestDistance
+						// Check ship to ship only
+						&& ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))
+						// Check AAA to plane only
+						&& ((tempUnit.id == UnitID.PLANE) == (id == UnitID.ARTILLERY && weight == UnitID.LIGHT))) {
+					smallestDistance = tempDist;
+					smallestPoint = tempPoint;
+					smallestUnit = tempUnit;
+				}
 			}
 		}
 		if (smallestUnit != null) {
-			Point pathfind = null;
+			// Enemy visible: yes
+			setTarget(smallestPoint);
+			setFacing(smallestPoint);
+			if (smallestDistance < range) {
+				// Enemy in range: yes
+				engage();
+				smallestUnit.engage();
+				return true;
+			} else {
+				// Enemy in range: no
+				disengage();
+			}
+		} else {
+			// Enemy visible: no
 			if (position.getDist(getTarget()) < 1) {
-				if (id != UnitID.SHIP) {
-					pathfind = pathfind(smallestPoint, 0.5f);
-				} else {
-					pathfind = pathfind(smallestPoint, 0);
-				}
-				if (pathfind != null) {
-					setTarget(pathfind);
-					setFacing(pathfind);
-				} else {
-					retarget();
-				}
+				// Target reached: yes
+				retarget(baseline);
 			}
-		} else {
-			if (position.getDist(getTarget()) < 1)
-				retarget();
-			if (id == UnitID.INFANTRY)
-				settle();
-
+			disengage();
 		}
-	}
-
-	/**
-	 * If the unit is far enough away other ports and cities, builds either a city,
-	 * port, or factory. Only builds max 2 airfields and 3 factories
-	 */
-	public void settle() {
-		nation.buyCity(position);
-		if (nation.getCityCost() > 30) {
-			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
-				if (nation.getAirfieldCost() < nation.coins / 2)
-					nation.buyAirfield(position);
-			} else {
-				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.buyPort(position)) {
-				} else {
-					if (nation.getFactoryCost() < nation.coins / 2)
-						nation.buyFactory(position);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Moves the unit to its target
-	 */
-	public void targetMove() {
-		if (id != UnitID.SHIP) {
-			if ((Map.getArray(getNextStep(target)) > 0.5f && Map.getArray(position) > 0.5f)
-					&& (Map.getArray(getNextStep(target)) < 1f && Map.getArray(position) < 1f)) {
-				velocityMove();
-			} else {
-				if (nation.isAIControlled()) {
-					escapeEdge();
-				} else {
-					target = new Point(position);
-				}
-			}
-		} else {
-			if (getWeight() != UnitID.LIGHT) {
-				if ((Map.getArray(getNextStep(target)) < 0.5f && Map.getArray(position) < 0.5f)
-						&& Map.getArray(getNextStep(target)) != -1) {
-					velocityMove();
-				} else {
-					if (nation.isAIControlled()) {
-						escapeEdge();
-					} else {
-						target = new Point(position);
-					}
-				}
-			} else {
-				velocityMove();
-			}
-		}
+		return false;
 	}
 
 	/**
 	 * Moves the unit along its velocity vector
 	 */
-	void velocityMove() {
-		if (position.getDist(getTarget()) > 0.1) {
-			velocity = position.getTargetVector(getTarget()).normalize().scalar(speed);
+	void velocityMove(Point goal) {
+		if (position.getDist(goal) > 1) {
+			velocity = position.getTargetVector(goal).normalize().scalar(speed);
 			position = position.addVector(velocity);
 		}
 	}
@@ -561,39 +513,14 @@ public abstract class Unit {
 	 * @param cal The damage to be done by the bullet fired
 	 * @return Whether or not there was an enemy
 	 */
-	boolean autoAim(float cal) {
-		int smallestDistance = 2048;
-		Point smallestPoint = new Point(-1, -1);
-		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Point tempPoint = tempUnit.getPosition();
-			int tempDist = (int) position.getDist(tempPoint);
-			if (tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.AIRFIELD || tempUnit.id == UnitID.PORT
-					|| tempUnit.id == UnitID.FACTORY)
-				tempDist *= 2;
-			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))
-					&& !(id != UnitID.INFANTRY && tempUnit.capital) && tempUnit.id != UnitID.PLANE
-					&& !tempUnit.isBoarded() && tempUnit.getID() != UnitID.NONE) {
-				smallestDistance = tempDist;
-				smallestPoint = tempPoint;
-				smallestUnit = tempUnit;
-			}
-		}
-		if (smallestUnit != null) {
-			if (id != UnitID.SHIP && smallestUnit.id != UnitID.PLANE)
-				if (nation.isAIControlled())
-					setTarget(position);
-			setFacing(new Point(smallestPoint));
-			if (!smallestUnit.engaged)
-				smallestUnit.engage();
+
+	public void autoAim(int range, float cal) {
+		if (findTarget(0.5f, range)) {
 			if ((Main.ticks - born) % 60 == 0) {
-				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(smallestPoint),
-						cal * (health / 10), UnitID.BULLET));
+				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(target), cal * (health / 10),UnitID.BULLET));
 			}
-			return true;
+			setTarget(position);
 		}
-		return false;
 	}
 
 	/**
@@ -805,27 +732,12 @@ public abstract class Unit {
 	/**
 	 * Changes the target of the unit to a random one
 	 */
-	void retarget() {
-		if (id == UnitID.SHIP) {
-			// int r = (int) (speed * 75.0f);
-			a += rand.nextFloat() * speed - speed / 2;
-			setTarget(position.addPoint(new Point(rand.nextInt(128) - 64, rand.nextInt(128) - 64)));
-		} else {
-			setTarget(position.addPoint(new Point(rand.nextInt(128) - 64, rand.nextInt(128) - 64)));
-		}
-
-		if (position.getX() < 0) {
-			escapeEdge();
-		}
-		if (position.getX() > 1024) {
-			escapeEdge();
-		}
-		if (position.getY() < 0) {
-			escapeEdge();
-		}
-		if (position.getY() > 512) {
-			escapeEdge();
-		}
+	void retarget(float baseline) {
+		double angle = rand.nextFloat()*2*Math.PI;
+		do {
+			setTarget(position.addPoint(new Point(Math.cos(angle), Math.sin(angle))));
+			angle += 0.1;
+		} while (Map.getArray(getTarget()) < baseline || Map.getArray(getTarget()) > baseline + 0.5f);
 		setFacing(getTarget());
 	}
 
@@ -854,7 +766,7 @@ public abstract class Unit {
 				a += 0.015f;
 			}
 			if (Map.getArray(getTarget()) > .5 && Map.getArray(getTarget()) < 1) {
-				velocityMove();
+				velocityMove(getTarget());
 			}
 		} else {
 			while (Map.getArray(getNextStep(target)) > .5
@@ -873,7 +785,7 @@ public abstract class Unit {
 				a += 0.015f;
 			}
 			if (Map.getArray(getTarget()) < .5 && Map.getArray(getTarget()) > -1) {
-				velocityMove();
+				velocityMove(getTarget());
 			}
 		}
 	}

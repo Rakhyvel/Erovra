@@ -20,13 +20,14 @@ public class Bullet extends Projectile {
 		speed = 4f;
 		setAttack(cal);
 		this.velocity = velocity.normalize().scalar(getSpeed());
+		System.out.println(velocity.getX());
 		this.id = id;
 	}
 
 	@Override
 	public void tick(double t) {
-		if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX()
-				|| position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
+		if (position.getX() < velocity.getX() || position.getX() > 1024 + velocity.getX()
+				|| position.getY() < + velocity.getY() || position.getY() > 512 + velocity.getY()) {
 			hit();
 		}
 		bulletMove();
