@@ -61,6 +61,11 @@ public class Nation {
 	public void addUnit(Unit unit) {
 		unitArray.add(unit);
 	}
+	
+	public void removeUnit(Unit unit) {
+		unitArray.remove(unit);
+		engagedUnits.remove(unit);
+	}
 
 	/**
 	 * Adds a Projectile object to the nations arrayList of projectiles

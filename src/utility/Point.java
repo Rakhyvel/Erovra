@@ -47,8 +47,9 @@ public class Point {
 		return Math.abs(x-p2.x)+Math.abs(y-p2.y);
 	}
 	public Point multScalar(double scalar){
-		x = x*scalar;
-		y = y*scalar;
-		return this;
+		return new Point(x*scalar, y*scalar);
+	}
+	public Point getMidPoint(Point p) {
+		return new Point((x+p.x)/2,(y+p.y)/2);
 	}
 }

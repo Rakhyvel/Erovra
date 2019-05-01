@@ -81,8 +81,7 @@ public class Ship extends Unit {
 							getPassenger2().setTarget(position.addPoint(new Point(.1, 0)));
 						}
 					}
-					nation.unitArray.remove(this);
-					nation.engagedUnits.remove(this);
+					nation.removeUnit(this);
 				}
 
 				if (nation.isAIControlled()) {
@@ -103,10 +102,9 @@ public class Ship extends Unit {
 							if(position.getDist(target) < 1)
 								passed = true;
 						if (position.getX() < -velocity.getX() || position.getX() > 1024 - velocity.getX() || position.getY() < -velocity.getY() || position.getY() > 512 - velocity.getY()) {
-							nation.unitArray.remove(getPassenger1());
-							nation.unitArray.remove(getPassenger2());
-							nation.unitArray.remove(this);
-							nation.engagedUnits.remove(this);
+							nation.removeUnit(getPassenger1());
+							nation.removeUnit(getPassenger2());
+							nation.removeUnit(this);
 						}
 					} else {
 						velocity.setX(0);
@@ -150,20 +148,19 @@ public class Ship extends Unit {
 						dropDownHeight = 90;
 					}
 				}
-				if (health < 0) {
-					nation.unitArray.remove(getPassenger1());
-					nation.unitArray.remove(getPassenger2());
-				}
 			}
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60 / speed);
 				if (!nation.engagedUnits.contains(this)) nation.engagedUnits.add(this);
 			}
-			if (spotted != 0) {
+			if (spotted > 0) {
 				spotted--;
 			} else {
-				nation.engagedUnits.remove(this);
+				disengage();
 			}
+		} else {
+			nation.removeUnit(getPassenger1());
+			nation.removeUnit(getPassenger2());
 		}
 	}
 

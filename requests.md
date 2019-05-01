@@ -5,30 +5,15 @@
 	- Box select
 	- Pathfinding
 	- Pressing a key shows all units arrows
-- Fight for air supremacy
-	- Build airfields
-	- Build fighters
-	- Bomb/ target enemy airfields if air supremacy is lowest
-		- Scout for them
-			- Go to empty squares
-- Fight for water supremacy
-	- Build ports
-	- Build ships
-	- Bomb/ target enemy ports if sea supremacy is lowest
-		- Scout for them
-			- Go to empty squares
-- If air and water are non-negative, fight for land supramacy
-	- Build factories
-	- Build units
-	- Maintain air/sea supremacy, do not go overboard
-	- Invade once land supremacy is acheived
-		- Scout for capital
-		- Make passes by gathering squads and invading
 - AI should priorotize units instead of buildings
-	- Prioritize units with greatest value
-	- AI should only know about units its seen
-	- Only increase enemy supremacy if youve never seen the unit before
 - Actually do artillery physics right
+- ~~Ports don't focus on building ships if nation has air sup but not  sea sup~~
+- Don't let nation build light buildings if it has medium/light buildings it can upgrade first
+- Ports build invisible ships
+- Landing craft still go off screen
+- Landing craft clearly targeted ports
+- ~~Perpendicularity fixed~~
+- Spotting is super fucked
 
 ### Update 1.1:
 #### Instructions and menus
