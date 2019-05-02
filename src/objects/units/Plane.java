@@ -56,7 +56,7 @@ public class Plane extends Unit {
 					nation.unitArray.remove(this);
 					nation.coins += 10;
 				}
-				aaAim();
+//				aaAim();
 				if (bombsAway) {
 					if (position.getDist(getTarget()) < 1) {
 						nation.coins += health;

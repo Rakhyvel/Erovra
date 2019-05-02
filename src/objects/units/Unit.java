@@ -13,7 +13,6 @@ import objects.projectiles.Torpedo;
 import output.Render;
 import terrain.Map;
 import utility.Point;
-import utility.Trig;
 import utility.Vector;
 
 /**
@@ -34,6 +33,7 @@ public abstract class Unit {
 	private Point facing;
 	public Nation nation;
 	protected boolean engaged = false;
+	public Point pathfind;
 
 	protected int hit = 0;
 	protected int spotted = 0;
@@ -69,6 +69,7 @@ public abstract class Unit {
 		}
 		setTarget(position.addPoint(new Point(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f)));
 		setFacing(position);
+		pathfind = new Point(position);
 		born = Main.ticks;
 	}
 
@@ -77,8 +78,7 @@ public abstract class Unit {
 		this.nation = unit.nation;
 		this.velocity = new Vector(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f);
 		health = 10;
-		if (nation.name.contains("Russia"))
-			health += 10;
+		if (nation.name.contains("Russia")) health += 10;
 		setTarget(position.addPoint(new Point(rand.nextFloat() - 0.5f, rand.nextFloat() - 0.5f)));
 		setFacing(position);
 		born = Main.ticks;
@@ -87,14 +87,16 @@ public abstract class Unit {
 	/**
 	 * If things goes well, is called 60 times a second
 	 * 
-	 * @param t Time since last call, in millis
+	 * @param t
+	 *            Time since last call, in millis
 	 */
 	public abstract void tick(double t);
 
 	/**
 	 * Called when game draws
 	 * 
-	 * @param r Instance of canvas
+	 * @param r
+	 *            Instance of canvas
 	 */
 	public abstract void render(Render r);
 
@@ -114,6 +116,10 @@ public abstract class Unit {
 	 */
 	public float getDefense() {
 		return defense;
+	}
+
+	public void setDefense(float defense) {
+		this.defense = defense;
 	}
 
 	/**
@@ -152,15 +158,16 @@ public abstract class Unit {
 	 */
 	public void disengage() {
 		if (engaged) {
-			engaged = false;
 			nation.engagedUnits.remove(this);
+			engaged = false;
 		}
 	}
 
 	/**
 	 * Sets the highlight ticker
 	 * 
-	 * @param hit The amount the ticker should be set
+	 * @param hit
+	 *            The amount the ticker should be set
 	 */
 	public void setHit(int hit) {
 		this.hit = hit;
@@ -169,7 +176,8 @@ public abstract class Unit {
 	/**
 	 * Sets the weight class of an object
 	 * 
-	 * @param weight The weight class
+	 * @param weight
+	 *            The weight class
 	 */
 	public void setWeight(UnitID weight) {
 		this.weight = weight;
@@ -185,7 +193,8 @@ public abstract class Unit {
 	/**
 	 * Sets whether or not the unit is selected
 	 * 
-	 * @param selected Whether or not the unit is selected
+	 * @param selected
+	 *            Whether or not the unit is selected
 	 */
 	public void setSelected(boolean selected) {
 		this.selected = selected;
@@ -201,7 +210,8 @@ public abstract class Unit {
 	/**
 	 * Sets whether or not the unit is aboard a landing craft
 	 * 
-	 * @param boarded Whether or not the unit is aboard a landing craft
+	 * @param boarded
+	 *            Whether or not the unit is aboard a landing craft
 	 */
 	public void setBoarded(boolean boarded) {
 		this.boarded = boarded;
@@ -217,7 +227,8 @@ public abstract class Unit {
 	/**
 	 * Sets the target of the unit
 	 * 
-	 * @param target The target of the unit
+	 * @param target
+	 *            The target of the unit
 	 */
 	public void setTarget(Point target) {
 		if (target != null && this.target != null) {
@@ -237,10 +248,11 @@ public abstract class Unit {
 	/**
 	 * Sets where the unit faces
 	 * 
-	 * @param facing The point the unit should face
+	 * @param facing
+	 *            The point the unit should face
 	 */
 	public void setFacing(Point facing) {
-		if (facing != null) {
+		if (facing != null && this.facing != null) {
 			this.facing = new Point(facing);
 		} else {
 			this.facing = facing;
@@ -259,7 +271,8 @@ public abstract class Unit {
 	 * target given. Used in pathfinding to detect if the unit will cross into
 	 * terrain it cannot move through
 	 * 
-	 * @param target The position the unit should go to
+	 * @param target
+	 *            The position the unit should go to
 	 * @return The position will be at next tick
 	 */
 	Point getNextStep(Point goal) {
@@ -282,10 +295,9 @@ public abstract class Unit {
 	}
 
 	public Point pathfind(Point enemy, float lowerLimit) {
-		if (clearPath(position, enemy, lowerLimit))
-			return enemy;
+		if (clearPath(position, enemy, lowerLimit)) return enemy;
 		Point midpoint = getObstacle(position, enemy, lowerLimit);
-		if (midpoint == null) {
+		if (midpoint == null || midpoint.equals(position)) {
 			return enemy;
 		}
 		return perpendicularize(midpoint, position, lowerLimit);
@@ -298,8 +310,7 @@ public abstract class Unit {
 		for (int i = 0; i < start.getDistSquared(end); i++) {
 			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
 			step = step.addVector(march);
-			if (!clear)
-				return false;
+			if (!clear) return false;
 		}
 		return clear;
 	}
@@ -307,18 +318,21 @@ public abstract class Unit {
 	Point getObstacle(Point start, Point end, float lowerLimit) {
 		Vector march = start.subVec(end).normalize().scalar(1);
 		Point step = new Point(start);
+		Point startPoint = null;
 		// Clear is whether or not the ray is clear
 		boolean clear = true;
 		while (step.getDistSquared(end) > 1) {
 			if (clear && (Map.getArray(step) < lowerLimit || Map.getArray(step) > lowerLimit + 0.5)) {
-				// If previous was clear, and this step is not, this must be the begining of the
+				// If previous was clear, and this step is not, this must be the
+				// begining of the
 				// first obstacle
-				start = new Point(step);
+				startPoint = new Point(step);
 			}
-			if (Map.getArray(step) > lowerLimit && Map.getArray(step) < lowerLimit + 0.5 && start != null) {
-				// If ray was inside an obstacle, but is now free, this must be the end of the
+			if (Map.getArray(step) > lowerLimit && Map.getArray(step) < lowerLimit + 0.5 && startPoint != null) {
+				// If ray was inside an obstacle, but is now free, this must be
+				// the end of the
 				// obstacle. Return midpoint.
-				return step.getMidPoint(start);
+				return step.getMidPoint(startPoint);
 			}
 			// Check clarity, advance step
 			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
@@ -340,7 +354,8 @@ public abstract class Unit {
 				a.setX(a.getX() + (displacement / Math.sqrt(slope * slope + 1)));
 				a.setY(a.getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 				if (a.getX() < 0 || a.getX() > 1025 || a.getY() < 0 || a.getY() > 513) {
-					// If a is out of bounds, set this to true. It is impossible for it to reset
+					// If a is out of bounds, set this to true. It is impossible
+					// for it to reset
 					aTooFar = true;
 				}
 				if (clearPath(start, a, lowerLimit)) {
@@ -352,7 +367,8 @@ public abstract class Unit {
 				b.setX(b.getX() + (-displacement / Math.sqrt(slope * slope + 1)));
 				b.setY(b.getY() + (slope * -displacement / Math.sqrt(slope * slope + 1)));
 				if (b.getX() < 0 || b.getX() > 1025 || b.getY() < 0 || b.getY() > 513) {
-					// If b is out of bounds, set this to true. It is impossible for it to reset
+					// If b is out of bounds, set this to true. It is impossible
+					// for it to reset
 					bTooFar = true;
 				}
 				if (clearPath(start, b, lowerLimit)) {
@@ -374,44 +390,103 @@ public abstract class Unit {
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
-		if (id != UnitID.ARTILLERY && weight != UnitID.LIGHT) {
-			for (int i = 0; i < nation.enemyNation.engagedUnits.size(); i++) {
-				Unit tempUnit = nation.enemyNation.engagedUnits.get(i);
+		int smallestEngagedDistance = smallestDistance;
+		Point smallestEngagedPoint = new Point(-1, -1);
+		if (!(id == UnitID.ARTILLERY && weight == UnitID.LIGHT)) {
+			for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+				Unit tempUnit = nation.enemyNation.getUnit(i);
 				Point tempPoint = tempUnit.getPosition();
 				int tempDist = (int) position.getDist(tempPoint);
-				if (tempDist < smallestDistance
-						// Check ship to ship only
-						&& ((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))
-						// Check AAA to plane only
-						&& ((tempUnit.id == UnitID.PLANE) == (id == UnitID.ARTILLERY && weight == UnitID.LIGHT))) {
-					smallestDistance = tempDist;
-					smallestPoint = tempPoint;
-					smallestUnit = tempUnit;
+				if (((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP)) && ((tempUnit.id == UnitID.PLANE) == (id == UnitID.ARTILLERY && weight == UnitID.LIGHT))) {
+					if (tempDist < smallestDistance) {
+						smallestDistance = tempDist;
+						smallestPoint = tempPoint;
+						smallestUnit = tempUnit;
+					}
+					if (tempDist < smallestEngagedDistance && tempUnit.engaged) {
+						smallestEngagedDistance = tempDist;
+						smallestEngagedPoint = tempPoint;
+					}
 				}
 			}
 		}
-		if (smallestUnit != null) {
+		if (smallestEngagedPoint.getX() != -1) {
 			// Enemy visible: yes
-			setTarget(smallestPoint);
-			setFacing(smallestPoint);
-			if (smallestDistance < range) {
-				// Enemy in range: yes
-				engage();
-				smallestUnit.engage();
-				return true;
+			if (position.getDist(target) < 1) {
+				pathfind = pathfind(smallestEngagedPoint, baseline);
 			} else {
-				// Enemy in range: no
-				disengage();
+				pathfind = target;
+			}
+			if (pathfind != null) {
+				setTarget(pathfind);
+				setFacing(pathfind);
+			} else {
+				retarget(baseline);
 			}
 		} else {
 			// Enemy visible: no
-			if (position.getDist(getTarget()) < 1) {
-				// Target reached: yes
+			retarget(baseline);
+		}
+		if (smallestDistance < range) {
+			pathfind = pathfind(smallestPoint, baseline);
+			if (pathfind != null) {
+				setTarget(pathfind);
+				setFacing(pathfind);
+				smallestUnit.engage();
+				engage();
+			} else {
 				retarget(baseline);
 			}
-			disengage();
+			return true;
 		}
 		return false;
+	}
+
+	public void shootBullet(float cal) {
+		if (findTarget(0.5f, 2048)) {
+			if ((Main.ticks - born) % 60 == 0) {
+				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(target), cal * (health / 10), UnitID.BULLET));
+			}
+			if (nation.isAIControlled()) setTarget(position);
+		}
+	}
+
+	public void shootShell(int range) {
+		if (findTarget(0.5f, range)) {
+			if ((Main.ticks - born) % 90 == 0) {
+				nation.addProjectile(new Shell(position, nation, target));
+			}
+			if (nation.isAIControlled()) setTarget(position);
+		}
+	}
+
+	public void shootTorpedo() {
+		if (findTarget(0, 38000)) {
+			if ((Main.ticks - born) % 90 == 0) {
+				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(getTarget())));
+			}
+			if (nation.isAIControlled()) setTarget(position);
+		}
+	}
+
+	void targetMove(float baseline) {
+		if (Map.withinBaseline(getNextStep(target), baseline)) {
+			velocity = position.getTargetVector(target).normalize().scalar(speed);
+			position = position.addVector(velocity);
+		} else {
+			double angle = rand.nextFloat() * 2 * Math.PI;
+			do {
+				setTarget(position.addPoint(new Point(Math.cos(angle) * 32, Math.sin(angle) * 32)));
+				angle += 0.1;
+			}
+			while (!clearPath(target, position, baseline));
+			setFacing(target);
+			velocity = position.getTargetVector(target).normalize().scalar(speed);
+			position = position.addVector(velocity);
+		}
+		/*
+		 * Needs to change pathfind once it gets there, not continously
+		 */
 	}
 
 	/**
@@ -425,26 +500,17 @@ public abstract class Unit {
 	}
 
 	/**
-	 * Checks enemy projectile array. If there are any close enough to the unit, it
-	 * subtracts the unit's health by (projectile's attack)/(unit's defense)
+	 * Checks enemy projectile array. If there are any close enough to the unit,
+	 * it subtracts the unit's health by (projectile's attack)/(unit's defense)
 	 */
 	public void detectHit() {
-		if (hit > 0)
-			hit--;
+		if (hit > 0) hit--;
 		for (int i = 0; i < nation.enemyNation.projectileSize() && getID() != UnitID.NONE; i++) {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
-			if (tempProjectile.id == UnitID.BOMB)
-				distance /= 4;
-			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0
-					&& !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET))
-					&& !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO)
-					&& !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL)
-					&& !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT)
-							&& tempProjectile.getID() == UnitID.ANTIPERSONEL)
-					&& !(tempProjectile.getID() == UnitID.BOMB && capital)) {
-				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL)
-					tempProjectile.hit();
+			if (tempProjectile.id == UnitID.BOMB) distance /= 4;
+			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0 && !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET)) && !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO) && !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL) && !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT) && tempProjectile.getID() == UnitID.ANTIPERSONEL) && !(tempProjectile.getID() == UnitID.BOMB && capital)) {
+				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL) tempProjectile.hit();
 				hit = 9;
 				health -= tempProjectile.getAttack() / getDefense();
 
@@ -455,38 +521,31 @@ public abstract class Unit {
 						nation.defeat();
 					}
 					if (Main.world.selectedUnit != null) {
-						if (selected || Main.world.selectedUnit.equals(this))
-							Main.world.selectedUnit = null;
+						if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
 					}
 					health = 0;
-					if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT)
-						nation.airSupremacy--;
-					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT)
-						nation.seaSupremacy--;
+					if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT) nation.airSupremacy--;
+					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT) nation.seaSupremacy--;
 					if (id == UnitID.CITY) {
-						if (nation.getCityCost() >= 1)
-							nation.setCityCost(nation.getCityCost() / 2);
+						if (nation.getCityCost() >= 1) nation.setCityCost(nation.getCityCost() / 2);
 						if (tempProjectile.getID() != UnitID.BOMB) {
 							nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
 							nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
 						}
 					} else if (id == UnitID.FACTORY) {
-						if (nation.getFactoryCost() >= 30)
-							nation.setFactoryCost(nation.getFactoryCost() / 2);
+						if (nation.getFactoryCost() >= 30) nation.setFactoryCost(nation.getFactoryCost() / 2);
 						if (tempProjectile.getID() != UnitID.BOMB) {
 							nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
 							nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
 						}
 					} else if (id == UnitID.PORT) {
-						if (nation.getPortCost() > 20)
-							nation.setPortCost(nation.getPortCost() / 2);
+						if (nation.getPortCost() > 20) nation.setPortCost(nation.getPortCost() / 2);
 						if (tempProjectile.getID() != UnitID.BOMB) {
 							nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
 							nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
 						}
 					} else if (id == UnitID.AIRFIELD) {
-						if (nation.getAirfieldCost() > 20)
-							nation.setAirfieldCost(nation.getAirfieldCost() / 2);
+						if (nation.getAirfieldCost() > 20) nation.setAirfieldCost(nation.getAirfieldCost() / 2);
 						if (tempProjectile.getID() != UnitID.BOMB) {
 							nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
 							nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
@@ -499,137 +558,10 @@ public abstract class Unit {
 						nation.setLandSupremacy(-1);
 					}
 					nation.removeUnit(this);
+					nation.engagedUnits.remove(this);
 				}
 			}
 		}
-	}
-
-	// autoAim(float cal):
-	/**
-	 * Checks for the closest enemy, if there are any close by, it stops and shoots
-	 * them using the caliber of bullet specified, and returns true. If there are no
-	 * units to shoot, this method returns false.
-	 * 
-	 * @param cal The damage to be done by the bullet fired
-	 * @return Whether or not there was an enemy
-	 */
-
-	public void autoAim(int range, float cal) {
-		if (findTarget(0.5f, range)) {
-			if ((Main.ticks - born) % 60 == 0) {
-				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(target), cal * (health / 10),UnitID.BULLET));
-			}
-			setTarget(position);
-		}
-	}
-
-	/**
-	 * Finds the closest airplane and shoots it. If there are no airplanes, returns
-	 * false.
-	 * 
-	 * @return True if enemy airplanes nearby, else false.
-	 */
-	boolean aaAim() {
-		int smallestDistance = 7372;
-		Point smallestPoint = new Point(-1, -1);
-		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Point tempPoint = tempUnit.getPosition();
-			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && (tempUnit.id == UnitID.PLANE)) {
-				smallestDistance = tempDist;
-				smallestPoint = tempPoint;
-				smallestUnit = tempUnit;
-			}
-		}
-		if (smallestUnit != null) {
-			if (!smallestUnit.engaged)
-				smallestUnit.engage();
-			if ((Main.ticks - born) % 20 == 0) {
-				nation.addProjectile(new Bullet(position, nation,
-						position.getTargetVector(
-								smallestPoint.addVector(smallestUnit.velocity.scalar(Math.sqrt(smallestDistance) / 4))),
-						.1f, UnitID.AIRBULLET));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	// torpedoAim():
-	/**
-	 * Checks for enemy boats nearby, if there are any, shoots a torpedo at the
-	 * closest one, and returns true. If there are no boats to shoot, torpedoAim
-	 * returns false.
-	 * 
-	 * @return Whether or not there was a ship to be fired at.
-	 */
-	boolean torpedoAim() {
-		int smallestDistance = 38000;
-		Point smallestPoint = new Point(-1, -1);
-		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = null;
-			tempUnit = nation.enemyNation.getUnit(i);
-			Point tempPoint = tempUnit.getPosition();
-			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && tempUnit.id == UnitID.SHIP) {
-				smallestDistance = tempDist;
-				smallestPoint = tempPoint;
-				smallestUnit = tempUnit;
-			}
-		}
-		if (smallestUnit != null && clearPath(smallestPoint, position, 0)) {
-			if (nation.isAIControlled()) {
-				if (smallestDistance < 9000)
-					setTarget(position);
-			}
-			if (!smallestUnit.engaged)
-				smallestUnit.engage();
-			if ((Main.ticks - born) % 90 == 0) {
-				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(smallestPoint)));
-			}
-			return true;
-		}
-		return false;
-	}
-
-	// autoArtilleryAim():
-	/**
-	 * Checks for enemies nearby, if there are any, shoots an artillery shell at
-	 * them
-	 * 
-	 * @param range How far (in pixels) the unit should see
-	 * @return Whether or not there was a target
-	 */
-	public boolean autoArtilleryAim(int range) {
-		int smallestDistance = range * range;
-		Point smallestPoint = new Point(-1, -1);
-		Unit smallestUnit = null;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
-			Point tempPoint = tempUnit.position;
-			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < smallestDistance && tempUnit.id != UnitID.PLANE && !tempUnit.isBoarded()
-					&& !tempUnit.capital) {
-				smallestDistance = tempDist;
-				smallestPoint = tempPoint;
-				smallestUnit = tempUnit;
-			}
-		}
-		if (smallestPoint.getX() != -1) {
-			if (nation.isAIControlled())
-				setTarget(position);
-			setFacing(smallestPoint);
-			if (!smallestUnit.engaged)
-				smallestUnit.engage();
-			if ((Main.ticks - born) % 90 == 0) {
-				nation.addProjectile(new Shell(position, nation, smallestPoint));
-			}
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -676,8 +608,7 @@ public abstract class Unit {
 				Main.world.nullifySelected();
 			}
 			if (Main.mouse.getMouseRightDown()) {
-				if (position.getDist(target) < 1)
-					setFacing(new Point(Main.mouse.getX(), Main.mouse.getY()));
+				if (position.getDist(target) < 1) setFacing(new Point(Main.mouse.getX(), Main.mouse.getY()));
 				selected = false;
 				Main.world.nullifySelected();
 			}
@@ -687,8 +618,8 @@ public abstract class Unit {
 	}
 
 	/**
-	 * Determines if the user has right clicked on the unit. If so, triggers a drop
-	 * down menu
+	 * Determines if the user has right clicked on the unit. If so, triggers a
+	 * drop down menu
 	 */
 	void clickToDropDown() {
 		if (Main.mouse.getMouseRightDown()) {
@@ -704,123 +635,31 @@ public abstract class Unit {
 	boolean boundingBox(double x, double y) {
 		double angle = position.subVec(getFacing()).getRadian();
 		if (getID() == UnitID.INFANTRY || getID() == UnitID.ARTILLERY || getID() == UnitID.CAVALRY) {
-			return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 8
-					&& Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x)
-							+ Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 16;
+			return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 8 && Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x) + Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 16;
 		} else if (getID() == UnitID.SHIP) {
 			if (getWeight() == UnitID.LIGHT) {
-				return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 16
-						&& Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x)
-								+ Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 13.5;
+				return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 16 && Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x) + Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 13.5;
 			} else if (getWeight() == UnitID.MEDIUM) {
-				return Math
-						.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 22.5
-						&& Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x)
-								+ Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 13.5;
+				return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 22.5 && Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x) + Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 13.5;
 			} else {
-				return Math
-						.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 30.5
-						&& Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x)
-								+ Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 8;
+				return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 30.5 && Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x) + Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 8;
 			}
 		}
-		return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 16
-				&& Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x)
-						+ Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 16;
+		return Math.abs(Math.sin(angle) * (position.getX() - x) + Math.cos(angle) * (position.getY() - y)) < 16 && Math.abs(Math.sin(angle + Math.PI / 2) * (position.getX() - x) + Math.cos(angle + Math.PI / 2) * (position.getY() - y)) < 16;
 	}
 
 	/**
 	 * Changes the target of the unit to a random one
 	 */
 	void retarget(float baseline) {
-		double angle = rand.nextFloat()*2*Math.PI;
-		do {
-			setTarget(position.addPoint(new Point(Math.cos(angle), Math.sin(angle))));
-			angle += 0.1;
-		} while (Map.getArray(getTarget()) < baseline || Map.getArray(getTarget()) > baseline + 0.5f);
-		setFacing(getTarget());
-	}
-
-	/**
-	 * Tries to pathfind around obstacles such as the coast or the world edge.
-	 */
-	void escapeEdge() {
-		Point p1;
-		Point p2;
-		float r = 1;
-		float cutoffPoint = a + 6.28f;
-		if (id != UnitID.SHIP) {
-			while ((Map.getArray(getNextStep(target)) <= .5 || Map.getArray(getNextStep(target)) >= 1)
-					&& a < cutoffPoint) {
-				r += 0.2;
-				p1 = new Point(r * Trig.sin(a), r * Trig.cos(a));
-				p2 = new Point(r * Trig.sin(a + 3.14f), r * Trig.cos(a + 3.14f));
-				double d1 = Math.abs(Map.getArray(position.addPoint(p1)) - 0.75);
-				double d2 = Math.abs(Map.getArray(position.addPoint(p2)) - 0.75);
-				if (d1 < d2) {
-					setTarget(position.addPoint(p1));
-				} else {
-					setTarget(position.addPoint(p2));
-					a += 3.14;
-				}
-				a += 0.015f;
+		if (position.getDist(target) < 1) {
+			double angle = rand.nextFloat() * 2 * Math.PI;
+			do {
+				setTarget(position.addPoint(new Point(Math.cos(angle) * 32, Math.sin(angle) * 32)));
+				angle += 0.1;
 			}
-			if (Map.getArray(getTarget()) > .5 && Map.getArray(getTarget()) < 1) {
-				velocityMove(getTarget());
-			}
-		} else {
-			while (Map.getArray(getNextStep(target)) > .5
-					|| Map.getArray(getNextStep(target)) == -1 && a < cutoffPoint) {
-				r += 0.1;
-				p1 = new Point(r * Trig.sin(a), r * Trig.cos(a));
-				p2 = new Point(r * Trig.sin(a + 3.14f), r * Trig.cos(a + 3.14f));
-				double d1 = Math.abs(Map.getArray(position.addPoint(p1)) - 0.25);
-				double d2 = Math.abs(Map.getArray(position.addPoint(p2)) - 0.25);
-				if (d1 < d2) {
-					setTarget(position.addPoint(p1));
-				} else {
-					setTarget(position.addPoint(p2));
-					a += 3.14;
-				}
-				a += 0.015f;
-			}
-			if (Map.getArray(getTarget()) < .5 && Map.getArray(getTarget()) > -1) {
-				velocityMove(getTarget());
-			}
+			while (!clearPath(target, position, baseline));
+			setFacing(target);
 		}
-	}
-
-	public boolean wetLandingPath(Point point, double depth) {
-		boolean ocean = true;
-		Point testPoint = new Point(-1, -1);
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-			testPoint.setX((point.getX() - position.getX()) * invDepth + position.getX());
-			testPoint.setY((point.getY() - position.getY()) * invDepth + position.getY());
-			ocean &= (Map.getArray((int) testPoint.getX(), (int) testPoint.getY()) < .5);
-			if (!ocean) {
-				return clearPath(testPoint, position, 16);
-			}
-		}
-		return ocean;
-	}
-
-	public boolean wetLandingPath(Point point, Point point2, double depth) {
-		boolean ocean = true;
-		Point testPoint = new Point(-1, -1);
-		for (int i = 1; i < depth; i++) {
-			double invDepth = i / depth;
-			testPoint.setX((point.getX() - point2.getX()) * invDepth + point2.getX());
-			testPoint.setY((point.getY() - point2.getY()) * invDepth + point2.getY());
-			ocean &= (Map.getArray((int) testPoint.getX(), (int) testPoint.getY()) < .5);
-			if (!ocean) {
-				return clearPath(point, testPoint, 16);
-			}
-		}
-		return ocean;
-	}
-
-	public void setDefense(float defense) {
-		this.defense = defense;
 	}
 }

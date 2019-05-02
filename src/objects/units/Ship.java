@@ -57,19 +57,22 @@ public class Ship extends Unit {
 		detectHit();
 		if (!(nation.defeated || nation.enemyNation.defeated) && health > 0) {
 			if (getWeight() != UnitID.LIGHT) {
-				if (nation.isAIControlled()) {
-					wander(0);
-				} else {
+				shootTorpedo();
+				if (!nation.isAIControlled()) {
 					clickToMove();
+					clickToDropDown();
 				}
-				if (getWeight() == UnitID.HEAVY) {
-					engaged = torpedoAim() || aaAim() || autoArtilleryAim(64);
+				if (engaged && spotted == 0 || hit > 0) {
+					spotted = (int) (60/speed);
+				}
+				if (spotted > 0){
+					spotted--;
 				} else {
-					engaged = torpedoAim() || aaAim();
+					disengage();
 				}
-				targetMove();
+				targetMove(0);
 			} else {
-				if (getPassenger1() != null) engaged = aaAim();
+//				if (getPassenger1() != null) engaged = aaAim();
 				if (isLanded()) {
 					if (getPassenger1() != null) {
 						getPassenger1().position = position;
@@ -113,7 +116,7 @@ public class Ship extends Unit {
 					}
 				} else {
 					clickToMove();
-					targetMove();
+					targetMove(0);
 					clickToDropDown();
 					if (passengers != 0) {
 						if (chanceToSelect) {

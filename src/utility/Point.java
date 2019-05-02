@@ -52,4 +52,13 @@ public class Point {
 	public Point getMidPoint(Point p) {
 		return new Point((x+p.x)/2,(y+p.y)/2);
 	}
+	public boolean equals(Point p){
+		if (p == this)
+			return true;
+		if (p == null)
+			return false;
+		double dX = x-p.x;
+		double dY = y-p.y;
+		return (dX*dX)+(dY*dY) < 1;
+	}
 }

@@ -40,22 +40,20 @@ public class Cavalry extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
-			if (nation.isAIControlled()) {
-				autoAim(2048,cal);
-			} else {
+			shootBullet(cal);
+			if (!nation.isAIControlled()) {
 				clickToMove();
+				clickToDropDown();
 			}
 			if (engaged && spotted == 0 || hit > 0) {
 				spotted = (int) (60/speed);
-				if(!nation.engagedUnits.contains(this))
-					nation.engagedUnits.add(this);
 			}
-			if (spotted != 0){
+			if (spotted > 0){
 				spotted--;
 			} else {
-				nation.engagedUnits.remove(this);
+				disengage();
 			}
-			targetMove();
+			targetMove(0.5f);
 		}
 	}
 

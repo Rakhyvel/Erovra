@@ -20,7 +20,6 @@ public class Bullet extends Projectile {
 		speed = 4f;
 		setAttack(cal);
 		this.velocity = velocity.normalize().scalar(getSpeed());
-		System.out.println(velocity.getX());
 		this.id = id;
 	}
 

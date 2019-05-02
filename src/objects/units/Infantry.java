@@ -30,8 +30,8 @@ public class Infantry extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
+			shootBullet(1);
 			if (nation.isAIControlled()) {
-				autoAim(2048,1);
 				settle();
 			} else {
 				clickToMove();
@@ -43,9 +43,9 @@ public class Infantry extends Unit {
 			if (spotted > 0){
 				spotted--;
 			} else {
-				nation.engagedUnits.remove(this);
+				disengage();
 			}
-			targetMove();
+			targetMove(0.5f);
 		}
 	}
 

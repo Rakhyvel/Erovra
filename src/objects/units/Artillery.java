@@ -36,29 +36,24 @@ public class Artillery extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
+			if (weight == UnitID.MEDIUM){
+				shootShell(128);
+			} else if (weight == UnitID.HEAVY){
+				shootShell(256);
+			}
 			if (!nation.isAIControlled()) {
 				clickToMove();
-			} else {
-				wander(0.5f);
-			}
-			if (getWeight() == UnitID.LIGHT) {
-				engaged = aaAim();
-			} else if (getWeight() == UnitID.MEDIUM) {
-				engaged = autoArtilleryAim(64);
-			} else {
-				engaged = autoArtilleryAim(128);
+				clickToDropDown();
 			}
 			if (engaged && spotted == 0 || hit > 0) {
-				spotted = (int) (60 / speed);
-				if(!nation.engagedUnits.contains(this))
-					nation.engagedUnits.add(this);
+				spotted = (int) (60/speed);
 			}
-			if (spotted != 0){
+			if (spotted > 0){
 				spotted--;
 			} else {
-				nation.engagedUnits.remove(this);
+				disengage();
 			}
-			targetMove();
+			targetMove(0.5f);
 		}
 	}
 

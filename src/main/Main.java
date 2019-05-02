@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.PLAINS;
+	public static MapID mapID = MapID.SEA;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -67,7 +67,6 @@ public class Main {
 
 		double currentTime = System.currentTimeMillis();
 		double accumulator = 0.0;
-		double accumulatorRender = 0;
 		double t = 0;
 		int frames = 0;
 		double frameTime;

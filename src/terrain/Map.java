@@ -21,11 +21,13 @@ public class Map {
 	 * Uses simplex noise and linear interpolation to render the terrain for the
 	 * game
 	 * 
-	 * @param seed Random seed to be used for the generation
-	 * @param id   Which type of generation to be done
+	 * @param seed
+	 *            Random seed to be used for the generation
+	 * @param id
+	 *            Which type of generation to be done
 	 */
 	public void generateMap(int seed, MapID map) {
-		//rand.setSeed(seed);
+		// rand.setSeed(seed);
 		id = map;
 
 		if (id == MapID.CUSTOM) {
@@ -40,13 +42,13 @@ public class Map {
 				mountain = perlinNoise(1, 0.5f);
 			} else if (id == MapID.ISLANDS || id == MapID.MOUNTAIN) {
 				for (int i = 0; i < 7; i++) {
-					points[i] = new Point(i % 7 * 170, rand.nextInt(256)+128);
+					points[i] = new Point(i % 7 * 170, rand.nextInt(256) + 128);
 				}
 				points[0].setY(rand.nextInt(512));
 				points[0].setX(64);
 				points[6].setY(rand.nextInt(512));
 				points[6].setX(960);
-				points[3].setY((points[0].getY()+points[6].getY())/2);
+				points[3].setY((points[0].getY() + points[6].getY()) / 2);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
 					int y = i / 1025;
@@ -54,8 +56,7 @@ public class Map {
 					Point point = new Point(x, y);
 					for (int i2 = 0; i2 < 7; i2++) {
 						int tempDist = (int) point.getDistSquared(points[i2]);
-						if(id == MapID.ISLANDS)
-							tempDist*=(-1/10.0f)*(i2)*(i2-6)+1f;
+						if (id == MapID.ISLANDS) tempDist *= (-1 / 10.0f) * (i2) * (i2 - 6) + 1f;
 						if (tempDist < smallestDistance) {
 							smallestDistance = tempDist;
 						}
@@ -69,29 +70,29 @@ public class Map {
 				}
 			} else if (id == MapID.RIVER) {
 				// n/sqrt(m^2+1)
-				double a = rand.nextFloat()*Math.PI;
-				Point b = new Point(512,Math.tan(a)*512).addPoint(new Point(512,256));
-				Point c = new Point(-512,Math.tan(a)*-512).addPoint(new Point(512,256));
-				Point e = new Point(256/Math.tan(a),256).addPoint(new Point(512,256));
-				Point f = new Point(-256/Math.tan(a),-256).addPoint(new Point(512,256));
-				if(a > Math.PI/2){
-					if(b.getDist(new Point(512,256))< f.getDist(new Point(512,256))){
+				double a = rand.nextFloat() * Math.PI;
+				Point b = new Point(512, Math.tan(a) * 512).addPoint(new Point(512, 256));
+				Point c = new Point(-512, Math.tan(a) * -512).addPoint(new Point(512, 256));
+				Point e = new Point(256 / Math.tan(a), 256).addPoint(new Point(512, 256));
+				Point f = new Point(-256 / Math.tan(a), -256).addPoint(new Point(512, 256));
+				if (a > Math.PI / 2) {
+					if (b.getDist(new Point(512, 256)) < f.getDist(new Point(512, 256))) {
 						points[0] = b;
 					} else {
 						points[0] = f;
 					}
-					if(c.getDist(new Point(512,256))< e.getDist(new Point(512,256))){
+					if (c.getDist(new Point(512, 256)) < e.getDist(new Point(512, 256))) {
 						points[1024] = c;
 					} else {
 						points[1024] = e;
 					}
 				} else {
-					if(b.getDist(new Point(512,256))< e.getDist(new Point(512,256))){
+					if (b.getDist(new Point(512, 256)) < e.getDist(new Point(512, 256))) {
 						points[0] = b;
 					} else {
 						points[0] = e;
 					}
-					if(f.getDist(new Point(512,256))< c.getDist(new Point(512,256))){
+					if (f.getDist(new Point(512, 256)) < c.getDist(new Point(512, 256))) {
 						points[1024] = f;
 					} else {
 						points[1024] = c;
@@ -101,10 +102,9 @@ public class Map {
 					int p = 1 << n;
 					for (int i = p; i < 1024; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
-						double slope = -1 * (points[i - p].getX() - points[i + p].getX())
-								/ (points[i - p].getY() - points[i + p].getY());
+						double slope = -1 * (points[i - p].getX() - points[i + p].getX()) / (points[i - p].getY() - points[i + p].getY());
 						double dist = points[i - p].getDistSquared(points[i + p]);
-						double displacement = ((rand.nextDouble() * 1) - 1 / 2.0f)*dist/2.0f;
+						double displacement = ((rand.nextDouble() * 1) - 1 / 2.0f) * dist / 2.0f;
 						points[i].setX(points[i].getX() + (displacement / Math.sqrt(slope * slope + 1)));
 						points[i].setY(points[i].getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
 					}
@@ -120,7 +120,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (smallestDistance-96)/250.0f+0.75f;
+					islandMask[i] = (smallestDistance - 96) / 250.0f + 0.75f;
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -131,7 +131,7 @@ public class Map {
 				mountain = perlinNoise(1, 0.5f);
 			}
 			for (int i2 = 2; i2 < 9; i2++) {
-				int denominator = 1 << (i2+1);
+				int denominator = 1 << (i2 + 1);
 				float[][] tempMountain = perlinNoise(i2, 1f / denominator);
 				for (int i = 0; i < 1025 * 513; i++) {
 					int x = i % 1025;
@@ -178,8 +178,8 @@ public class Map {
 					}
 				} else {
 					noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude);
-					if(id == MapID.RIVER && islandMask[x+y*1025]<0.5) {
-						noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude/2.0f);
+					if (id == MapID.RIVER && islandMask[x + y * 1025] < 0.5) {
+						noise[x][y] = ((2 * rand.nextFloat() - 1f) * amplitude / 2.0f);
 					}
 				}
 			}
@@ -203,10 +203,8 @@ public class Map {
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1f;
 		}
-		float topInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
-				noise[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
-				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) y1], x1 + p, noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = cosineInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p, noise[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return cosineInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
@@ -231,13 +229,7 @@ public class Map {
 	}
 
 	float generateRiver(int x, int y, float amplitude) {
-		float land = amplitude
-				* ((rand.nextFloat() - 0.5f)
-						+ amplitude * 50
-								* Math.abs(x + 50 * (rand.nextFloat() - 0.5f)
-										- (y + 256 + 100 * (rand.nextFloat() - 0.5f)))
-								/ (51.0f / amplitude)
-						+ amplitude);
+		float land = amplitude * ((rand.nextFloat() - 0.5f) + amplitude * 50 * Math.abs(x + 50 * (rand.nextFloat() - 0.5f) - (y + 256 + 100 * (rand.nextFloat() - 0.5f))) / (51.0f / amplitude) + amplitude);
 		if (land > 0.3) {
 			land = 0.3f;
 		}
@@ -266,10 +258,8 @@ public class Map {
 		if (x1 + p > 1025 || y1 + p > 513) {
 			return 1.5f;
 		}
-		float topInterpolation = linearInterpolation(x1, noise[(int) x1][(int) y1], x1 + p,
-				noise[(int) (x1 + p)][(int) y1], x2);
-		float bottomInterpolation = linearInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p,
-				noise[(int) (x1 + p)][(int) (y1 + p)], x2);
+		float topInterpolation = linearInterpolation(x1, noise[(int) x1][(int) y1], x1 + p, noise[(int) (x1 + p)][(int) y1], x2);
+		float bottomInterpolation = linearInterpolation(x1, noise[(int) x1][(int) (y1 + p)], x1 + p, noise[(int) (x1 + p)][(int) (y1 + p)], x2);
 		return linearInterpolation(y1, topInterpolation, y1 + p, bottomInterpolation, y2);
 	}
 
@@ -279,36 +269,40 @@ public class Map {
 
 	// getArray(...): returns the float value at a given coordinate
 	/**
-	 * @param x coordiate on the map
-	 * @param y coordiate on the map
+	 * @param x
+	 *            coordiate on the map
+	 * @param y
+	 *            coordiate on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
-		if (x > 1024)
-			x = 1024;
-		if (y > 512)
-			y = 512;
-		if (x < 0)
-			x = 0;
-		if (y < 0)
-			y = 0;
+		if (x > 1024) x = 1024;
+		if (y > 512) y = 512;
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
 		return mountain[x][y];
 	}
 
 	/**
-	 * @param p Point on the map
+	 * @param p
+	 *            Point on the map
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512)
-			return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
+	public static boolean withinBaseline(Point p, float baseline) {
+		if (getArray(p) == -1) return false;
+		return getArray(p) > baseline && getArray(p) < baseline + 0.5f;
+	}
+
 	/**
-	 * @param value The float value from 0f-1f
-	 * @return A color based on the depth, 0 being a deep blue, 0.5f being coast,
-	 *         and 1 being green plains.
+	 * @param value
+	 *            The float value from 0f-1f
+	 * @return A color based on the depth, 0 being a deep blue, 0.5f being
+	 *         coast, and 1 being green plains.
 	 */
 	int getColor(float value) {
 		int blue = 0;
@@ -338,18 +332,12 @@ public class Map {
 		// green = (int) (value * 255);
 		// red = (int) (value * 255);
 
-		if (blue < 0)
-			blue = 0;
-		if (green < 0)
-			green = 0;
-		if (red < 0)
-			red = 0;
-		if (blue > 255)
-			blue = 255;
-		if (green > 255)
-			green = 255;
-		if (red > 255)
-			red = 255;
+		if (blue < 0) blue = 0;
+		if (green < 0) green = 0;
+		if (red < 0) red = 0;
+		if (blue > 255) blue = 255;
+		if (green > 255) green = 255;
+		if (red > 255) red = 255;
 		return 255 << 24 | red << 16 | green << 8 | blue;
 	}
 }
