@@ -27,6 +27,7 @@ public class Port extends Industry {
 		setProductWeight(UnitID.NONE);
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getPortCost() / 2;
+		nation.unupgradedPorts+=1;
 	}
 
 	@Override
@@ -47,9 +48,9 @@ public class Port extends Industry {
 					addProduct();
 					if (nation.isAIControlled()) {
 						if (!upgrading) {
-							if (weight == UnitID.LIGHT && buyInCost < nation.getPortCost()) {
+							if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
 								upgrade(nation.getPortCost() / 2);
-							} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getPortCost()) {
+							} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
 								upgrade(nation.getPortCost() / 2);
 							} else {
 								decideNewProduct();
@@ -70,14 +71,14 @@ public class Port extends Industry {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			if (getProduct() != UnitID.PORT) {
 				nation.addUnit(new Ship(position, nation, getProductWeight()));
-				if (getProductWeight() == UnitID.MEDIUM)
+				if(getProductWeight() != UnitID.LIGHT){
 					nation.seaSupremacy++;
-				if (getProductWeight() == UnitID.HEAVY)
-					nation.seaSupremacy++;
+				}
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
+					nation.unupgradedPorts-=1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);
@@ -95,7 +96,7 @@ public class Port extends Industry {
 	public void decideNewProduct() {
 		if (nation.enemyNation.airSupremacy <= nation.airSupremacy) {
 			// If nation has air supremacy
-			if (nation.enemyNation.seaSupremacy < nation.seaSupremacy) {
+			if (nation.enemyNation.seaEngagedSupremacy < nation.seaSupremacy) {
 				// If nation has sea supremacy
 				int smallestDistance = 1310720;
 				int unitCount = 0;

@@ -61,4 +61,7 @@ public class Point {
 		double dY = y-p.y;
 		return (dX*dX)+(dY*dY) < 1;
 	}
+	public String toString(){
+		return String.valueOf(x) + " " + String.valueOf(y);
+	}
 }

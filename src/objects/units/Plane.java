@@ -52,6 +52,7 @@ public class Plane extends Unit {
 				if (!nation.isAIControlled())
 					clickToPatrol();
 			} else {
+				aaAim();
 				if (getTarget().getX() == -1) {
 					nation.unitArray.remove(this);
 					nation.coins += 10;
@@ -169,7 +170,7 @@ public class Plane extends Unit {
 			smallestUnit.engage();
 			patrolPoint = new Point(smallestPoint
 					.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4)));
-			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && smallestDistance < 73728) {
+			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95 && position.getDist(smallestPoint) < 73728) {
 				if ((Main.ticks - born) % 15 == 0 && getWeight() == UnitID.LIGHT) {
 					nation.addProjectile(
 							new Bullet(position, nation, position.getTargetVector(patrolPoint), .5f, UnitID.AIRBULLET));

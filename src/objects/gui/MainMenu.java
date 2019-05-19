@@ -1,8 +1,15 @@
 package objects.gui;
 
+import java.awt.Desktop;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import main.Main;
 import main.StateID;
 import output.Render;
+
+import com.sun.org.apache.xerces.internal.util.URI;
 
 /**
  * Handles the main menu
@@ -25,6 +32,13 @@ public class MainMenu extends Menu {
 						Main.startNewMatch();
 					} else if (buttonsHovered == 2) {
 						Main.setState(StateID.MENU);
+						try {
+							openWebpage(new URL("https://github.com/Rakhyvel/Erovra/issues/new"));
+						}
+						catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					} else if (buttonsHovered == 3) {
 						Main.endGame();
 					}
@@ -40,7 +54,7 @@ public class MainMenu extends Menu {
 		if (Main.gameState == StateID.MENU) {
 			r.drawString("Erovra", 512, 112, r.font32, 255<<24);
 			drawButton("Start New Game", 512, 208, 1, r);
-			drawButton("Settings", 512, 256, 2, r);
+			drawButton("Report a Bug", 512, 256, 2, r);
 			drawButton("Exit", 512, 304, 3, r);
 		}
 	}
@@ -62,5 +76,27 @@ public class MainMenu extends Menu {
 		} else {
 			buttonsHovered = 0;
 		}
+	}
+	
+	public static boolean openWebpage(java.net.URI uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return false;
+	}
+	
+	public static boolean openWebpage(URL url) {
+	    try {
+	        return openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 }

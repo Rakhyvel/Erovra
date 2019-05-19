@@ -27,6 +27,7 @@ public class Airfield extends Industry {
 		id = UnitID.AIRFIELD;
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getAirfieldCost() / 2;
+		nation.unupgradedAirfields+=1;
 	}
 
 	@Override
@@ -48,9 +49,9 @@ public class Airfield extends Industry {
 				addProduct();
 				if (nation.isAIControlled()) {
 					if (!upgrading) {
-						if (weight == UnitID.LIGHT && buyInCost < nation.getAirfieldCost()) {
+						if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
 							upgrade(nation.getAirfieldCost() / 2);
-						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getAirfieldCost()) {
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
 							upgrade(nation.getAirfieldCost() / 2);
 						} else {
 							decideNewProduct();
@@ -72,6 +73,7 @@ public class Airfield extends Industry {
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
+					nation.unupgradedAirfields-=1;
 					setDefense(4);
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
@@ -91,7 +93,7 @@ public class Airfield extends Industry {
 		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
 			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * getDefense() * 0.5, getTime(weight, UnitID.LIGHT));
 		} else {
-			if (nation.enemyNation.landSupremacy > nation.landSupremacy && nation.enemyNation.seaSupremacy > nation.seaSupremacy) {
+			if (nation.enemyNation.landEngagedSupremacy > nation.landSupremacy && nation.enemyNation.seaEngagedSupremacy > nation.seaSupremacy) {
 				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, getTime(weight, UnitID.MEDIUM));
 			} else {
 				int smallestDistance = 1310720;

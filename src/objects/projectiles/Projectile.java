@@ -53,10 +53,10 @@ public abstract class Projectile extends Unit {
 	/**
 	 * Moves the shell according to its velocity. Shell is not damaging until it reaches its target, where its attack is then activated
 	 */
-	public void shellMove() {
+	public void shellMove(double airTime) {
 		velocity = new Vector(0, 0);
-		if (position.getDist(getTarget()) > 3) {
-			velocity = position.getTargetVector(getTarget()).normalize().scalar(getSpeed());
+		if (position.getDist(getTarget()) > 0.5) {
+			velocity = position.getTargetVector(getTarget()).normalize().scalar(airTime);
 		} else {
 			hit();
 		}

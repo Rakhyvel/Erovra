@@ -26,6 +26,7 @@ public class City extends Industry {
 		setDefense(1);
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getCityCost()/2;
+		nation.unupgradedCities+=1;
 	}
 
 	@Override
@@ -43,7 +44,6 @@ public class City extends Industry {
 			}
 			if (Main.ticks % 6000 == 0 && capital) {
 				nation.addUnit(new Infantry(position, nation));
-				nation.setLandSupremacy(1);
 			}
 			if (!nation.isAIControlled()) {
 				clickToDropDown();
@@ -52,9 +52,9 @@ public class City extends Industry {
 				addProduct();
 				if (nation.isAIControlled())
 					if(!upgrading){
-						if (weight == UnitID.LIGHT && buyInCost < nation.getCityCost()) {
+						if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
 							upgrade(nation.getCityCost() / 2);
-						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getCityCost()) {
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
 							upgrade(nation.getCityCost() / 2);
 						}
 					}
@@ -65,6 +65,7 @@ public class City extends Industry {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
+					nation.unupgradedCities-=1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);

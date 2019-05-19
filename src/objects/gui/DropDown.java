@@ -58,13 +58,13 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
-					180 << 24 | 86 << 16 | 86 << 8 | 86,15);
+					180 << 24 | 86 << 16 | 86 << 8 | 86,15); // 350
 			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 12,
-					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			unit.dropDownRender(r, this);
+					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false); // 380
+			unit.dropDownRender(r, this); // 510
 			
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 22, (int) (18 * unit.getHealth()),
-					8, unit.nation.color,15);
+					8, unit.nation.color,15); // 300
 		}
 	}
 

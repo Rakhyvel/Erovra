@@ -82,8 +82,8 @@ public class Render extends Canvas {
 	public int[] flag = image.loadImage("/res/flag.png", 16, 16);
 	public int[] arrow = image.loadImage("/res/arrow.png", 18, 9);
 	public int[] target = image.loadImage("/res/target.png", 32, 32);
-	public int[] settings = image.loadImage("/res/settings.png",25, 25);
-
+	public int[] settings = image.loadImage("/res/settings.png", 25, 25);
+	public int[] showPath = image.loadImage("/res/showPath.png", 26, 26);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -128,8 +128,8 @@ public class Render extends Canvas {
 			System.arraycopy(menu, 0, pixels, 0, 1025 * 513);
 		}
 		world.render(this);
-		drawString("FPS:", 22, 10, font16,255<<24 | 250 << 16 | 250 << 8 | 250);
-		drawString(String.valueOf(Main.fps), 55, 10, font16, 244<<24|250 << 16 | 250 << 8 | 250);
+		drawString("FPS:", 22, 10, font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
+		drawString(String.valueOf(Main.fps), 55, 10, font16, 244 << 24 | 250 << 16 | 250 << 8 | 250);
 		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
@@ -242,19 +242,21 @@ public class Render extends Canvas {
 		if (w > 0) {
 			h = image.length / w;
 		}
+		float halfW = w / 2;
+		float halfH = h / 2;
 
-		for (float i = 0; i < image.length; i += 0.3333f) {
+		for (float i = 0; i < image.length; i += 0.49f) {
 			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * opacity;
-			double x1 = (i % w) - w / 2;
-			double y1 = i / w - h / 2;
-			double x2 = (int) (x1 + x);
-			double y2 = (int) (y1 + y);
 			if (alpha > 0) {
-				x1 = (i % w) - w / 2;
-				y1 = i / w - h / 2;
+				double x1 = (i % w) - halfW;
+				double y1 = i / w - halfH;
+				double x2 = (int) (x1 + x);
+				double y2 = (int) (y1 + y);
 				if (rotate != 0) {
-					x2 = (int) (x1 * Math.cos(-rotate) - y1 * Math.sin(-rotate) + x);
-					y2 = (int) ((x1 * Math.sin(-rotate) + y1 * Math.cos(-rotate)) + y);
+					double cos = Math.cos(-rotate);
+					double sin = Math.sin(-rotate);
+					x2 = (int) (x1 * cos - y1 * sin + x);
+					y2 = (int) (x1 * sin + y1 * cos + y);
 				}
 				int id = (int) (x2 + y2 * (width + 1) + 0.5);
 				if (id > 0 && id < width * height) {
@@ -300,10 +302,9 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = getScreenBlend(250 << 16 | 250 << 8,font.getLetter(letter));
-				//.getScreenBlend()
+				letterImage = getScreenBlend(250 << 16 | 250 << 8, font.getLetter(letter));
 			} else {
-				letterImage = getScreenBlend(color,font.getLetter(letter));
+				letterImage = getScreenBlend(color, font.getLetter(letter));
 			}
 			drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(), letterImage, 1, 0);
 			carriage += font.getKern(letter);
@@ -318,9 +319,9 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage =  getScreenBlend(250 << 16 | 250 << 8,font.getLetter(letter));
+				letterImage = getScreenBlend(250 << 16 | 250 << 8, font.getLetter(letter));
 			} else {
-				letterImage = getScreenBlend(color,font.getLetter(letter));
+				letterImage = getScreenBlend(color, font.getLetter(letter));
 			}
 			if (centered) {
 				drawImage(x + carriage - length / 2 + font.getSize() / 2, y, font.getSize(), letterImage, 1, 0);
@@ -330,6 +331,7 @@ public class Render extends Canvas {
 			carriage += font.getKern(letter);
 		}
 	}
+
 	public static int[] getScreenBlend(int color, int[] img) {
 		int r, g, b;
 		float screen, alpha;
@@ -360,11 +362,11 @@ public class Render extends Canvas {
 		}
 		return img2;
 	}
-	public int[] shadowify(int[] img){
+
+	public int[] shadowify(int[] img) {
 		int[] img2 = new int[img.length];
-		for(int i = 0; i < img.length;i++){
-			if((img[i]>>24&255)>0)
-				img2[i] = 26<<24;
+		for (int i = 0; i < img.length; i++) {
+			if ((img[i] >> 24 & 255) > 0) img2[i] = 26 << 24;
 		}
 		return img2;
 	}
@@ -383,7 +385,7 @@ public class Render extends Canvas {
 	 */
 	public int[] resize(int[] img, double factor, int width, int height) {
 		double invFactor = 1 / factor;
-		int newWidth = (int)(factor * width);
+		int newWidth = (int) (factor * width);
 		int[] img2 = new int[(int) (width * factor * height * factor)];
 		for (int i = 0; i < img2.length; i++) {
 			int x = (int) ((i % newWidth) * invFactor);
@@ -428,10 +430,11 @@ public class Render extends Canvas {
 		}
 		return img2;
 	}
-	public static int getColor(UnitID weight, int color){
-		if(weight == UnitID.MEDIUM){
+
+	public static int getColor(UnitID weight, int color) {
+		if (weight == UnitID.MEDIUM) {
 			return color;
-		} else if (weight == UnitID.LIGHT){
+		} else if (weight == UnitID.LIGHT) {
 			return lighten(color);
 		}
 		return darken(color);
@@ -494,7 +497,7 @@ public class Render extends Canvas {
 		// b = (a + b) >> 1;
 		// int cMax = Math.max(r,Math.max(g,b));
 		// 76 127 178
-		int hue = getRGB(getHue(r,g,b),getSaturation(r,g,b)*0.4,getValue(r,g,b)*0.4);
+		int hue = getRGB(getHue(r, g, b), getSaturation(r, g, b) * 0.4, getValue(r, g, b) * 0.4);
 		return hue;
 	}
 
@@ -532,49 +535,49 @@ public class Render extends Canvas {
 		} else {
 			hue = 60 * (((r1 - g1) / (cMax - cMin)) + 4);
 		}
-		if(hue < 0){
-			hue+=360;
+		if (hue < 0) {
+			hue += 360;
 		}
 		return hue;
 	}
-	
-	public int getRGB(double hue, double saturation, double value){
-		if(hue < 0){
-			hue+=360;
+
+	public int getRGB(double hue, double saturation, double value) {
+		if (hue < 0) {
+			hue += 360;
 		}
 		double c = value * saturation;
-		double x = c*(1-Math.abs(((hue/60)%2)-1));
+		double x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
 		double m = value - c;
 		double r = 0;
 		double g = 0;
 		double b = 0;
-		
-		if(hue >= 0 && hue < 60){
+
+		if (hue >= 0 && hue < 60) {
 			r = c;
 			g = x;
 			b = 0;
-		} else if(hue >= 60 && hue < 120){
+		} else if (hue >= 60 && hue < 120) {
 			r = x;
 			g = c;
 			b = 0;
-		} else if(hue >= 120 && hue < 180){
+		} else if (hue >= 120 && hue < 180) {
 			r = 0;
 			g = c;
 			b = x;
-		} else if(hue >= 180 && hue < 240){
+		} else if (hue >= 180 && hue < 240) {
 			r = 0;
 			g = x;
 			b = c;
-		} else if(hue >= 240 && hue < 300){
+		} else if (hue >= 240 && hue < 300) {
 			r = x;
 			g = 0;
 			b = c;
-		} else if(hue >= 300 && hue < 360){
+		} else if (hue >= 300 && hue < 360) {
 			r = c;
 			g = 0;
 			b = x;
 		}
-		return (int)((r+m)*255)<<16|(int)((g+m)*255)<<8|(int)((b+m)*255);
+		return (int) ((r + m) * 255) << 16 | (int) ((g + m) * 255) << 8 | (int) ((b + m) * 255);
 	}
 
 	public int dither(int x, int y, int value) {
@@ -615,7 +618,7 @@ public class Render extends Canvas {
 	 * @return Darker and desaturated image
 	 */
 	public int[] darkenScreen(int[] image) {
-		for (int i = 0; i < 1025 * 513-4; i++) {
+		for (int i = 0; i < 1025 * 513 - 4; i++) {
 			image[i] = desaturate(image[i]);
 		}
 		return image;
@@ -627,7 +630,7 @@ public class Render extends Canvas {
 	public int[] eggShellScreen() {
 		int[] image = new int[1025 * 513];
 		for (int i = 0; i < 1025 * 513; i++) {
-			image[i] = 50<<16|50<<8|50;
+			image[i] = 50 << 16 | 50 << 8 | 50;
 		}
 		return image;
 	}
@@ -740,9 +743,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -855,9 +858,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}
@@ -950,9 +953,9 @@ public class Render extends Canvas {
 				}
 			}
 			if (p2.getY() < p1.getY()) {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian());
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian());
 			} else {
-				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color,arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
+				drawImage((int) endPoint.getX(), (int) endPoint.getY(), 18, getScreenBlend(color, arrow), 1, p2.subVec(p1).getRadian() + 3.14f);
 			}
 		}
 	}

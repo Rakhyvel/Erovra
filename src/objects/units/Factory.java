@@ -31,6 +31,7 @@ public class Factory extends Industry {
 		}
 		dropDownHeight = 150;
 		buyInCost = nation.getFactoryCost() / 2;
+		nation.unupgradedFactories+=1;
 	}
 
 	@Override
@@ -51,9 +52,9 @@ public class Factory extends Industry {
 				addProduct();
 				if (nation.isAIControlled())
 					if (!upgrading) {
-						if (weight == UnitID.LIGHT && buyInCost < nation.getFactoryCost()) {
+						if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
 							upgrade(nation.getFactoryCost() / 2);
-						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.getFactoryCost()) {
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
 							upgrade(nation.getFactoryCost() / 2);
 						} else {
 							decideNewProduct();
@@ -74,11 +75,10 @@ public class Factory extends Industry {
 			if (getProduct() != UnitID.FACTORY) {
 				if (getProduct() == UnitID.CAVALRY) {
 					nation.addUnit(new Cavalry(position, nation, getProductWeight()));
-					nation.landSupremacy++;
 				} else if (getProduct() == UnitID.ARTILLERY) {
 					nation.addUnit(new Artillery(position, nation, getProductWeight()));
-					nation.landSupremacy++;
 				}
+				nation.landSupremacy++;
 				setProductWeight(UnitID.NONE);
 				if (!nation.isAIControlled()) {
 					setProduct(UnitID.NONE);
@@ -87,6 +87,7 @@ public class Factory extends Industry {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
+					nation.unupgradedFactories-=1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);
@@ -104,30 +105,34 @@ public class Factory extends Industry {
 	 */
 	@Override
 	public void decideNewProduct() {
-		if(nation.airSupremacy > nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaSupremacy){
-			if (cavalry) {
-				if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5,
-						getTime(weight,UnitID.LIGHT))) {
-					// Heavy cavalry
-				} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5,
-						getTime(weight,UnitID.MEDIUM))) {
-					// Medium cavalry
-				} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5,
-						getTime(weight,UnitID.HEAVY))) {
-					// Light Cavalry
+		if(nation.seaSupremacy >= nation.enemyNation.seaEngagedSupremacy){
+			if(nation.airSupremacy > nation.enemyNation.airSupremacy){
+				if (cavalry) {
+					if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5,
+							getTime(weight,UnitID.LIGHT))) {
+						// Heavy cavalry
+					} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5,
+							getTime(weight,UnitID.MEDIUM))) {
+						// Medium cavalry
+					} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5,
+							getTime(weight,UnitID.HEAVY))) {
+						// Light Cavalry
+					}
+		
+				} else {
+					if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5,
+							getTime(weight,UnitID.LIGHT))) {
+						// Heavy artillery
+					} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * getDefense() * 0.5,
+							getTime(weight,UnitID.MEDIUM))) {
+						// Medium artillery
+					}
 				}
-	
 			} else {
-				if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5,
-						getTime(weight,UnitID.LIGHT))) {
-					// Heavy artillery
-				} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * getDefense() * 0.5,
-						getTime(weight,UnitID.MEDIUM))) {
-					// Medium artillery
-				} else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * getDefense() * 0.5,
-						getTime(weight,UnitID.HEAVY))) {
-					// Anti Air artillery
-				}
+				 if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * getDefense() * 0.5,
+							getTime(weight,UnitID.HEAVY))) {
+						// Anti Air artillery
+					}
 			}
 		}
 	}
@@ -231,12 +236,12 @@ public class Factory extends Industry {
 				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 4, 180, 30,
 						180 << 24 | 32 << 16 | 32 << 8 | 32, 13);
 			} else {
-				if (d.getTab() == 0) {
+				if ((d.getTab() == 0 && getProduct() == UnitID.NONE) || getProduct() == UnitID.CAVALRY) {
 					d.drawIndustry(r, "Light tank", "Medium tank", "Heavy tank",
 							(nation.getCavalryCost() / 2) * (getDefense() / 2),
 							nation.getCavalryCost() * (getDefense() / 2),
 							(nation.getCavalryCost() * 2) * (getDefense() / 2), this);
-				} else if(d.getTab() == 1){
+				} else if((d.getTab() == 1 && getProduct() == UnitID.NONE) || getProduct() == UnitID.ARTILLERY){
 					d.drawIndustry(r, "Anti air", "Mortar", "Howitzer",
 							nation.getArtilleryCost() / 2 * (getDefense() / 2),
 							nation.getArtilleryCost()     * (getDefense() / 2),

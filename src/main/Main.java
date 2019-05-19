@@ -15,6 +15,7 @@ import objects.gui.GameMenu;
 import objects.gui.MainMenu;
 import objects.units.City;
 import objects.units.Infantry;
+import objects.units.Unit;
 import output.Render;
 import terrain.Map;
 import utility.Point;
@@ -32,7 +33,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.SEA;
+	public static MapID mapID = MapID.RANDOM;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -113,9 +114,7 @@ public class Main {
 	}
 
 	/**
-	 * Sets up the game's window
-	 * 30 for windows
-	 * 41 for mac
+	 * Sets up the game's window 30 for windows 41 for mac
 	 */
 	void window() {
 		frame.setSize(width + 7, height + 30);
@@ -137,16 +136,15 @@ public class Main {
 		world.selectedUnit = null;
 		Main.setState(StateID.ONGOING);
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Sweden");
-//		sweden.setAIControlled(false);
-//		russia.setAIControlled(false);
+		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
+		sweden.setAIControlled(false);
+		// russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
 		MapID id = mapID;
-		if(mapID == MapID.RANDOM)
-			id = MapID.values()[rand.nextInt(5)];
+		if (mapID == MapID.RANDOM) id = MapID.values()[rand.nextInt(5)];
 		System.out.println(id);
 		world.getDropDown().shouldClose();
 
@@ -163,7 +161,20 @@ public class Main {
 			for (int i = 0; i < 6; i++) {
 				int x = i / 6 * 64 + 96;
 				int y = i % 6 * 64 + 96;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
+				int clearAdjacentSides = 0;
+				if (Unit.clearPath(new Point(x, y), new Point(x, y + 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x, y - 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x + 64, y), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -175,7 +186,20 @@ public class Main {
 			for (int i = 0; i < 6; i++) {
 				int x = (6 - (i / 6)) * 64 + 544;
 				int y = (6 - (i % 6)) * 64 + 32;
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1) {
+				int clearAdjacentSides = 0;
+				if (Unit.clearPath(new Point(x, y), new Point(x, y + 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x, y - 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x + 64, y), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
+					clearAdjacentSides++;
+				}
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;
@@ -236,9 +260,10 @@ public class Main {
 		dt *= 2;
 		System.out.println((50 / 3.0) / dt);
 	}
+
 	public static String getOperatingSystem() {
-	    String os = System.getProperty("os.name");
-	    // System.out.println("Using System Property: " + os);
-	    return os;
+		String os = System.getProperty("os.name");
+		// System.out.println("Using System Property: " + os);
+		return os;
 	}
 }

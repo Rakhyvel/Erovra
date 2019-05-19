@@ -38,6 +38,15 @@ public class Nation {
 	public int seaSupremacy = 0;
 	public int landSupremacy = 0;
 
+	public int airEngagedSupremacy = 0;
+	public int seaEngagedSupremacy = 0;
+	public int landEngagedSupremacy = 0;
+	
+	public int unupgradedCities = -1;
+	public int unupgradedFactories = 0;
+	public int unupgradedAirfields = 0;
+	public int unupgradedPorts = 0;
+
 	public String name;
 	public ArrayList<Unit> unitArray = new ArrayList<Unit>(20);
 	public ArrayList<Unit> engagedUnits = new ArrayList<Unit>();

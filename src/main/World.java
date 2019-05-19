@@ -1,5 +1,7 @@
 package main;
 
+import input.Mouse;
+
 import java.util.ArrayList;
 
 import objects.Nation;
@@ -42,29 +44,31 @@ public class World {
 	/**
 	 * Calls the tick method for each object in the game
 	 * 
-	 * @param t The time in millis since last tick
+	 * @param t
+	 *            The time in millis since last tick
 	 */
 	public void tick(double t) {
 		highlightedUnit = null;
 		if (Main.gameState == StateID.ONGOING) {
+			setShowPaths(Main.mouse.getX() > 930 && Main.mouse.getX() < 960 && Main.mouse.getY() < 30);
+			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
+				friendly.getProjectile(i2).tick(t);
+			}
 			for (int i2 = 0; i2 < friendly.unitSize(); i2++) {
 				friendly.getUnit(i2).tick(t);
 			}
 			if (selectedUnit != null) {
 				selectedUnit.setHit(3);
 			}
-			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
-				friendly.getProjectile(i2).tick(t);
-			}
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
 				friendly.getCoin(i2).tick(t);
 			}
 
-			for (int i2 = 0; i2 < hostile.unitSize(); i2++) {
-				hostile.getUnit(i2).tick(t);
-			}
 			for (int i2 = 0; i2 < hostile.projectileSize(); i2++) {
 				hostile.getProjectile(i2).tick(t);
+			}
+			for (int i2 = 0; i2 < hostile.unitSize(); i2++) {
+				hostile.getUnit(i2).tick(t);
 			}
 			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
 				hostile.getCoin(i2).tick(t);
@@ -116,12 +120,13 @@ public class World {
 	/**
 	 * Calls for each object in the game to draw
 	 * 
-	 * @param r Render object used to draw to the canvas
+	 * @param r
+	 *            Render object used to draw to the canvas
 	 */
 	public void render(Render r) {
 		if (Main.gameState == StateID.ONGOING) {
-			if(!defeatedName.equals("")) {
-				if(defeatedName.contains("Sweden")) {
+			if (!defeatedName.equals("")) {
+				if (defeatedName.contains("Sweden")) {
 					Main.setState(StateID.DEFEAT);
 				} else {
 					Main.setState(StateID.VICTORY);
@@ -138,12 +143,17 @@ public class World {
 				}
 			}
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() != UnitID.PLANE)
-					friendly.getUnit(i2).render(r);
+				if (UnitID.isBuilding(friendly.getUnit(i2).getID())) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() != UnitID.PLANE)
-					hostile.getUnit(i2).render(r);
+				if (UnitID.isBuilding(hostile.getUnit(i2).getID())) hostile.getUnit(i2).render(r);
+			}
+			
+			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
+				if (!UnitID.isBuilding(friendly.getUnit(i2).getID()) && friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
+			}
+			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
+				if (!UnitID.isBuilding(hostile.getUnit(i2).getID()) && hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
@@ -158,17 +168,20 @@ public class World {
 			}
 
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (friendly.getUnit(i2).getID() == UnitID.PLANE)
-					friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID() == UnitID.PLANE) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (hostile.getUnit(i2).getID() == UnitID.PLANE)
-					hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID() == UnitID.PLANE) hostile.getUnit(i2).render(r);
 			}
 
-			r.drawRect(1024-64, 0, 64, 20, 128 << 24);
-			r.drawRectBorders(1024-94,0,30,30,128<<24,15);
-			
+			r.drawRect(1024 - 64, 0, 64, 20, 128 << 24);
+			r.drawRectBorders(1024 - 94, 0, 30, 30, 128 << 24, 15);
+			if(getShowPaths()){
+				r.drawImage(1024-79, 15, 26, Render.getScreenBlend(friendly.color, r.showPath), 1, 0);
+			}else{
+				r.drawImage(1024-79, 15, 26, r.showPath, 1, 0);
+			}
+
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
 				friendly.getCoin(i2).render(r);
 			}
@@ -184,17 +197,18 @@ public class World {
 	/**
 	 * Draws the amount of coins
 	 * 
-	 * @param g Graphics object
+	 * @param g
+	 *            Graphics object
 	 */
 	public void drawCoins(Render r) {
-		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 993, 10, r.font16,
-				255<<24 | 250 << 16 | 250 << 8 | 250);
+		r.drawString((char) 7 + "" + String.valueOf(friendly.getCoinAmount()), 993, 10, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
 	}
 
 	/**
 	 * Sets the friendly nation
 	 * 
-	 * @param nation The nation to be set to friendly
+	 * @param nation
+	 *            The nation to be set to friendly
 	 */
 	public void setFriendly(Nation nation) {
 		friendly = nation;
@@ -204,7 +218,8 @@ public class World {
 	/**
 	 * The hostile nation
 	 * 
-	 * @param nation The nation to be set to hostile
+	 * @param nation
+	 *            The nation to be set to hostile
 	 */
 	public void setHostile(Nation nation) {
 		hostile = nation;
@@ -220,11 +235,12 @@ public class World {
 	public void nullifySelected() {
 		nullifySelected = true;
 	}
-	
-	public void setShowPaths(boolean showPaths){
+
+	public void setShowPaths(boolean showPaths) {
 		this.showPaths = showPaths;
 	}
-	public boolean getShowPaths(){
+
+	public boolean getShowPaths() {
 		return showPaths;
 	}
 }

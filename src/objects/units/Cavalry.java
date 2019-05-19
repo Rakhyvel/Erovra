@@ -45,9 +45,6 @@ public class Cavalry extends Unit {
 				clickToMove();
 				clickToDropDown();
 			}
-			if (engaged && spotted == 0 || hit > 0) {
-				spotted = (int) (60/speed);
-			}
 			if (spotted > 0){
 				spotted--;
 			} else {

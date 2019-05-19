@@ -36,17 +36,16 @@ public class Artillery extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
-			if (weight == UnitID.MEDIUM){
-				shootShell(128);
+			if (weight == UnitID.LIGHT){
+				aaAim();
+			} else if (weight == UnitID.MEDIUM){
+				shootShell(4096, 8);
 			} else if (weight == UnitID.HEAVY){
-				shootShell(256);
+				shootShell(16384, 11.313708499);
 			}
 			if (!nation.isAIControlled()) {
 				clickToMove();
 				clickToDropDown();
-			}
-			if (engaged && spotted == 0 || hit > 0) {
-				spotted = (int) (60/speed);
 			}
 			if (spotted > 0){
 				spotted--;

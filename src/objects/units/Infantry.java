@@ -15,8 +15,8 @@ import utility.Point;
  * @see Unit
  */
 public class Infantry extends Unit {
-	
-	int weightColor = 255<<24;
+
+	int weightColor = 255 << 24;
 
 	public Infantry(Point position, Nation nation) {
 		super(position, nation, UnitID.MEDIUM);
@@ -37,10 +37,7 @@ public class Infantry extends Unit {
 				clickToMove();
 				clickToDropDown();
 			}
-			if (engaged && spotted == 0 || hit > 0) {
-				spotted = (int) (60/speed);
-			}
-			if (spotted > 0){
+			if (spotted > 0) {
 				spotted--;
 			} else {
 				disengage();
@@ -51,24 +48,21 @@ public class Infantry extends Unit {
 
 	@Override
 	public void render(Render r) {
-		if ((spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
-				|| Main.gameState == StateID.VICTORY) && !isBoarded()) {
+		if ((spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) && !isBoarded()) {
 			float direction = position.subVec(getFacing()).getRadian();
-			if (velocity.getY() > 0)
-				direction += 3.14f;
+			if (velocity.getY() > 0) direction += 3.14f;
 
-			if(!nation.isAIControlled()) {
+			if (!nation.isAIControlled()) {
 				if (isSelected()) {
 					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
-					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
-							220 << 16 | 220 << 8 | 220);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
+					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
 				}
 			}
 
-			r.drawImage((int) position.getX(), (int) position.getY(), 32, Render.getScreenBlend(Render.getColor(weight,nation.color),Render.infantry),1, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32, Render.getScreenBlend(Render.getColor(weight, nation.color), Render.infantry), 1, direction);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.hitSprite, 1, direction);
 			}
 		}
 	}
@@ -110,22 +104,21 @@ public class Infantry extends Unit {
 			d.drawOption("Airfield (" + nation.getAirfieldCost() + ")", 4, 0, 13, r);
 		}
 	}
-	
+
 	/**
-	 * If the unit is far enough away other ports and cities, builds either a city,
-	 * port, or factory. Only builds max 2 airfields and 3 factories
+	 * If the unit is far enough away other ports and cities, builds either a
+	 * city, port, or factory. Only builds max 2 airfields and 3 factories
 	 */
 	public void settle() {
-		nation.buyCity(position);
+		if (nation.unupgradedCities == 0) nation.buyCity(position);
 		if (nation.getCityCost() > 30) {
 			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
-				if (nation.getAirfieldCost() < nation.coins / 2)
-					nation.buyAirfield(position);
+				if (nation.getAirfieldCost() < nation.coins / 2 && nation.unupgradedAirfields == 0) nation.buyAirfield(position);
 			} else {
-				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.buyPort(position)) {
+				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.unupgradedPorts == 0) {
+					nation.buyPort(position);
 				} else {
-					if (nation.getFactoryCost() < nation.coins / 2)
-						nation.buyFactory(position);
+					if (nation.getFactoryCost() < nation.coins / 2&& nation.unupgradedFactories == 0) nation.buyFactory(position);
 				}
 			}
 		}

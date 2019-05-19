@@ -14,8 +14,12 @@ import utility.Point;
 public class Shell extends Projectile {
 	
 	float distance;
+	double angle = 0;
+	double secondDeriv = 0;
+	double airTime = 0;
+	double initialVelocity = 0;
 
-	public Shell(Point position, Nation nation, Point target) {	
+	public Shell(Point position, double power, Nation nation, Point target) {	
 		super(position, nation);
 		speed = 1.5f;
 		setAttack(0);
@@ -23,23 +27,37 @@ public class Shell extends Projectile {
 		this.setTarget(target);
 		id = UnitID.SHELL;
 		distance = (float)position.getDistSquared(target);
+		angle = getAngle(distance, power);
+		secondDeriv = getSecondDeriv(power, angle);
+		airTime = distance/getAirTime(power,angle);
+		initialVelocity = Math.tan(angle);
 	}
 
 	@Override
 	public void tick(double t) {
-		shellMove();
-		if (position.getDist(getTarget()) < 6) {
+		shellMove(airTime);
+		distance-=airTime;
+		if (distance < 1) {
 			setAttack(1.5f);
 		}
 	}
 
 	@Override
 	public void render(Render r) {
-		double scale = position.getDistSquared(target)/distance;
-		scale = (-3 * (scale-.5) * (scale-.5)) + 1.25f;
-		//r.drawImage((int) position.getX(), (int) position.getY(), shadow.resize(0.5f), 0);
+		double scale = (secondDeriv*distance*distance+initialVelocity*distance)/64;
 		r.drawImage((int) position.getX(), (int) position.getY(), 4, r.shadowify(r.shell),1,0);
 		r.drawImage((int) position.getX(), (int) (position.getY()-(16*scale)), (int)((scale/2.0+0.5f)*4), r.resize(r.shell,(scale/2.0+0.5f),4,4),1,0);
-		//.resize((float)(scale/2.0+0.5f))
+	}
+	
+	double getAngle(float range, double power){
+		return (-Math.asin(range/(power*power))+Math.PI)/2;
+	}
+	
+	double getSecondDeriv(double power, double angle){
+		return -1/(2*power*power*Math.cos(angle)*Math.cos(angle));
+	}
+	
+	double getAirTime(double power, double angle){
+		return 10*power*Math.sin(angle);
 	}
 }

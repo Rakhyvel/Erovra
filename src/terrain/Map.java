@@ -276,11 +276,8 @@ public class Map {
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(int x, int y) {
-		if (x > 1024) x = 1024;
-		if (y > 512) y = 512;
-		if (x < 0) x = 0;
-		if (y < 0) y = 0;
-		return mountain[x][y];
+		if (x >= 0 && x < 1025 && y >= 0 && y < 513) return mountain[x][y];
+		return -1;
 	}
 
 	/**
@@ -289,7 +286,7 @@ public class Map {
 	 * @return The float value of the given position on the terrain
 	 */
 	public static float getArray(Point p) {
-		if (p.getX() > 0 && p.getX() < 1024 && p.getY() > 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
+		if (p.getX() >= 0 && p.getX() < 1024 && p.getY() >= 0 && p.getY() < 512) return mountain[(int) p.getX()][(int) p.getY()];
 		return -1;
 	}
 
@@ -310,7 +307,7 @@ public class Map {
 		int red = 0;
 
 		if (value < .495f) {
-			blue = (int) (460 * value + 38);
+			blue = (int) (460 * value + 16);
 			red = (int) (820 * value * value - 6);
 			green = (int) (1040 * value * value - 6);
 		} else if (value < .5) {
