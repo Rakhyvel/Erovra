@@ -241,7 +241,7 @@ public class Ship extends Unit {
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
 					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					if (weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange, 0.5f, 0);
 					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255 << 24 | 220 << 16 | 220 << 8 | 220);
 				}

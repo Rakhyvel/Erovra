@@ -228,7 +228,7 @@ public class Plane extends Unit {
 				if (isSelected()) {
 					r.drawImage((int) target.getX(), (int) target.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
 							220 << 16 | 220 << 8 | 220);
 				}
@@ -236,7 +236,7 @@ public class Plane extends Unit {
 				if (isSelected()) {
 					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())) {
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 				}
 			}

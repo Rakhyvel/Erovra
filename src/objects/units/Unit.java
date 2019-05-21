@@ -714,7 +714,7 @@ public abstract class Unit {
 				setTarget(position.addPoint(new Point(Math.cos(angle) * 32, Math.sin(angle) * 32)));
 				angle += 0.1;
 			}
-			while (!clearPath(target, position, baseline));
+			while (!clearPath(target, position, baseline) && angle < start + 6.28f);
 			setFacing(target);
 		}
 	}

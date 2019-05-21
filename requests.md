@@ -17,14 +17,14 @@
 
 ### Update 1.1:
 #### Instructions and menus
-- Instructions screen
-- Settings screen
 - Map choose screen
+- Map is generating screen
 - Zoom function
 - When people first click start game, they don't really know what to do
 	- Hints
 	- "You have lost air supremacy!"
-- Map is generating screen
+- Settings screen
+- Fullscreen
 
 ### Update 1.2:
 #### Sounds and animations

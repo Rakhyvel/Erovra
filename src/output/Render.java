@@ -116,7 +116,7 @@ public class Render extends Canvas {
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
-			drawLongLat();
+			//drawLongLat();
 			captured = false;
 		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
