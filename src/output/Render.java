@@ -116,7 +116,6 @@ public class Render extends Canvas {
 		// //////////////////////////////////////
 		if (Main.gameState == StateID.ONGOING) {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
-			//drawLongLat();
 			captured = false;
 		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
 			if (!captured) {
@@ -134,38 +133,6 @@ public class Render extends Canvas {
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
 		bs.show();
-	}
-
-	/**
-	 * Draws the longitude and latitude lines on the map
-	 */
-	void drawLongLat() {
-		// int xCenter = (int) (512 * Main.zoom) - 512;
-		// int yCenter = (int) (256 * Main.zoom) - 256;
-		// Latitude
-		for (int i = 0; i < 512 * 17; i++) {
-			int x = (int) ((i % 17 * 64 / Main.zoom));
-			int y = i / 17;
-			int id = y * (width + 1) + x;
-			if (x < 1025 && x > 0) {
-				int r = (int) (((pixels[id] >> 16) & 255) * .75);
-				int g = (int) (((pixels[id] >> 8) & 255) * .75);
-				int b = (int) ((pixels[id] & 255) * .75);
-				pixels[id] = r << 16 | g << 8 | b;
-			}
-		}
-		// Longitude
-		for (int i = 0; i < 512 * 18; i++) {
-			int x = i % 1024;
-			int y = (int) ((i / 1024) * 64 / Main.zoom);
-			int id = y * (width + 1) + x;
-			if (id < 1024 * 512 && id > 0) {
-				int r = (int) (((pixels[id] >> 16) & 255) * .75);
-				int g = (int) (((pixels[id] >> 8) & 255) * .75);
-				int b = (int) ((pixels[id] & 255) * .75);
-				pixels[id] = r << 16 | g << 8 | b;
-			}
-		}
 	}
 
 	/**
@@ -239,13 +206,20 @@ public class Render extends Canvas {
 	 */
 	public void drawImage(int x, int y, int w, int[] image, float opacity, float rotate) {
 		int h = 1, r, g, b;
+		double cos = 0, sin = 0;
 		if (w > 0) {
 			h = image.length / w;
 		}
 		float halfW = w / 2;
 		float halfH = h / 2;
+		float deltaI = 1;
+		if (rotate != 0) {
+			deltaI = 0.49f;
+			cos = Math.cos(-rotate);
+			sin = Math.sin(-rotate);
+		}
 
-		for (float i = 0; i < image.length; i += 0.49f) {
+		for (float i = 0; i < image.length; i += deltaI) {
 			float alpha = ((image[(int) i] >> 24 & 255) / 255.0f) * opacity;
 			if (alpha > 0) {
 				double x1 = (i % w) - halfW;
@@ -253,8 +227,6 @@ public class Render extends Canvas {
 				double x2 = (int) (x1 + x);
 				double y2 = (int) (y1 + y);
 				if (rotate != 0) {
-					double cos = Math.cos(-rotate);
-					double sin = Math.sin(-rotate);
 					x2 = (int) (x1 * cos - y1 * sin + x);
 					y2 = (int) (x1 * sin + y1 * cos + y);
 				}
@@ -635,111 +607,32 @@ public class Render extends Canvas {
 		return image;
 	}
 
-	public void drawLandLine(Point p1, Point p2, int color, int background) {
+	public void drawLandLine(Point p1, Point p2, int color, int background, float baseline) {
 		Point endPoint = p2;
 		double slope = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
 		if (p2.getX() < 1021 && p2.getX() >= 5 && p2.getY() < 509 && p2.getY() >= 5 && p1.getDist(p2) > 32) {
-			if (slope < 1 && slope > -1) {
-				if (p2.getX() > p1.getX()) {
-					for (double i = p1.getX(); i < p2.getX(); i++) {
-						int x = (int) i;
-						int y = (int) (slope * (i - p1.getX()) + p1.getY());
-						int id = y * (width + 1) + x;
-						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int) x, (int) y) > 1) {
-							endPoint.setX(x);
-							endPoint.setY(y);
-							break;
-						}
-						if (background != 0) {
-							pixels[id - 4100] = background;
-							pixels[id - 3075] = background;
-						}
-						pixels[id - 2050] = 0;
-						pixels[id - 1025] = 0;
-						pixels[id] = color;
-						pixels[id + 1025] = color;
-						pixels[id + 2050] = 0;
-						pixels[id + 3075] = background;
-						if (background != 0) {
-							pixels[id + 5125] = background;
-							pixels[id + 4100] = background;
-						}
-					}
-				} else {
-					for (double i = p1.getX(); i > p2.getX(); i--) {
-						int x = (int) i;
-						int y = (int) (slope * (i - p1.getX()) + p1.getY());
-						int id = y * (width + 1) + x;
-						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int) x, (int) y) > 1) {
-							endPoint.setX(x);
-							endPoint.setY(y);
-							break;
-						}
-						if (background != 0) {
-							pixels[id - 5125] = background;
-							pixels[id - 4100] = background;
-						}
-						pixels[id - 3075] = 0;
-						pixels[id - 2050] = 0;
-						pixels[id - 1025] = color;
-						pixels[id] = color;
-						pixels[id + 1025] = 0;
-						pixels[id + 2050] = 0;
-						if (background != 0) {
-							pixels[id + 4100] = background;
-							pixels[id + 3075] = background;
-						}
-					}
+			for (double i = p1.getX(); i < p2.getX(); i++) {
+				int x = (int) i;
+				int y = (int) (slope * (i - p1.getX()) + p1.getY());
+				int id = y * (width + 1) + x;
+				if (Map.getArray((int) x, (int) y) < baseline || Map.getArray((int) x, (int) y) > baseline + 0.5f) {
+					endPoint.setX(x);
+					endPoint.setY(y);
+					break;
 				}
-			} else {
-				if (p2.getY() > p1.getY()) {
-					for (int y = (int) p1.getY(); y < p2.getY(); y++) {
-						int x = (int) ((y - p1.getY()) / slope + p1.getX());
-						int id = (int) (y * (width + 1)) + x;
-						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int) x, (int) y) > 1) {
-							endPoint.setX(x);
-							endPoint.setY(y);
-							break;
-						}
-						if (background != 0) {
-							pixels[id - 4] = background;
-							pixels[id - 3] = background;
-						}
-						pixels[id - 2] = 0;
-						pixels[id - 1] = 0;
-						pixels[id] = color;
-						pixels[id + 1] = color;
-						pixels[id + 2] = 0;
-						pixels[id + 3] = 0;
-						if (background != 0) {
-							pixels[id + 5] = background;
-							pixels[id + 4] = background;
-						}
-					}
-				} else {
-					for (int y = (int) p1.getY(); y > p2.getY(); y--) {
-						int x = (int) ((y - p1.getY()) / slope + p1.getX());
-						int id = (int) (y * (width + 1)) + x;
-						if (Map.getArray((int) x, (int) y) < .5 || Map.getArray((int) x, (int) y) > 1) {
-							endPoint.setX(x);
-							endPoint.setY(y);
-							break;
-						}
-						if (background != 0) {
-							pixels[id - 5] = background;
-							pixels[id - 4] = background;
-						}
-						pixels[id - 3] = 0;
-						pixels[id - 2] = 0;
-						pixels[id - 1] = color;
-						pixels[id] = color;
-						pixels[id + 1] = 0;
-						pixels[id + 2] = 0;
-						if (background != 0) {
-							pixels[id + 4] = background;
-							pixels[id + 3] = background;
-						}
-					}
+				if (background != 0) {
+					pixels[id - 4100] = background;
+					pixels[id - 3075] = background;
+				}
+				pixels[id - 2050] = 0;
+				pixels[id - 1025] = 0;
+				pixels[id] = color;
+				pixels[id + 1025] = color;
+				pixels[id + 2050] = 0;
+				pixels[id + 3075] = background;
+				if (background != 0) {
+					pixels[id + 5125] = background;
+					pixels[id + 4100] = background;
 				}
 			}
 			if (p2.getY() < p1.getY()) {

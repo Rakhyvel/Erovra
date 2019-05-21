@@ -54,9 +54,9 @@ public class Infantry extends Unit {
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0.5f);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
-					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220);
+					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220, 0.5f);
 				}
 			}
 

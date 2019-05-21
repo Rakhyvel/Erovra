@@ -3,6 +3,7 @@ package terrain;
 import java.util.Random;
 
 import objects.gui.Image;
+import main.Main;
 import main.MapID;
 import utility.Point;
 
@@ -155,6 +156,30 @@ public class Map {
 			int x = i % 1025;
 			int y = i / 1025;
 			mapData[i] = getColor(getArray(x, y));
+		}
+		// Latitude
+		for (int i = 0; i < 512 * 17; i++) {
+			int x = (int) ((i % 17 * 64 / Main.zoom));
+			int y = i / 17;
+			int id = y * (1025) + x;
+			if (x < 1025 && x > 0) {
+				int r = (int) (((mapData[id] >> 16) & 255) * .75);
+				int g = (int) (((mapData[id] >> 8) & 255) * .75);
+				int b = (int) ((mapData[id] & 255) * .75);
+				mapData[id] = r << 16 | g << 8 | b;
+			}
+		}
+		// Longitude
+		for (int i = 0; i < 512 * 18; i++) {
+			int x = i % 1024;
+			int y = (int) ((i / 1024) * 64 / Main.zoom);
+			int id = y * (1025) + x;
+			if (id < 1024 * 512 && id > 0) {
+				int r = (int) (((mapData[id] >> 16) & 255) * .75);
+				int g = (int) (((mapData[id] >> 8) & 255) * .75);
+				int b = (int) ((mapData[id] & 255) * .75);
+				mapData[id] = r << 16 | g << 8 | b;
+			}
 		}
 	}
 
