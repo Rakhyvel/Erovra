@@ -86,8 +86,7 @@ public class Port extends Industry {
 				upgrading = false;
 			}
 		}
-		setProduct(UnitID.NONE);
-		setProductWeight(UnitID.NONE);
+		reviewAutomatic();
 	}
 
 	/**
@@ -162,11 +161,7 @@ public class Port extends Industry {
 				}
 			} else if (d.getTab() == 1) {
 				if (d.buttonsHovered == 2) {
-					if (nation.getCoinAmount() >= nation.getPortCost() / 2) {
-						upgrade(nation.getPortCost() / 2);
-					} else {
-						Main.world.errorMessage.showErrorMessage("Insufficient funds!");
-					}
+					upgrade(nation.getPortCost() / 2);
 				} else if (d.buttonsHovered == 3) {
 					nation.unitArray.remove(this);
 					d.shouldClose();
@@ -176,10 +171,11 @@ public class Port extends Industry {
 			}
 		} else {
 			if (d.buttonsHovered == 2) {
-				setProductWeight(UnitID.NONE);
-				setProduct(UnitID.NONE);
-				nation.coins += 10;
-				upgrading = false;
+				if(Main.mouse.getX() > d.getPosition().getX()+90){
+					cancelOrder(d);
+				} else {
+					automatic = !automatic;
+				}
 			}
 		}
 	}

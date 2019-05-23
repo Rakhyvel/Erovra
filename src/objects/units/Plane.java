@@ -130,6 +130,17 @@ public class Plane extends Unit {
 		setTarget(position.addPoint(new Point(Trig.sin(a), Trig.cos(a))));
 
 	}
+	
+	void recon(){
+		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = nation.enemyNation.getUnit(i);
+			Point tempPoint = tempUnit.getPosition();
+			int tempDist = (int) position.getDist(tempPoint);
+			if(tempDist < 4084){
+				tempUnit.engage();
+			}
+		}
+	}
 
 	/**
 	 * Decides what the plane should aim at
@@ -192,6 +203,10 @@ public class Plane extends Unit {
 				}
 			}
 			patrolPoint = new Point(secondaryTarget);
+
+			if(getWeight() == UnitID.LIGHT){
+				recon();
+			}
 		}
 	}
 
@@ -227,15 +242,15 @@ public class Plane extends Unit {
 			if (weight == UnitID.HEAVY && !bombsAway) {
 				if (isSelected()) {
 					r.drawImage((int) target.getX(), (int) target.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
-							220 << 16 | 220 << 8 | 220);
+							220 << 16 | 220 << 8 | 220, 1);
 				}
 			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
 				if (isSelected()) {
 					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,Render.getScreenBlend(nation.color,r.target),1, 0);
 				}

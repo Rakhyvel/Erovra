@@ -2,6 +2,10 @@ package utility;
 
 public class Point {
 	double x,y;
+	public Point(){
+		this.setX(0);
+		this.setY(0);
+	}
 	public Point(double x, double y) {
 		this.setX(x);
 		this.setY(y);

@@ -57,20 +57,24 @@ public class Ship extends Unit {
 		detectHit();
 		if (!(nation.defeated || nation.enemyNation.defeated) && health > 0) {
 			if (getWeight() != UnitID.LIGHT) {
-				shootTorpedo();
+				if(getWeight() == UnitID.MEDIUM){
+					shootTorpedo();
+				} else if (getWeight() == UnitID.HEAVY){
+					shootShell(16384, 11.313708499);
+				}
 				aaAim();
 				if (!nation.isAIControlled()) {
 					clickToMove();
 					clickToDropDown();
 				}
-				if (spotted > 0){
+				if (spotted > 0) {
 					spotted--;
 				} else {
 					disengage();
 				}
 				targetMove(0);
 			} else {
-//				if (getPassenger1() != null) engaged = aaAim();
+				// if (getPassenger1() != null) engaged = aaAim();
 				if (isLanded()) {
 					if (getPassenger1() != null) {
 						getPassenger1().position = position;
@@ -87,26 +91,22 @@ public class Ship extends Unit {
 
 				if (nation.isAIControlled()) {
 					if (getPassenger1() != null) {
-						if(!passed){
+						if (!passed) {
 							if (pathfind != null) {
 								velocity = position.getTargetVector(pathfind).normalize().scalar(speed);
 								setFacing(pathfind);
-								if (position.getDist(pathfind) < 2)
-									pathfind = pathfind(target, 0f);
+								if (position.getDist(pathfind) < 2) pathfind = pathfind(target, 0f);
 							} else {
 								velocity = position.getTargetVector(target).normalize().scalar(speed);
 								setFacing(target);
 							}
 						}
 						position = position.addVector(velocity);
-						if(!passed)
-							if(position.getDist(target) < 1)
-								passed = true;
+						if (!passed) if (position.getDist(target) < 1) passed = true;
 						if (position.getX() < 0 || position.getX() > 1024 || position.getY() < 0 || position.getY() > 512) {
 							nation.removeUnit(getPassenger1());
 							nation.removeUnit(getPassenger2());
 							nation.removeUnit(this);
-							System.out.println(target.toString());
 						}
 					} else {
 						velocity.setX(0);
@@ -189,7 +189,7 @@ public class Ship extends Unit {
 	// isLander(): checks to see if the boat has reached land, used for landind
 	// craft
 	boolean isLanded() {
-		return Map.getArray(position) > 0.51f;
+		return Map.getArray(position) >= 0.50f;
 	}
 
 	void loadPassengers() {
@@ -201,11 +201,6 @@ public class Ship extends Unit {
 			Unit tempUnit = nation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempUnit.weight == UnitID.HEAVY) {
-				tempDist /= 4.0;
-			} else if (tempUnit.weight == UnitID.MEDIUM) {
-				tempDist /= 2.0;
-			}
 			if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY && tempUnit.weight != UnitID.LIGHT)) && !tempUnit.isBoarded()) {
 				smallestDistance = tempDist;
 				secondUnit = firstUnit;
@@ -213,7 +208,7 @@ public class Ship extends Unit {
 				unitCount++;
 			}
 		}
-		if (firstUnit != -1 && unitCount > 2) {
+		if (firstUnit != -1 && unitCount > 0) {
 			setPassenger1(nation.getUnit(firstUnit));
 			getPassenger1().setBoarded(true);
 			getPassenger1().disengage();
@@ -229,27 +224,26 @@ public class Ship extends Unit {
 	public void render(Render r) {
 		if (spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			float direction = 0;
-			if(weight == UnitID.LIGHT){
+			if (weight == UnitID.LIGHT) {
 				direction = velocity.getRadian();
 				if (velocity.getY() > 0) direction += 3.14f;
 			} else {
 				direction = position.subVec(getFacing()).getRadian();
 				if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
 			}
-			
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawSeaLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths() && position.getDist(target) > 16) {
 					if (weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange, 0.5f, 0);
-					r.drawSeaLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255 << 24 | 220 << 16 | 220 << 8 | 220);
+					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 255 << 24 | 220 << 16 | 220 << 8 | 220, 0);
 				}
 			}
 			if (getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landing), 1, direction);
 			if (getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 13, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyer), 1, direction);
 			if (getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 14, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiser), 1, direction);
-			
+
 			if ((hit > 1) && getWeight() == UnitID.LIGHT) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.landingHit), 1, direction);
 			if ((hit > 1) && getWeight() == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 17, Render.getScreenBlend(Render.getColor(weight, nation.color), r.destroyerHit), 1, direction);
 			if ((hit > 1) && getWeight() == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(), 18, Render.getScreenBlend(Render.getColor(weight, nation.color), r.cruiserHit), 1, direction);
@@ -259,8 +253,8 @@ public class Ship extends Unit {
 	void decideTarget() {
 		Point smallestPoint = new Point(-1, -1);
 		double smallestDist = 1310720;
-		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-			Unit tempUnit = nation.enemyNation.getUnit(i);
+		for (int i = 0; i < nation.enemyNation.engagedUnits.size(); i++) {
+			Unit tempUnit = nation.enemyNation.engagedUnits.get(i);
 			if ((tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.AIRFIELD) && ((nation.airSupremacy < nation.enemyNation.airSupremacy && tempUnit.id == UnitID.AIRFIELD) || (nation.landSupremacy < nation.enemyNation.landEngagedSupremacy && tempUnit.id == UnitID.FACTORY) || (nation.airSupremacy >= nation.enemyNation.airSupremacy && nation.seaSupremacy >= nation.enemyNation.seaEngagedSupremacy && nation.landSupremacy >= nation.enemyNation.landEngagedSupremacy))) {
 				Point tempPoint = tempUnit.getPosition();
 				double tempDist = tempPoint.getDist(position);
@@ -268,7 +262,6 @@ public class Ship extends Unit {
 					smallestPoint = tempPoint;
 					smallestDist = tempDist;
 				}
-				System.out.println(tempUnit.id);
 			}
 		}
 		if (smallestPoint.getX() != -1) {
@@ -295,10 +288,12 @@ public class Ship extends Unit {
 	@Override
 	public void dropDownRender(Render r, DropDown d) {
 		d.setPosition(position);
-		drawOption("", 1, 0.5f, r, d);
-		drawOption("", 2, 0.5f, r, d);
-		drawSlot(1, r, d);
-		drawSlot(2, r, d);
+		if(weight == UnitID.LIGHT){
+			drawOption("", 1, 0.5f, r, d);
+			drawOption("", 2, 0.5f, r, d);
+			drawSlot(1, r, d);
+			drawSlot(2, r, d);
+		}
 	}
 
 	/**

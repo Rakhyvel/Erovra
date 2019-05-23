@@ -1,15 +1,11 @@
 package objects.gui;
 
-import java.awt.Desktop;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import main.Main;
 import main.StateID;
 import output.Render;
-
-import com.sun.org.apache.xerces.internal.util.URI;
 
 /**
  * Handles the main menu
@@ -31,12 +27,10 @@ public class MainMenu extends Menu {
 					if (buttonsHovered == 1) {
 						Main.startNewMatch();
 					} else if (buttonsHovered == 2) {
-						Main.setState(StateID.MENU);
 						try {
 							openWebpage(new URL("https://github.com/Rakhyvel/Erovra/issues/new"));
 						}
 						catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					} else if (buttonsHovered == 3) {
@@ -76,27 +70,5 @@ public class MainMenu extends Menu {
 		} else {
 			buttonsHovered = 0;
 		}
-	}
-	
-	public static boolean openWebpage(java.net.URI uri) {
-	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-	        try {
-	            desktop.browse(uri);
-	            return true;
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return false;
-	}
-	
-	public static boolean openWebpage(URL url) {
-	    try {
-	        return openWebpage(url.toURI());
-	    } catch (URISyntaxException e) {
-	        e.printStackTrace();
-	    }
-	    return false;
 	}
 }

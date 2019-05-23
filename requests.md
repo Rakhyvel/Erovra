@@ -1,20 +1,3 @@
-- Squad functions
-	- Patrol
-	- Task forces
-	- Offensive mode??
-	- Box select
-	- ~~Pathfinding~~
-	- Pressing a key shows all units arrows
-- AI should priorotize units instead of buildings
-- ~~Actually do artillery physics right~~
-- ~~Ports don't focus on building ships if nation has air sup but not  sea sup~~
-- ~~Don't let nation build light buildings if it has medium/light buildings it can upgrade first~~
-- ~~Ports build invisible ships~~
-- Landing craft still go off screen
-- ~~Landing craft clearly targeted ports~~
-- ~~Perpendicularity fixed~~
-- ~~Spotting is super fucked~~
-
 ### Update 1.1:
 #### Instructions and menus
 - Map choose screen
@@ -24,6 +7,7 @@
 	- Hints
 	- "You have lost air supremacy!"
 - Settings screen
+	- Colorblind mode
 - Fullscreen
 
 ### Update 1.2:
@@ -33,9 +17,16 @@
 	- Sound effects
 - Death animation, ghost out and drain color
 - Particles
+	- Steam and bubbles for ships
+	- Dust around upgrading buildings
+	- Fire when things like ships are about to die
+	- Splashes when artillery shells/bombs hit water
+	- Explosions when artillery shells/bombs hit land
 
 ### Update 1.3:
 #### Gamemodes
+- Capture the flag
+- Campaign
 
 ### Update 2.0:
 #### Multiplayer

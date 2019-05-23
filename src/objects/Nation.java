@@ -20,10 +20,10 @@ public class Nation {
 	boolean ai = true;
 
 	// Units
-	private final int cavalryCost = 20;
-	private final int artilleryCost = 20;
-	private final int shipCost = 20;
-	private int planeCost = 20;
+	public int cavalryCost = 20;
+	public int artilleryCost = 20;
+	public int shipCost = 20;
+	public int planeCost = 20;
 
 	// Structures
 	private int cityCost = 15;

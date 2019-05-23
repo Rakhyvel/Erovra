@@ -1,5 +1,9 @@
 package objects.gui;
 
+import java.awt.Desktop;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import output.Render;
 
 /**
@@ -51,5 +55,28 @@ public abstract class Menu {
 			r.drawRect(x - 110, y - 20, 220, 40, 180 << 24| 20 << 16 | 20 << 8 | 20);
 			r.drawString(label, x, y, r.font16, 255<<24 | 250 << 16 | 250 << 8 | 250);
 		}
+	}
+
+	
+	public static boolean openWebpage(java.net.URI uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return false;
+	}
+	
+	public static boolean openWebpage(URL url) {
+	    try {
+	        return openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 }

@@ -1,5 +1,8 @@
 package objects.gui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import main.Main;
 import main.StateID;
 import output.Render;
@@ -43,7 +46,7 @@ public class GameMenu extends Menu {
 			drawButton("Exit", 512, 304, 3, r);
 		} else if (Main.gameState == StateID.PAUSED) {
 			drawButton("Continue", 512, 208, 1, r);
-			drawButton("Settings", 512, 256, 2, r);
+			drawButton("Report a Bug", 512, 256, 2, r);
 			drawButton("Surrender", 512, 304, 3, r);
 		}
 	}
@@ -81,7 +84,12 @@ public class GameMenu extends Menu {
 			if (buttonsHovered == 1) {
 				Main.setState(StateID.ONGOING);
 			} else if (buttonsHovered == 2) {
-				Main.setState(StateID.ONGOING);
+				try {
+					openWebpage(new URL("https://github.com/Rakhyvel/Erovra/issues/new"));
+				}
+				catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
 			} else if (buttonsHovered == 3) {
 				Main.setState(StateID.DEFEAT);
 			}

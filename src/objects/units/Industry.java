@@ -15,6 +15,8 @@ public abstract class Industry extends Unit {
 	protected UnitID productWeight = UnitID.NONE;
 	protected boolean upgrading = false;
 	public double refund = 0;
+	boolean automatic = false;
+	double prevCost = 0;
 
 	public Industry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -50,9 +52,10 @@ public abstract class Industry extends Unit {
 			nation.coins -= cost;
 			this.setProduct(product);
 			this.setProductWeight(productWeight);
-			setStart((int)time);
+			setStart((int) time);
 			maxStart = getStart();
-			refund = cost/2;
+			refund = cost / 2;
+			prevCost = cost;
 			return true;
 		} else {
 			this.setProduct(UnitID.NONE);
@@ -61,43 +64,76 @@ public abstract class Industry extends Unit {
 			maxStart = getStart();
 			refund = 0;
 		}
-		if(!nation.isAIControlled())
-			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
+		if (!nation.isAIControlled()) {
+			if (automatic) {
+				Main.world.errorMessage.showErrorMessage("Insufficient funds! Order canceled.");
+			} else {
+				Main.world.errorMessage.showErrorMessage("Insufficient funds!");
+			}
+		}
 		return false;
 	}
-	
+
 	public void upgrade(int cost) {
-		if(nation.coins > cost){
+		if (nation.coins >= cost) {
+			automatic = false;
 			upgrading = true;
 			this.setProduct(id);
 			this.setProductWeight(weight);
 			setStart(1200);
 			maxStart = getStart();
 			nation.coins -= cost;
+		} else if (!nation.isAIControlled()) {
+			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
 	
+	void cancelOrder(DropDown d){
+		automatic = false;
+		setProductWeight(UnitID.NONE);
+		setProduct(UnitID.NONE);
+		nation.coins += refund;
+		upgrading = false;
+		d.setTab(0);
+	}
+	
+	void reviewAutomatic(){
+		if(!automatic){
+			setProductWeight(UnitID.NONE);
+			if (!nation.isAIControlled()) {
+				setProduct(UnitID.NONE);
+			}
+		} else {
+			if(buyUnit(getProduct(), getProductWeight(), prevCost, getTime(weight,getProductWeight()))){
+				start = (int)maxStart;
+			} else {
+				automatic = false;
+			}
+		}
+	}
+
 	int getDropDownHeight() {
-		if(getProduct() == UnitID.NONE) {
-			if(getID() == UnitID.CITY)
+		if (getProduct() == UnitID.NONE) {
+			if (getID() == UnitID.CITY) {
 				return 90;
+			}
 			return 150;
-		} 
+		}
 		return 90;
 	}
-	
+
 	int getTime(UnitID industryWeight, UnitID unitWeight) {
 		int baseTime = 3600;
-		if(industryWeight == UnitID.MEDIUM) {
-			baseTime+=20*60;
-		} else if(industryWeight == UnitID.LIGHT){
-			baseTime+=40*60;
+		if (industryWeight == UnitID.MEDIUM) {
+			baseTime += 20 * 60;
+		} else if (industryWeight == UnitID.LIGHT) {
+			baseTime += 40 * 60;
 		}
-		
-		if(unitWeight == UnitID.MEDIUM) {
-			baseTime+=20*60;
-		} else if(unitWeight == UnitID.HEAVY){
-			baseTime+=40*60;
+
+		if (unitWeight == UnitID.MEDIUM) {
+			baseTime += 20 * 60;
+		} else if (unitWeight == UnitID.HEAVY) {
+			baseTime += 40 * 60;
 		}
 		return baseTime;
 	}
@@ -117,5 +153,9 @@ public abstract class Industry extends Unit {
 	public abstract void addProduct();
 
 	public abstract void decideNewProduct();
+
+	public boolean getAutomatic() {
+		return automatic;
+	}
 
 }

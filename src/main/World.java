@@ -1,7 +1,5 @@
 package main;
 
-import input.Mouse;
-
 import java.util.ArrayList;
 
 import objects.Nation;
@@ -28,6 +26,7 @@ public class World {
 	boolean pauseClicked = false;
 	boolean speedClicked = false;
 	boolean slowClicked = false;
+	boolean pathClicked = false;
 	public Unit selectedUnit = null;
 	public Unit highlightedUnit = null;
 	private DropDown dropDown = new DropDown();
@@ -50,7 +49,14 @@ public class World {
 	public void tick(double t) {
 		highlightedUnit = null;
 		if (Main.gameState == StateID.ONGOING) {
-			setShowPaths(Main.mouse.getX() > 930 && Main.mouse.getX() < 960 && Main.mouse.getY() < 30);
+			if(Main.mouse.getX() > 930 && Main.mouse.getX() < 960 && Main.mouse.getY() < 30){
+				if(Main.mouse.getMouseLeftDown()){
+					pathClicked = true;
+				} else if(pathClicked){
+					setShowPaths(!getShowPaths());
+					pathClicked = false;
+				}
+			}
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {
 				friendly.getProjectile(i2).tick(t);
 			}

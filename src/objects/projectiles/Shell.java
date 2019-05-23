@@ -45,6 +45,9 @@ public class Shell extends Projectile {
 	@Override
 	public void render(Render r) {
 		double scale = (secondDeriv*distance*distance+initialVelocity*distance)/64;
+		if(Math.abs(scale) > 10){
+			hit();
+		}
 		r.drawImage((int) position.getX(), (int) position.getY(), 4, r.shadowify(r.shell),1,0);
 		r.drawImage((int) position.getX(), (int) (position.getY()-(16*scale)), (int)((scale/2.0+0.5f)*4), r.resize(r.shell,(scale/2.0+0.5f),4,4),1,0);
 	}

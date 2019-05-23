@@ -54,9 +54,9 @@ public class Infantry extends Unit {
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawLandLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0.5f);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
-					r.drawLandLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220, 0.5f);
+					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0.5f);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths() && position.getDist(target) > 16) {
+					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220, 0.5f);
 				}
 			}
 
@@ -111,15 +111,14 @@ public class Infantry extends Unit {
 	 */
 	public void settle() {
 		if (nation.unupgradedCities == 0) nation.buyCity(position);
-		if (nation.getCityCost() > 30) {
+		if (nation.getCityCost() > 15) {
 			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
 				if (nation.getAirfieldCost() < nation.coins / 2 && nation.unupgradedAirfields == 0) nation.buyAirfield(position);
 			} else {
-				if (nation.seaSupremacy <= nation.enemyNation.seaSupremacy && nation.unupgradedPorts == 0) {
-					nation.buyPort(position);
-				} else {
-					if (nation.getFactoryCost() < nation.coins / 2&& nation.unupgradedFactories == 0) nation.buyFactory(position);
+				if (nation.seaSupremacy <= nation.enemyNation.seaEngagedSupremacy) {
+					if (nation.unupgradedPorts == 0) nation.buyPort(position);
 				}
+				if (nation.getFactoryCost() <= nation.coins && nation.unupgradedFactories == 0) nation.buyFactory(position);
 			}
 		}
 	}

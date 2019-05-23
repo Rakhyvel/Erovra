@@ -320,7 +320,7 @@ public abstract class Unit {
 		Point step = new Point(start);
 		boolean clear = true;
 		for (int i = 0; i < start.getDistSquared(end); i++) {
-			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
+			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) > lowerLimit;
 			step = step.addVector(march);
 			if (!clear) return false;
 		}
@@ -328,13 +328,13 @@ public abstract class Unit {
 	}
 
 	Point getObstacle(Point start, Point end, float lowerLimit) {
-		Vector march = start.subVec(end).normalize().scalar(1);
+		Vector march = start.subVec(end).normalize().scalar(0.5f);
 		Point step = new Point(start);
 		Point startPoint = null;
 		// Clear is whether or not the ray is clear
 		boolean clear = true;
 		while (step.getDistSquared(end) > 1) {
-			if (clear && (Map.getArray(step) < lowerLimit || Map.getArray(step) > lowerLimit + 0.5)) {
+			if (clear && (Map.getArray(step) <= lowerLimit || Map.getArray(step) > lowerLimit + 0.5)) {
 				// If previous was clear, and this step is not, this must be the
 				// begining of the
 				// first obstacle
@@ -347,7 +347,7 @@ public abstract class Unit {
 				return step.getMidPoint(startPoint);
 			}
 			// Check clarity, advance step
-			clear &= Map.getArray(step) < lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
+			clear &= Map.getArray(step) <= lowerLimit + 0.5 && Map.getArray(step) >= lowerLimit;
 			step = step.addVector(march);
 		}
 		// If there was no obstacle, return null for midpoint
@@ -357,7 +357,7 @@ public abstract class Unit {
 	Point perpendicularize(Point midPoint, Point start, float lowerLimit) {
 		if (midPoint.getY() == start.getY()) start.setY(start.getY() + 1);
 		double slope = -1 * (midPoint.getX() - start.getX()) / (midPoint.getY() - start.getY());
-		double displacement = 1;
+		double displacement = 5;
 		boolean aTooFar = false;
 		boolean bTooFar = false;
 		while (displacement > 0) {
@@ -475,6 +475,7 @@ public abstract class Unit {
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, power, nation, facing));
 			}
+			if (id == UnitID.SHIP) setFacing(getTarget());
 			if (nation.isAIControlled()) setTarget(position);
 		}
 	}
@@ -482,8 +483,9 @@ public abstract class Unit {
 	public void shootTorpedo() {
 		if (findTarget(0, 16384)) {
 			if ((Main.ticks - born) % 90 == 0) {
-				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(getTarget())));
+				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(facing)));
 			}
+			setFacing(getTarget());
 			if (nation.isAIControlled()) setTarget(position);
 		}
 	}
@@ -514,7 +516,7 @@ public abstract class Unit {
 	}
 
 	void targetMove(float baseline) {
-		if (Map.withinBaseline(getNextStep(target), baseline)) {
+		if (Map.withinBaseline(getNextStep(target), baseline) || (id == UnitID.SHIP && weight == UnitID.LIGHT)) {
 			velocity = position.getTargetVector(target).normalize().scalar(speed);
 			position = position.addVector(velocity);
 			if (!nation.isAIControlled() && position.getDist(target) < 1) {
@@ -557,64 +559,68 @@ public abstract class Unit {
 	 */
 	public void detectHit() {
 		if (hit > 0) hit--;
+		UnitID projectileID = UnitID.NONE;
 		for (int i = 0; i < nation.enemyNation.projectileSize() && getID() != UnitID.NONE; i++) {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
+			projectileID = tempProjectile.getID();
 			if (tempProjectile.id == UnitID.BOMB) distance /= 4;
 			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0 && !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET)) && !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO) && !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL) && !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT) && tempProjectile.getID() == UnitID.ANTIPERSONEL) && !(tempProjectile.getID() == UnitID.BOMB && capital)) {
 				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL) tempProjectile.hit();
 				hit = 9;
 				health -= tempProjectile.getAttack() / getDefense();
-
-				if (health <= 0) {
-					if (capital) {
-						System.out.println(nation.name + " has lost! This took:");
-						System.out.println(Main.ticks / 3600 + " minutes!");
-						nation.defeat();
-					}
-					if (Main.world.selectedUnit != null) {
-						if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
-					}
-					health = 0;
-					if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT) {
-						nation.airSupremacy--;
-					}
-					if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT) {
-						nation.seaSupremacy--;
-						nation.seaEngagedSupremacy--;
-					}
-					if (id == UnitID.CITY) {
-						if (nation.getCityCost() >= 1) nation.setCityCost(nation.getCityCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) {
-							nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
-							nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
-						}
-					} else if (id == UnitID.FACTORY) {
-						if (nation.getFactoryCost() >= 30) nation.setFactoryCost(nation.getFactoryCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) {
-							nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
-							nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
-						}
-					} else if (id == UnitID.PORT) {
-						if (nation.getPortCost() > 20) nation.setPortCost(nation.getPortCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) {
-							nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
-							nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
-						}
-					} else if (id == UnitID.AIRFIELD) {
-						if (nation.getAirfieldCost() > 20) nation.setAirfieldCost(nation.getAirfieldCost() / 2);
-						if (tempProjectile.getID() != UnitID.BOMB) {
-							nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
-							nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
-						}
-					} else if (id == UnitID.INFANTRY || id == UnitID.CAVALRY || id == UnitID.ARTILLERY) {
-						nation.setLandSupremacy(-1);
-						nation.landEngagedSupremacy--;
-					}
-					nation.removeUnit(this);
-					nation.engagedUnits.remove(this);
-				}
+				if(health <= 0)
+					break;
 			}
+		}
+		if (health <= 0) {
+			if (capital) {
+				System.out.println(nation.name + " has lost! This took:");
+				System.out.println(Main.ticks / 3600 + " minutes!");
+				nation.defeat();
+			}
+			if (Main.world.selectedUnit != null) {
+				if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
+			}
+			health = 0;
+			if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT) {
+				nation.airSupremacy--;
+			}
+			if (id == UnitID.SHIP && getWeight() != UnitID.LIGHT) {
+				nation.seaSupremacy--;
+				nation.seaEngagedSupremacy--;
+			}
+			if (id == UnitID.CITY) {
+				if (nation.getCityCost() >= 1) nation.setCityCost(nation.getCityCost() / 2);
+				if (projectileID != UnitID.BOMB) {
+					nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
+					nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
+				}
+			} else if (id == UnitID.FACTORY) {
+				if (nation.getFactoryCost() >= 30) nation.setFactoryCost(nation.getFactoryCost() / 2);
+				if (projectileID != UnitID.BOMB) {
+					nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
+					nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
+				}
+			} else if (id == UnitID.PORT) {
+				if (nation.getPortCost() > 20) nation.setPortCost(nation.getPortCost() / 2);
+				if (projectileID != UnitID.BOMB) {
+					nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
+					nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
+				}
+			} else if (id == UnitID.AIRFIELD) {
+				if (nation.getAirfieldCost() > 20) nation.setAirfieldCost(nation.getAirfieldCost() / 2);
+				if (projectileID != UnitID.BOMB) {
+					nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
+					nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
+				}
+			} else if (id == UnitID.INFANTRY || id == UnitID.CAVALRY || id == UnitID.ARTILLERY) {
+				nation.setLandSupremacy(-1);
+				nation.landEngagedSupremacy--;
+			}
+			nation.removeUnit(this);
+			nation.engagedUnits.remove(this);
+			if (!nation.isAIControlled()) if (Main.world.getDropDown().isUnit(this)) Main.world.getDropDown().shouldClose();
 		}
 	}
 

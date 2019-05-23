@@ -47,7 +47,7 @@ public class DropDown extends Menu {
 				}
 			} else {
 				buttonsHovered = 0;
-				if (Main.mouse.getMouseLeftDown())
+				if (Main.mouse.getMouseLeftDown() || Main.mouse.getMouseRightDown())
 					shouldClose();
 			}
 		}
@@ -90,6 +90,26 @@ public class DropDown extends Menu {
 		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);
 		r.drawString(label, x + 7, y + 14 + buttonID * 30, r.font16, textColor, false);
 	}
+	
+	public void drawOption(String label, int x, int buttonID, int rectColor, int borders, Render r) {
+		int y = (int) getPosition().getY();
+		int textColor = 255 << 24 | 250 << 16 | 250 << 8 | 250;
+		if (buttonsHovered == buttonID && rectColor > 0 && Main.mouse.getX() > x && Main.mouse.getX() < x+90) {
+			rectColor *= 2.7;
+		}
+		if(x == getPosition().getX()+90){
+			borders = 12;
+			r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);	
+		} else {
+			if(rectColor == 0){
+				r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | 25 << 16 | 128 << 8 | 230,borders);	
+			} else {
+				r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);	
+			}
+		}
+		r.drawString(label, x + 45, y + 14 + buttonID * 30, r.font16, textColor);
+	}
+	
 
 	public void drawTab(int tabs, int[] tab1, int[] tab2, int[] tab3, int w1, int w2, int w3, Render r) {
 		for (int i = 0; i < tabs; i++) {
@@ -243,7 +263,12 @@ public class DropDown extends Menu {
 					180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
 			r.drawString(product, (int) getPosition().getX(), (int) getPosition().getY() + 44, r.font16,
 					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			drawOption("Cancel order (-"+(int)(industry.refund)+")", 2, 32, 13, r);
+			if(industry.getAutomatic()){
+				drawOption("Auto", (int)getPosition().getX(),  2, 0, 13, r);
+			} else {
+				drawOption("Auto", (int)getPosition().getX(),  2, 32, 13, r);
+			}
+			drawOption("Cancel", (int)getPosition().getX()+90, 2, 32, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
 				drawOption(light + " (" + (int)lightCost + ")", 2, 32, 5, r);
@@ -297,5 +322,10 @@ public class DropDown extends Menu {
 		r.drawString(product, (int) getPosition().getX()+7, (int) getPosition().getY() + 44, r.font16,
 				255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 		drawOption("Cancel upgrade", 2, 32, 13, r);
+	}
+	public boolean isUnit(Unit unit){
+		if(this.unit == null)
+			return false;
+		return this.unit.equals(unit);
 	}
 }

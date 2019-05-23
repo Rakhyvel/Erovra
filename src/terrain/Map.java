@@ -317,7 +317,7 @@ public class Map {
 
 	public static boolean withinBaseline(Point p, float baseline) {
 		if (getArray(p) == -1) return false;
-		return getArray(p) > baseline && getArray(p) < baseline + 0.5f;
+		return getArray(p) >= baseline && getArray(p) < baseline + 0.5f;
 	}
 
 	/**
