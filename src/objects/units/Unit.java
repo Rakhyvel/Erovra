@@ -45,6 +45,7 @@ public abstract class Unit {
 
 	protected UnitID id;
 	protected UnitID weight;
+	private UnitID closestUnit;
 
 	public boolean capital = false;
 	private boolean boarded = false;
@@ -278,6 +279,14 @@ public abstract class Unit {
 		return weight;
 	}
 
+	// This function removes the unit from selection. Used when units are
+	// removed from game.
+	void removeSelect() {
+		if (Main.world.selectedUnit != null) {
+			if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
+		}
+	}
+
 	/**
 	 * Returns the position the unit would be at if it were to advance at to the
 	 * target given. Used in pathfinding to detect if the unit will cross into
@@ -400,6 +409,7 @@ public abstract class Unit {
 	}
 
 	public boolean findTarget(float baseline, int range) {
+		closestUnit = null;
 		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
@@ -416,7 +426,7 @@ public abstract class Unit {
 						smallestPoint = tempPoint;
 						smallestUnit = tempUnit;
 					}
-					if ((tempDist < smallestEngagedDistance || (UnitID.isLandUnit(tempUnit.id) && UnitID.isBuilding(smallestUnit.id))) && tempUnit.engaged) {
+					if ((tempDist < smallestEngagedDistance || (tempUnit.id.isLandUnit() && smallestUnit.id.isBuilding())) && tempUnit.engaged) {
 						smallestEngagedDistance = tempDist;
 						smallestEngagedPoint = tempPoint;
 					}
@@ -456,6 +466,7 @@ public abstract class Unit {
 			} else {
 				if (nation.isAIControlled()) retarget(baseline);
 			}
+			closestUnit = smallestUnit.id;
 			return smallestPoint.equals(pathfind);
 		}
 		return false;
@@ -466,7 +477,9 @@ public abstract class Unit {
 			if ((Main.ticks - born) % 60 == 0) {
 				nation.addProjectile(new Bullet(position, nation, position.getTargetVector(facing), cal * (health / 10), UnitID.BULLET));
 			}
-			if (nation.isAIControlled()) setTarget(position);
+			if (nation.isAIControlled() || (!(id == UnitID.CAVALRY && weight == UnitID.LIGHT) && !closestUnit.isBuilding())) {
+				setTarget(position);
+			}
 		}
 	}
 
@@ -569,8 +582,7 @@ public abstract class Unit {
 				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL) tempProjectile.hit();
 				hit = 9;
 				health -= tempProjectile.getAttack() / getDefense();
-				if(health <= 0)
-					break;
+				if (health <= 0) break;
 			}
 		}
 		if (health <= 0) {
@@ -578,9 +590,6 @@ public abstract class Unit {
 				System.out.println(nation.name + " has lost! This took:");
 				System.out.println(Main.ticks / 3600 + " minutes!");
 				nation.defeat();
-			}
-			if (Main.world.selectedUnit != null) {
-				if (selected || Main.world.selectedUnit.equals(this)) Main.world.selectedUnit = null;
 			}
 			health = 0;
 			if (id == UnitID.PLANE && getWeight() == UnitID.LIGHT) {
@@ -618,6 +627,7 @@ public abstract class Unit {
 				nation.setLandSupremacy(-1);
 				nation.landEngagedSupremacy--;
 			}
+			removeSelect();
 			nation.removeUnit(this);
 			nation.engagedUnits.remove(this);
 			if (!nation.isAIControlled()) if (Main.world.getDropDown().isUnit(this)) Main.world.getDropDown().shouldClose();

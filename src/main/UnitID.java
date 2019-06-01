@@ -10,10 +10,10 @@ public enum UnitID {
 	//Weights
 	LIGHT, MEDIUM, HEAVY, NONE;
 	
-	public static boolean isLandUnit(UnitID id){
-		return id == INFANTRY || id == CAVALRY || id == ARTILLERY;
+	public boolean isLandUnit(){
+		return this == INFANTRY || this == CAVALRY || this == ARTILLERY;
 	}
-	public static boolean isBuilding(UnitID id){
-		return id == AIRFIELD || id == CITY || id == FACTORY || id == PORT;
+	public boolean isBuilding(){
+		return this == AIRFIELD || this == CITY || this == FACTORY || this == PORT;
 	}
 }

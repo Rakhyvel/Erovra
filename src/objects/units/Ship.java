@@ -86,6 +86,7 @@ public class Ship extends Unit {
 							getPassenger2().setTarget(position.addPoint(new Point(.1, 0)));
 						}
 					}
+					removeSelect();
 					nation.removeUnit(this);
 				}
 

@@ -66,7 +66,7 @@ public class Airfield extends Industry {
 	 * Adds whatever product is decided to the game
 	 */
 	public void addProduct() {
-		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
+		if (getProductWeight() != null && getProductWeight() != UnitID.NONE) {
 			if (getProduct() != UnitID.AIRFIELD) {
 				nation.addUnit(new Plane(position, nation, getProductWeight()));
 				if (getProductWeight() == UnitID.LIGHT) nation.airSupremacy++;
@@ -150,8 +150,10 @@ public class Airfield extends Industry {
 				}
 			}
 		} else {
+			System.out.println("Beep bop a doo bop");
 			if (d.buttonsHovered == 2) {
-				if(Main.mouse.getX() > d.getPosition().getX()+90){
+				// This part cancels both upgrades and production. The or operator differenciates between the two
+				if (Main.mouse.getX() > d.getPosition().getX() + 90 || getProduct() == UnitID.AIRFIELD) {
 					cancelOrder(d);
 				} else {
 					automatic = !automatic;

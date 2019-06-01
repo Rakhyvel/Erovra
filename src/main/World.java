@@ -149,17 +149,17 @@ public class World {
 				}
 			}
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (UnitID.isBuilding(friendly.getUnit(i2).getID())) friendly.getUnit(i2).render(r);
+				if (friendly.getUnit(i2).getID().isBuilding()) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (UnitID.isBuilding(hostile.getUnit(i2).getID())) hostile.getUnit(i2).render(r);
+				if (hostile.getUnit(i2).getID().isBuilding()) hostile.getUnit(i2).render(r);
 			}
 			
 			for (int i2 = friendly.unitSize() - 1; i2 >= 0; i2--) {
-				if (!UnitID.isBuilding(friendly.getUnit(i2).getID()) && friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
+				if (!friendly.getUnit(i2).getID().isBuilding() && friendly.getUnit(i2).getID() != UnitID.PLANE) friendly.getUnit(i2).render(r);
 			}
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
-				if (!UnitID.isBuilding(hostile.getUnit(i2).getID()) && hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
+				if (!hostile.getUnit(i2).getID().isBuilding() && hostile.getUnit(i2).getID() != UnitID.PLANE) hostile.getUnit(i2).render(r);
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {

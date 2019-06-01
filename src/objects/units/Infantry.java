@@ -30,13 +30,13 @@ public class Infantry extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
-			shootBullet(1);
 			if (nation.isAIControlled()) {
 				settle();
 			} else {
 				clickToMove();
 				clickToDropDown();
 			}
+			shootBullet(1);
 			if (spotted > 0) {
 				spotted--;
 			} else {

@@ -1,6 +1,8 @@
 ### Update 1.1:
 #### Instructions and menus
 - Map choose screen
+	- Nation name to display on capital
+	- Color selector
 - Map is generating screen
 - Zoom function
 - When people first click start game, they don't really know what to do
@@ -15,7 +17,11 @@
 - Sound
 	- In-game music
 	- Sound effects
-- Death animation, ghost out and drain color
+- Animations
+	- Death animations (drain color and fade) for ground units
+	- Sinking for sea units
+	- Plane crashing
+	- Spinning to target
 - Particles
 	- Steam and bubbles for ships
 	- Dust around upgrading buildings

@@ -186,7 +186,8 @@ public class Factory extends Industry {
 			}
 		} else {
 			if (d.buttonsHovered == 2) {
-				if (Main.mouse.getX() > d.getPosition().getX() + 90) {
+				// This part cancels both upgrades and production. The or operator differenciates between the two
+				if (Main.mouse.getX() > d.getPosition().getX() + 90 || getProduct() == UnitID.FACTORY) {
 					cancelOrder(d);
 					if (d.getTab() == 0) {
 						cavalry = true;
