@@ -40,8 +40,15 @@ public class City extends Industry {
 				if (!nation.engagedUnits.contains(this)) nation.engagedUnits.add(this);
 			}
 			engaged = false;
-			if ((Main.ticks - born) % (640 / getDefense()) == 0 && !upgrading) {
-				nation.addCoin(position);
+			// (#47) Code that determines whether or not capital produced twice coins or not
+			if(capital && !recruiting) {
+				if ((Main.ticks - born) % (320 / getDefense()) == 0 && !upgrading) {
+					nation.addCoin(position);
+				}
+			} else {
+				if ((Main.ticks - born) % (640 / getDefense()) == 0 && !upgrading) {
+					nation.addCoin(position);
+				}
 			}
 			if (start < 0 && capital) {
 				nation.addUnit(new Infantry(position, nation));

@@ -138,7 +138,7 @@ public class Main {
 		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
 		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
 		sweden.setAIControlled(false);
-		// russia.setAIControlled(false);
+//		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -147,8 +147,10 @@ public class Main {
 		if (mapID == MapID.RANDOM) id = MapID.values()[rand.nextInt(5)];
 		System.out.println(id);
 		world.getDropDown().shouldClose();
+		boolean clearPath;
 
 		do {
+			clearPath = true;
 			// Generate a new map
 			map.generateMap((int) System.currentTimeMillis() & 255, id);
 
@@ -205,8 +207,27 @@ public class Main {
 					break;
 				}
 			}
+
+			if(id == MapID.MOUNTAIN && (sweden.unitSize() + russia.unitSize()) == 2) {
+				System.out.println("pathing");
+				// (#46) Pathfinding moutain maps
+				sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
+				for (int i = 0; i < 6 && clearPath; i++) {
+					Point pathfind = sweden.getUnit(1).pathfind(russia.capital.getPosition(),0.5f);
+					if(pathfind == null) {
+						clearPath = false;
+					} else {
+						System.out.println(pathfind.toString());
+						sweden.getUnit(1).setPosition(pathfind);
+					}
+					if(i == 6) {
+						clearPath = false;
+					}
+				}
+				sweden.removeUnit(sweden.getUnit(1));
+			}
 		}
-		while (sweden.unitSize() + russia.unitSize() < 2);
+		while (sweden.unitSize() + russia.unitSize() < 2 || !clearPath);
 		sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
 		russia.addUnit(new Infantry(new Point(russia.getUnit(0).getPosition()), russia));
 	}
