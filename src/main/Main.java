@@ -1,8 +1,5 @@
 package main;
 
-import input.Keyboard;
-import input.Mouse;
-
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Random;
@@ -10,6 +7,8 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import input.Keyboard;
+import input.Mouse;
 import objects.Nation;
 import objects.gui.GameMenu;
 import objects.gui.MainMenu;
@@ -58,8 +57,7 @@ public class Main {
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
 	 * 
-	 * @param args
-	 *            No idea what these do
+	 * @param args No idea what these do
 	 */
 	public static void main(String args[]) {
 		Main m = new Main();
@@ -83,7 +81,8 @@ public class Main {
 				Main.world.tick(t);
 				accumulator -= dt;
 				t += dt;
-				if (gameState == StateID.ONGOING) ticks++;
+				if (gameState == StateID.ONGOING)
+					ticks++;
 			}
 			m.render.render();
 			frames++;
@@ -128,8 +127,8 @@ public class Main {
 	}
 
 	/**
-	 * Sets the state of the game to ongoin, creates two teams, and generates a
-	 * new map
+	 * Sets the state of the game to ongoing, creates two teams, and generates a new
+	 * map
 	 */
 	public static void startNewMatch() {
 		ticks = 0;
@@ -144,7 +143,8 @@ public class Main {
 		sweden.setEnemyNation(russia);
 		russia.setEnemyNation(sweden);
 		MapID id = mapID;
-		if (mapID == MapID.RANDOM) id = MapID.values()[rand.nextInt(5)];
+		if (mapID == MapID.RANDOM)
+			id = MapID.values()[rand.nextInt(5)];
 		System.out.println(id);
 		world.getDropDown().shouldClose();
 		boolean clearPath;
@@ -208,33 +208,31 @@ public class Main {
 				}
 			}
 
-			if(id == MapID.MOUNTAIN && (sweden.unitSize() + russia.unitSize()) == 2) {
+			if (id == MapID.MOUNTAIN && sweden.unitSize() == 1 && russia.unitSize() == 1) {
 				System.out.println("pathing");
 				// (#46) Pathfinding moutain maps
 				sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
 				for (int i = 0; i < 6 && clearPath; i++) {
-					Point pathfind = sweden.getUnit(1).pathfind(russia.capital.getPosition(),0.5f);
-					if(pathfind == null) {
+					Point pathfind = sweden.getUnit(1).pathfind(russia.capital.getPosition(), 0.5f);
+					if (pathfind == null) {
 						clearPath = false;
 					} else {
 						System.out.println(pathfind.toString());
 						sweden.getUnit(1).setPosition(pathfind);
 					}
-					if(i == 6) {
+					if (i == 6) {
 						clearPath = false;
 					}
 				}
 				sweden.removeUnit(sweden.getUnit(1));
 			}
-		}
-		while (sweden.unitSize() + russia.unitSize() < 2 || !clearPath);
+		} while (sweden.unitSize() + russia.unitSize() < 2 || !clearPath);
 		sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
 		russia.addUnit(new Infantry(new Point(russia.getUnit(0).getPosition()), russia));
 	}
 
 	/**
-	 * @param id
-	 *            The game state to be changed.
+	 * @param id The game state to be changed.
 	 */
 	public static void setState(StateID id) {
 		Main.gameState = id;

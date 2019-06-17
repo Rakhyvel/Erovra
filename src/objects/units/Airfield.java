@@ -89,24 +89,26 @@ public class Airfield extends Industry {
 	 * Decides what product to manufacture. Only used for AI
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
-			buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * getDefense() * 0.5, getTime(weight, UnitID.LIGHT));
-		} else {
-			if (nation.enemyNation.landEngagedSupremacy > nation.landSupremacy && nation.enemyNation.seaEngagedSupremacy > nation.seaSupremacy) {
-				buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, getTime(weight, UnitID.MEDIUM));
+		if((nation.getCityCost()) >= nation.unitSize()) {
+			if (nation.enemyNation.airSupremacy >= nation.airSupremacy) {
+				buyUnit(UnitID.PLANE, UnitID.LIGHT, nation.getPlaneCost() / 2 * getDefense() * 0.5, getTime(weight, UnitID.LIGHT));
 			} else {
-				int smallestDistance = 1310720;
-				for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-					Unit tempUnit = nation.enemyNation.getUnit(i);
-					if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
-						Point tempPoint = tempUnit.getPosition();
-						int tempDist = (int) position.getDist(tempPoint);
-						if (tempDist < smallestDistance) {
-							smallestDistance = tempDist;
+				if (nation.enemyNation.landEngagedSupremacy > nation.landSupremacy && nation.enemyNation.seaEngagedSupremacy > nation.seaSupremacy) {
+					buyUnit(UnitID.PLANE, UnitID.MEDIUM, nation.getPlaneCost() * getDefense() * 0.5, getTime(weight, UnitID.MEDIUM));
+				} else {
+					int smallestDistance = 1310720;
+					for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+						Unit tempUnit = nation.enemyNation.getUnit(i);
+						if ((tempUnit.id == UnitID.CITY || tempUnit.id == UnitID.FACTORY || tempUnit.id == UnitID.PORT || tempUnit.id == UnitID.AIRFIELD) && !tempUnit.capital) {
+							Point tempPoint = tempUnit.getPosition();
+							int tempDist = (int) position.getDist(tempPoint);
+							if (tempDist < smallestDistance) {
+								smallestDistance = tempDist;
+							}
 						}
 					}
+					if (smallestDistance < 1310720) buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 2.5 * getDefense() * 0.5, getTime(weight, UnitID.HEAVY));
 				}
-				if (smallestDistance < 1310720) buyUnit(UnitID.PLANE, UnitID.HEAVY, nation.getPlaneCost() * 2.5 * getDefense() * 0.5, getTime(weight, UnitID.HEAVY));
 			}
 		}
 	}
@@ -114,7 +116,7 @@ public class Airfield extends Industry {
 	@Override
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
-			if (getProductWeight() != UnitID.NONE && getStart() > 1) {
+			if (getProductWeight() != UnitID.NONE && getStart() > 1 && nation.name.contains("Sweden")) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 			}
@@ -150,7 +152,6 @@ public class Airfield extends Industry {
 				}
 			}
 		} else {
-			System.out.println("Beep bop a doo bop");
 			if (d.buttonsHovered == 2) {
 				// This part cancels both upgrades and production. The or operator differenciates between the two
 				if (Main.mouse.getX() > d.getPosition().getX() + 90 || getProduct() == UnitID.AIRFIELD) {

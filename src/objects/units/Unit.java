@@ -477,6 +477,10 @@ public abstract class Unit {
 			}
 			closestUnit = smallestUnit.id;
 			return smallestPoint.equals(pathfind);
+		} else {
+			// (#55) This is to make sure units don't stay fixated on a target after its died or gone out of range
+			if (!getTarget().equals(position))
+				setFacing(getTarget());
 		}
 		return false;
 	}
@@ -776,7 +780,7 @@ public abstract class Unit {
 			double angle = rand.nextFloat() * 2 * Math.PI;
 			double start = angle;
 			do {
-				setTarget(position.addPoint(new Point(Math.cos(angle) * 32, Math.sin(angle) * 32)));
+				setTarget(position.addPoint(new Point(Math.cos(angle) * 50, Math.sin(angle) * 50)));
 				angle += 0.1;
 			} while (!clearPath(target, position, baseline) && angle < start + 6.28f);
 			setFacing(target);

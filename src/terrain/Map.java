@@ -101,13 +101,17 @@ public class Map {
 				}
 				for (int n = 9; n >= 0; n--) {
 					int p = 1 << n;
+					boolean right = false;
 					for (int i = p; i < 1024; i += p * 2) {
 						points[i] = new Point(points[i - p].addPoint(points[i + p])).multScalar(0.5f);
 						double slope = -1 * (points[i - p].getX() - points[i + p].getX()) / (points[i - p].getY() - points[i + p].getY());
 						double dist = points[i - p].getDistSquared(points[i + p]);
-						double displacement = ((rand.nextDouble() * 1) - 1 / 2.0f) * dist / 2.0f;
+						double displacement = Math.abs(((rand.nextDouble() * 1) - 1 / 2.0f) * dist / 2.0f);
+						if(right)
+							displacement *= -1;
 						points[i].setX(points[i].getX() + (displacement / Math.sqrt(slope * slope + 1)));
 						points[i].setY(points[i].getY() + (slope * displacement / Math.sqrt(slope * slope + 1)));
+						right = !right;
 					}
 				}
 				for (int i = 0; i < 1025 * 513; i++) {

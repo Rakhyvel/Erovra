@@ -41,7 +41,7 @@ public class Nation {
 	public int airEngagedSupremacy = 0;
 	public int seaEngagedSupremacy = 0;
 	public int landEngagedSupremacy = 0;
-	
+
 	public int unupgradedCities = -1;
 	public int unupgradedFactories = 0;
 	public int unupgradedAirfields = 0;
@@ -70,7 +70,7 @@ public class Nation {
 	public void addUnit(Unit unit) {
 		unitArray.add(unit);
 	}
-	
+
 	public void removeUnit(Unit unit) {
 		unitArray.remove(unit);
 		engagedUnits.remove(unit);
@@ -203,16 +203,16 @@ public class Nation {
 			Point cityPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(cityPoint) > 0.5f && Map.getArray(cityPoint) < 1) {
-				if(checkProximity(position)) {
+				if (checkProximity(position)) {
 					coins -= getCityCost();
 					setCityCost(getCityCost() * 2);
 					addUnit(new City(cityPoint, this, Main.ticks));
 					return true;
 				}
-			} else if(!isAIControlled()){
+			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build a city here!");
 			}
-		} else if(!isAIControlled()){
+		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 		return false;
@@ -222,48 +222,49 @@ public class Nation {
 	 * First checks to see if there is enough coins, then checks to see if the land
 	 * is able to have a factory
 	 * 
-	 * @param position  The position of the infantry unit buying
+	 * @param position The position of the infantry unit buying
 	 */
 	public void buyFactory(Point position) {
-		if(coins >= factoryCost) {
+		if (coins >= factoryCost) {
 			Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
 			if (Map.getArray(factoryPoint) > 0.5f && Map.getArray(factoryPoint) < 1) {
-				if(checkProximity(position)) {
+				if (checkProximity(position)) {
 					coins -= getFactoryCost();
 					setFactoryCost(getFactoryCost() * 2);
 					addUnit(new Factory(factoryPoint, this));
 				}
-			} else if(!isAIControlled()){
+			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build a factory here!");
 			}
-		} else if(!isAIControlled()){
+		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
 
 	/**
-	 * First checks to see if there is enough coins,
-	 * then checks to see if the land is able to have a port
+	 * First checks to see if there is enough coins, then checks to see if the land
+	 * is able to have a port
 	 * 
-	 * @param position  The position of the infantry unit buying
+	 * @param position The position of the infantry unit buying
 	 */
 	public boolean buyPort(Point position) {
-		if(coins >= portCost) {
-			Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32, ((int) (position.getY() / 64)) * 64 + 32);
+		if (coins >= portCost) {
+			Point portPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
+					((int) (position.getY() / 64)) * 64 + 32);
 			float land = Map.getArray(portPoint);
 			if (land < 0.5f && land > 0) {
-				if(checkProximity(position)) {
+				if (checkProximity(position)) {
 					coins -= getPortCost();
 					setPortCost(getPortCost() * 2);
 					addUnit(new Port(portPoint, this));
 					return true;
 				}
-			} else if(!isAIControlled()){
+			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build a port on a land tile!");
 				return false;
 			}
-		} else if(!isAIControlled()){
+		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 			return false;
 		}
@@ -271,20 +272,20 @@ public class Nation {
 	}
 
 	public void buyAirfield(Point position) {
-		if(coins >= airfieldCost) {
+		if (coins >= airfieldCost) {
 			Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
 			float land = Map.getArray(airfieldPoint);
 			if (land > 0.5f && land < 1) {
-				if(checkProximity(position)) {
+				if (checkProximity(position)) {
 					coins -= getAirfieldCost();
 					setAirfieldCost(getAirfieldCost() * 2);
 					addUnit(new Airfield(airfieldPoint, this));
 				}
-			} else if(!isAIControlled()){
+			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build an airfield here!");
 			}
-		} else if(!isAIControlled()){
+		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
 	}
@@ -331,7 +332,7 @@ public class Nation {
 				}
 			}
 		}
-		if(!isAIControlled() && smallestDistance < 32) {
+		if (!isAIControlled() && smallestDistance < 32) {
 			Main.world.errorMessage.showErrorMessage("Cannot build a building here!");
 		}
 		return smallestDistance >= 32;
@@ -384,12 +385,13 @@ public class Nation {
 	public int getPlaneCost() {
 		return planeCost;
 	}
+
 	public void setPlaneCost(int planeCost) {
 		this.planeCost = planeCost;
 	}
-	
-	public void setLandSupremacy(int i){
-		if(landSupremacy+i >= 0)
-			landSupremacy+=i;
+
+	public void setLandSupremacy(int i) {
+		if (landSupremacy + i >= 0)
+			landSupremacy += i;
 	}
 }

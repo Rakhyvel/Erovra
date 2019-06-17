@@ -27,7 +27,7 @@ public class Port extends Industry {
 		setProductWeight(UnitID.NONE);
 		weight = UnitID.LIGHT;
 		buyInCost = nation.getPortCost() / 2;
-		nation.unupgradedPorts+=1;
+		nation.unupgradedPorts += 1;
 	}
 
 	@Override
@@ -71,14 +71,14 @@ public class Port extends Industry {
 		if (getProductWeight() != UnitID.NONE && getProductWeight() != null) {
 			if (getProduct() != UnitID.PORT) {
 				nation.addUnit(new Ship(position, nation, getProductWeight()));
-				if(getProductWeight() != UnitID.LIGHT){
+				if (getProductWeight() != UnitID.LIGHT) {
 					nation.seaSupremacy++;
 				}
 			} else {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
-					nation.unupgradedPorts-=1;
+					nation.unupgradedPorts -= 1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);
@@ -93,33 +93,39 @@ public class Port extends Industry {
 	 * If the nation is AI controlled, decides what ship to build
 	 */
 	public void decideNewProduct() {
-		if (nation.enemyNation.airSupremacy <= nation.airSupremacy) {
-			// If nation has air supremacy
-			if (nation.enemyNation.seaEngagedSupremacy < nation.seaSupremacy) {
-				// If nation has sea supremacy
-				int smallestDistance = 1310720;
-				int unitCount = 0;
-				for (int i = 0; i < nation.unitSize(); i++) {
-					Unit tempUnit = nation.getUnit(i);
-					int tempDist = (int) position.getDist(tempUnit.getPosition());
-					if (tempDist < smallestDistance && ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY) || (tempUnit.id == UnitID.ARTILLERY && tempUnit.weight != UnitID.LIGHT)) && !tempUnit.isBoarded()) {
-						smallestDistance = tempDist;
-						unitCount++;
+
+		if ((nation.getCityCost()) >= nation.unitSize()) {
+			if (nation.enemyNation.airSupremacy <= nation.airSupremacy) {
+				// If nation has air supremacy
+				if (nation.enemyNation.seaEngagedSupremacy < nation.seaSupremacy) {
+					// If nation has sea supremacy
+					int smallestDistance = 1310720;
+					int unitCount = 0;
+					for (int i = 0; i < nation.unitSize(); i++) {
+						Unit tempUnit = nation.getUnit(i);
+						int tempDist = (int) position.getDist(tempUnit.getPosition());
+						if (tempDist < smallestDistance
+								&& ((tempUnit.id == UnitID.CAVALRY) || (tempUnit.id == UnitID.INFANTRY)
+										|| (tempUnit.id == UnitID.ARTILLERY && tempUnit.weight != UnitID.LIGHT))
+								&& !tempUnit.isBoarded()) {
+							smallestDistance = tempDist;
+							unitCount++;
+						}
 					}
-				}
-				if (unitCount > 3) {
-					buyUnit(UnitID.SHIP, UnitID.LIGHT, (int) (nation.getShipCost() / 4 * getDefense() * 0.5),
-							getTime(weight, UnitID.LIGHT));
-				}
-			} else {
-				// If nation does not have sea supremacy
-				if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
-						getTime(weight, UnitID.HEAVY))) {
-					// If nation can afford cruiser
+					if (unitCount > 3) {
+						buyUnit(UnitID.SHIP, UnitID.LIGHT, (int) (nation.getShipCost() / 4 * getDefense() * 0.5),
+								getTime(weight, UnitID.LIGHT));
+					}
 				} else {
-					buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
-							getTime(weight, UnitID.MEDIUM));
-					// If nation cannot afford cruiser, but can afford destroyer
+					// If nation does not have sea supremacy
+					if (buyUnit(UnitID.SHIP, UnitID.HEAVY, nation.getShipCost() * 2 * getDefense() * 0.5,
+							getTime(weight, UnitID.HEAVY))) {
+						// If nation can afford cruiser
+					} else {
+						buyUnit(UnitID.SHIP, UnitID.MEDIUM, nation.getShipCost() * getDefense() * 0.5,
+								getTime(weight, UnitID.MEDIUM));
+						// If nation cannot afford cruiser, but can afford destroyer
+					}
 				}
 			}
 		}
@@ -129,7 +135,7 @@ public class Port extends Industry {
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
 				|| Main.gameState == StateID.VICTORY) {
-			if (getProductWeight() != UnitID.NONE && getStart() > 1) {
+			if (getProductWeight() != UnitID.NONE && getStart() > 1 && nation.name.contains("Sweden")) {
 				r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 				r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
 						(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
@@ -171,7 +177,8 @@ public class Port extends Industry {
 			}
 		} else {
 			if (d.buttonsHovered == 2) {
-				// This part cancels both upgrades and production. The or operator differenciates between the two
+				// This part cancels both upgrades and production. The or operator
+				// differenciates between the two
 				if (Main.mouse.getX() > d.getPosition().getX() + 90 || getProduct() == UnitID.PORT) {
 					cancelOrder(d);
 				} else {

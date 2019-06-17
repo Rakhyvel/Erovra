@@ -225,13 +225,9 @@ public class Ship extends Unit {
 	public void render(Render r) {
 		if (spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			float direction = 0;
-			if (weight == UnitID.LIGHT) {
-				direction = velocity.getRadian();
-				if (velocity.getY() > 0) direction += 3.14f;
-			} else {
-				direction = position.subVec(getFacing()).getRadian();
-				if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
-			}
+			// (#50) This make sure that units keep pointing where they are when they come to a stop
+			direction = position.subVec(getFacing()).getRadian();
+			if (position.subVec(getFacing()).getY() > 0) direction += 3.14f;
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {

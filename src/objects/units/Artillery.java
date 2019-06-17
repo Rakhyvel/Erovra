@@ -38,7 +38,7 @@ public class Artillery extends Unit {
 		if (!isBoarded() && health > 0) {
 			if (weight == UnitID.LIGHT){
 				aaAim();
-				if(position.getDist(target) < 1)
+				if(position.getDist(target) < 1 && nation.isAIControlled())
 					retarget(0.5f);
 			} else if (weight == UnitID.MEDIUM){
 				shootShell(4096, 8);

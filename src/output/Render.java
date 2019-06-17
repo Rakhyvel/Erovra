@@ -137,6 +137,31 @@ public class Render extends Canvas {
 		g.dispose();
 		bs.show();
 	}
+	
+	void drawVoronoi() {
+		for (int i = 0; i < 1025 * 513; i++) {
+			double closestFriendlyDist = 300000000;
+			for (int i2 = 0; i2 < Main.world.friendly.unitSize(); i2++) {
+				if (Main.world.friendly.getUnit(i2).getID() != UnitID.PLANE && Main.world.friendly.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025)) < closestFriendlyDist) {
+					closestFriendlyDist = Main.world.friendly.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025));
+				}
+			}
+			double closestHostileDist = 300000000;
+			for (int i2 = 0; i2 < Main.world.hostile.unitSize(); i2++) {
+				if (Main.world.hostile.getUnit(i2).getID() != UnitID.PLANE && Main.world.hostile.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025)) < closestHostileDist) {
+					closestHostileDist = Main.world.hostile.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025));
+				}
+			}
+			
+			if(closestFriendlyDist < closestHostileDist) {
+				pixels[i] = (64)+pixels[i];
+			} else if(closestFriendlyDist > closestHostileDist){
+				pixels[i] = (64<<16)+pixels[i];
+			} else {
+				pixels[i] = 0;
+			}
+		}
+	}
 
 	/**
 	 * Draws a rectangle, with opacity

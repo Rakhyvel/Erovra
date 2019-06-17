@@ -20,7 +20,7 @@ import utility.Point;
 public class World {
 
 	public Nation friendly;
-	private Nation hostile;
+	public Nation hostile;
 	public ArrayList<Nation> nationArray = new ArrayList<Nation>();
 	public ArrayList<Menu> menuArray = new ArrayList<Menu>();
 	boolean pauseClicked = false;

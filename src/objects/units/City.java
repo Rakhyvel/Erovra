@@ -42,11 +42,11 @@ public class City extends Industry {
 			engaged = false;
 			// (#47) Code that determines whether or not capital produced twice coins or not
 			if(capital && !recruiting) {
-				if ((Main.ticks - born) % (320 / getDefense()) == 0 && !upgrading) {
+				if ((Main.ticks - born) % (160 / getDefense()) == 0 && !upgrading) {
 					nation.addCoin(position);
 				}
 			} else {
-				if ((Main.ticks - born) % (640 / getDefense()) == 0 && !upgrading) {
+				if ((Main.ticks - born) % (320 / getDefense()) == 0 && !upgrading) {
 					nation.addCoin(position);
 				}
 			}
@@ -91,7 +91,7 @@ public class City extends Industry {
 	public void render(Render r) {
 		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
 			if (capital) {
-				if(recruiting){
+				if(recruiting && nation.name.contains("Sweden")){
 					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
 					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * (6000 - getStart()) / 6000), 2, nation.color);
 				}
