@@ -42,6 +42,12 @@ public class Keyboard extends KeyAdapter {
 		if (keyCode == KeyEvent.VK_COMMA) {
 			comma.setPressed(pressed);
 		}
+		if (keyCode == KeyEvent.VK_CONTROL) {
+			ctrl.setPressed(pressed);
+		}
+		if (keyCode == KeyEvent.VK_SHIFT) {
+			shift.setPressed(pressed);
+		}
 	}
 
 	public Key esc = new Key();
@@ -49,6 +55,8 @@ public class Keyboard extends KeyAdapter {
 	public Key minus = new Key();
 	public Key period = new Key();
 	public Key comma = new Key();
+	public Key ctrl = new Key();
+	public Key shift = new Key();
 
 	/**
 	 * Holds information pertaining to whether or not the key is pressed or released.

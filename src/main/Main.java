@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RANDOM;
+	public static MapID mapID = MapID.ISLANDS;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -52,7 +52,7 @@ public class Main {
 	public static String os = getOperatingSystem();
 
 	// GitHub
-	public static String version = "Erovra 1.0.17";
+	public static String version = "Erovra 1.0.18";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -132,12 +132,13 @@ public class Main {
 	 */
 	public static void startNewMatch() {
 		ticks = 0;
-		world.selectedUnit = null;
+		world.selectedUnits.clear();
 		Main.setState(StateID.ONGOING);
-		Nation sweden = new Nation(255 << 24 | 25 << 16 | 128 << 8 | 230, "Sweden");
-		Nation russia = new Nation(255 << 24 | 230 << 16 | 25 << 8 | 25, "Russia");
+		int hue = 210;
+		Nation sweden = new Nation(255 << 24 | Render.getRGB(hue, .89, .902), "Sweden");
+		Nation russia = new Nation(255 << 24 | Render.getRGB(0.1, .89, .902), "Sweden");
 		sweden.setAIControlled(false);
-//		russia.setAIControlled(false);
+		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -176,7 +177,7 @@ public class Main {
 				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
 					clearAdjacentSides++;
 				}
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1 || id == MapID.CUSTOM) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -201,7 +202,7 @@ public class Main {
 				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
 					clearAdjacentSides++;
 				}
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1 || id == MapID.CUSTOM) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;

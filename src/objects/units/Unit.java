@@ -3,6 +3,7 @@ package objects.units;
 import java.util.Random;
 
 import main.Main;
+import main.SelectionID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
@@ -283,9 +284,8 @@ public abstract class Unit {
 	// This function removes the unit from selection. Used when units are
 	// removed from game.
 	void removeSelect() {
-		if (Main.world.selectedUnit != null) {
-			if (selected || Main.world.selectedUnit.equals(this))
-				Main.world.selectedUnit = null;
+		if (!Main.world.selectedUnits.isEmpty()) {
+			Main.world.selectedUnits.remove(this);
 		}
 	}
 
@@ -478,7 +478,8 @@ public abstract class Unit {
 			closestUnit = smallestUnit.id;
 			return smallestPoint.equals(pathfind);
 		} else {
-			// (#55) This is to make sure units don't stay fixated on a target after its died or gone out of range
+			// (#55) This is to make sure units don't stay fixated on a target after its
+			// died or gone out of range
 			if (!getTarget().equals(position))
 				setFacing(getTarget());
 		}
@@ -678,7 +679,7 @@ public abstract class Unit {
 	 * click.
 	 */
 	void clickToMove() {
-		if (Main.world.selectedUnit == null) {
+		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI) && Main.world.selectionMethod != SelectionID.BOX) {
 			if (boundingBox(Main.mouse.getX(), Main.mouse.getY()) && Main.world.highlightedUnit == null) {
 				Main.world.highlightedUnit = this;
 				hit = 3;
@@ -697,14 +698,15 @@ public abstract class Unit {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
-					Main.world.selectedUnit = this;
+					Main.world.selectedUnits.add(this);
 				}
 				leftClicked = false;
 			} else {
-				selected = false;
+				if(Main.world.selectionMethod != SelectionID.MULTI)
+					selected = false;
 				leftClicked = false;
 			}
-		} else if (Main.world.selectedUnit.equals(this)) {
+		} else if (Main.world.selectedUnits.contains(this)) {
 			// If there is a unit being selected AND the selected unit is this
 			// unit AND the
 			// mouse is down

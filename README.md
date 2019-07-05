@@ -1,4 +1,17 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.18
+- Added selection modes!
+- Added some procedural color finding
+
+### Erovra 1.0.17
+- Pathfinding!
+- Resume/ Pause recruitment function
+- Show All targets button
+- Better spawn conditions for capitals
+- Fixed arrow graphics
+- Added auto-reorder
+- Can now right-click to get out of dropdown
+
 ### Erovra 1.0.16
 - Upgrading function!
 - Bombers now target buildings strategically

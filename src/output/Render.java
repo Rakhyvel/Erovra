@@ -86,7 +86,12 @@ public class Render extends Canvas {
 	public int[] smallShaft = image.loadImage("/res/smallShaft.png", 3, 3);
 	public int[] target = image.loadImage("/res/target.png", 32, 32);
 	public int[] settings = image.loadImage("/res/settings.png", 25, 25);
+
 	public int[] showPath = image.loadImage("/res/showPath.png", 26, 26);
+	public int[] selectSingle = image.loadImage("/res/single.png", 26, 26);
+	public int[] selectMulti = image.loadImage("/res/multi.png", 26, 26);
+	public int[] selectBox = image.loadImage("/res/box.png", 26, 26);
+	public int[] selectTask = image.loadImage("/res/task.png", 26, 26);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -105,8 +110,7 @@ public class Render extends Canvas {
 	}
 
 	/**
-	 * Calls all objects to render to pixels int array, draws pixel array to
-	 * screen.
+	 * Calls all objects to render to pixels int array, draws pixel array to screen.
 	 */
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
@@ -120,7 +124,8 @@ public class Render extends Canvas {
 		if (Main.gameState == StateID.ONGOING) {
 			System.arraycopy(Map.mapData, 0, pixels, 0, 1025 * 513);
 			captured = false;
-		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED || Main.gameState == StateID.VICTORY) {
+		} else if (Main.gameState == StateID.DEFEAT || Main.gameState == StateID.PAUSED
+				|| Main.gameState == StateID.VICTORY) {
 			if (!captured) {
 				System.arraycopy(darkenScreen(pixels), 0, background, 0, 1025 * 513);
 				captured = true;
@@ -132,31 +137,36 @@ public class Render extends Canvas {
 		world.render(this);
 		drawString("FPS:", 22, 10, font16, 255 << 24 | 250 << 16 | 250 << 8 | 250);
 		drawString(String.valueOf(Main.fps), 55, 10, font16, 244 << 24 | 250 << 16 | 250 << 8 | 250);
-		if (Main.gameState == StateID.ONGOING) world.drawCoins(this);
+		if (Main.gameState == StateID.ONGOING)
+			world.drawCoins(this);
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
 		bs.show();
 	}
-	
+
 	void drawVoronoi() {
 		for (int i = 0; i < 1025 * 513; i++) {
 			double closestFriendlyDist = 300000000;
 			for (int i2 = 0; i2 < Main.world.friendly.unitSize(); i2++) {
-				if (Main.world.friendly.getUnit(i2).getID() != UnitID.PLANE && Main.world.friendly.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025)) < closestFriendlyDist) {
-					closestFriendlyDist = Main.world.friendly.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025));
+				if (Main.world.friendly.getUnit(i2).getID() != UnitID.PLANE && Main.world.friendly.getUnit(i2)
+						.getPosition().getDist(new Point(i % 1025, i / 1025)) < closestFriendlyDist) {
+					closestFriendlyDist = Main.world.friendly.getUnit(i2).getPosition()
+							.getDist(new Point(i % 1025, i / 1025));
 				}
 			}
 			double closestHostileDist = 300000000;
 			for (int i2 = 0; i2 < Main.world.hostile.unitSize(); i2++) {
-				if (Main.world.hostile.getUnit(i2).getID() != UnitID.PLANE && Main.world.hostile.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025)) < closestHostileDist) {
-					closestHostileDist = Main.world.hostile.getUnit(i2).getPosition().getDist(new Point(i%1025,i/1025));
+				if (Main.world.hostile.getUnit(i2).getID() != UnitID.PLANE && Main.world.hostile.getUnit(i2)
+						.getPosition().getDist(new Point(i % 1025, i / 1025)) < closestHostileDist) {
+					closestHostileDist = Main.world.hostile.getUnit(i2).getPosition()
+							.getDist(new Point(i % 1025, i / 1025));
 				}
 			}
-			
-			if(closestFriendlyDist < closestHostileDist) {
-				pixels[i] = (64)+pixels[i];
-			} else if(closestFriendlyDist > closestHostileDist){
-				pixels[i] = (64<<16)+pixels[i];
+
+			if (closestFriendlyDist < closestHostileDist) {
+				pixels[i] = (64) + pixels[i];
+			} else if (closestFriendlyDist > closestHostileDist) {
+				pixels[i] = (64 << 16) + pixels[i];
 			} else {
 				pixels[i] = 0;
 			}
@@ -166,18 +176,12 @@ public class Render extends Canvas {
 	/**
 	 * Draws a rectangle, with opacity
 	 * 
-	 * @param x
-	 *            The x coordinate of the top left corner of the rectangle
-	 * @param y
-	 *            The y coordinate of the top left corner of the rectangle
-	 * @param w
-	 *            The width of the rectangle
-	 * @param h
-	 *            The height of the rectangle
-	 * @param color
-	 *            The color of the rectangle
-	 * @param alpha
-	 *            The opacity of the rectangle
+	 * @param x     The x coordinate of the top left corner of the rectangle
+	 * @param y     The y coordinate of the top left corner of the rectangle
+	 * @param w     The width of the rectangle
+	 * @param h     The height of the rectangle
+	 * @param color The color of the rectangle
+	 * @param alpha The opacity of the rectangle
 	 */
 	public void drawRect(int x, int y, int w, int h, int color) {
 		float alpha = ((color >> 24) & 255) / 255.0f;
@@ -211,7 +215,8 @@ public class Render extends Canvas {
 				b = pixels[id] & 255;
 				int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
 				// bottom | right | top | left
-				if ((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 < 2) || (((borders & 4) == 4) && x1 > w - 3) || (((borders & 8) == 8) && y1 > h - 3)) {
+				if ((((borders & 1) == 1) && x1 < 2) || (((borders & 2) == 2) && y1 < 2)
+						|| (((borders & 4) == 4) && x1 > w - 3) || (((borders & 8) == 8) && y1 > h - 3)) {
 					pixels[id] = 230 << 16 | 230 << 8 | 230;
 				} else {
 					pixels[id] = newColor + newColor2;
@@ -223,14 +228,10 @@ public class Render extends Canvas {
 	/**
 	 * Draws an image
 	 * 
-	 * @param x
-	 *            The x coordinate of the top left corner of the image
-	 * @param y
-	 *            The y coordinate of the top right corner of the image
-	 * @param w
-	 *            The width of the image
-	 * @param image
-	 *            The image
+	 * @param x     The x coordinate of the top left corner of the image
+	 * @param y     The y coordinate of the top right corner of the image
+	 * @param w     The width of the image
+	 * @param image The image
 	 */
 	public void drawImage(int x, int y, int w, int[] image, float opacity, float rotate) {
 		int h = 1, r, g, b;
@@ -270,7 +271,8 @@ public class Render extends Canvas {
 					r = ((pixels[id] >> 16) & 255);
 					g = ((pixels[id] >> 8) & 255);
 					b = (pixels[id] & 255);
-					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8 | (int) (b * (1 - alpha));
+					int newColor2 = (int) (r * (1 - alpha)) << 16 | (int) (g * (1 - alpha)) << 8
+							| (int) (b * (1 - alpha));
 
 					// Finally adding colors to pixel array
 					pixels[id] = newColor + newColor2;
@@ -282,16 +284,11 @@ public class Render extends Canvas {
 	/**
 	 * Draws a string
 	 * 
-	 * @param label
-	 *            String to be drawn
-	 * @param x
-	 *            coordinate value of the middle of the string
-	 * @param y
-	 *            coordinate value of the string
-	 * @param font
-	 *            Font to be used
-	 * @param color
-	 *            Color of the string
+	 * @param label String to be drawn
+	 * @param x     coordinate value of the middle of the string
+	 * @param y     coordinate value of the string
+	 * @param font  Font to be used
+	 * @param color Color of the string
 	 */
 
 	public void drawString(String label, int x, int y, Font font, int color) {
@@ -366,7 +363,8 @@ public class Render extends Canvas {
 	public int[] shadowify(int[] img) {
 		int[] img2 = new int[img.length];
 		for (int i = 0; i < img.length; i++) {
-			if ((img[i] >> 24 & 255) > 0) img2[i] = 26 << 24;
+			if ((img[i] >> 24 & 255) > 0)
+				img2[i] = 26 << 24;
 		}
 		return img2;
 	}
@@ -375,12 +373,9 @@ public class Render extends Canvas {
 	 * Takes an integer array and returns a resized integer array by the factor
 	 * given. The returned array will have a different size for factors != 1
 	 * 
-	 * @param img
-	 *            The image to be resized
-	 * @param width
-	 *            The width of the original image
-	 * @param factor
-	 *            The factor to be scaled
+	 * @param img    The image to be resized
+	 * @param width  The width of the original image
+	 * @param factor The factor to be scaled
 	 * @return The resized image
 	 */
 	public int[] resize(int[] img, double factor, int width, int height) {
@@ -391,25 +386,23 @@ public class Render extends Canvas {
 			int x = (int) ((i % newWidth) * invFactor);
 			int y = (int) ((i / newWidth) * invFactor);
 			int id = y * width + x;
-			if (id >= 0 && id < img.length) img2[i] = img[y * width + x];
+			if (id >= 0 && id < img.length)
+				img2[i] = img[y * width + x];
 		}
 		return img2;
 	}
 
 	/**
-	 * Takes an integer array and scales it up by a given factor. The size of
-	 * the returned integer array is the same as the original, and the null
-	 * point is at the center of the image. Therefore, for factors greater than
-	 * 1, there will be clipping, and less than 1 there will be empty space.
+	 * Takes an integer array and scales it up by a given factor. The size of the
+	 * returned integer array is the same as the original, and the null point is at
+	 * the center of the image. Therefore, for factors greater than 1, there will be
+	 * clipping, and less than 1 there will be empty space.
 	 * 
-	 * @param img
-	 *            The image to be reszied
-	 * @param width
-	 *            The width of the original image
-	 * @param d
-	 *            The factor to be scaled up
-	 * @return An integer array of the scaled up image, with the same length as
-	 *         the original
+	 * @param img   The image to be reszied
+	 * @param width The width of the original image
+	 * @param d     The factor to be scaled up
+	 * @return An integer array of the scaled up image, with the same length as the
+	 *         original
 	 */
 	public int[] rescale(int[] img, double d, int width, int height) {
 		// Set up the new variables
@@ -426,7 +419,8 @@ public class Render extends Canvas {
 
 			// If the new coordinates are on screen, print them
 			id = (y * 2048 + x);
-			if (id >= 0 && id < img.length && x >= 0 && x < 2048) img2[i] = img[id];
+			if (id >= 0 && id < img.length && x >= 0 && x < 2048)
+				img2[i] = img[id];
 		}
 		return img2;
 	}
@@ -443,50 +437,39 @@ public class Render extends Canvas {
 	/**
 	 * Returns a lighter color
 	 * 
-	 * @param color
-	 *            The original color
+	 * @param color The original color
 	 * @return A color 50% lighter
 	 */
 	public static int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r = (int) (r * 0.5) + 128;
-		g = (int) (g * 0.5) + 128;
-		b = (int) (b * 0.5) + 128;
-		if (b > r) {
-			g += 40;
-			r -= 25;
-		} else {
-			b -= 30;
-			g += 30;
-		}
-		return 255 << 24 | r << 16 | g << 8 | b;
+		double hue = getHue(r, g, b);
+		double saturation = getSaturation(r, g, b);
+		double value = getValue(r, g, b);
+		if(hue >= 0 && hue < 240) 
+			return 255 << 24 | getRGB((hue-60)*0.7+60, saturation-0.5, 1);
+		return 255 << 24 | getRGB((hue-420)*0.7+420, saturation-0.5, 1);
 	}
 
 	/**
 	 * Returns a darker color
 	 * 
-	 * @param color
-	 *            The original color
+	 * @param color The original color
 	 * @return A new color, 50% darker
 	 */
 	public static int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
-		r = (r >> 1);
-		g = (g >> 1);
-		b = (b >> 1);
-		if (b > r) {
-			g *= 0.75;
-		} else {
-			b *= 1.8;
-		}
-		return 255 << 24 | r << 16 | g << 8 | b;
+		double hue = getHue(r, g, b);
+		double saturation = getSaturation(r, g, b);
+		double value = getValue(r, g, b);
+		if(hue >= 0 && hue < 240) 
+			return 255 << 24 | getRGB((hue-60)/0.7+60, 1, value-0.4);
+		return 255 << 24 | getRGB((hue-420)/0.7+420, 1, value-0.4);
 	}
 
 	/**
 	 * Desaturates a given color
 	 * 
-	 * @param color
-	 *            Original color
+	 * @param color Original color
 	 * @return A less saturated color
 	 */
 	public int desaturate(int color) {
@@ -501,24 +484,25 @@ public class Render extends Canvas {
 		return hue;
 	}
 
-	public double getValue(int r, int g, int b) {
+	public static double getValue(int r, int g, int b) {
 		double r1 = r / 255.0;
 		double g1 = g / 255.0;
 		double b1 = b / 255.0;
 		return Math.max(r1, Math.max(g1, b1));
 	}
 
-	public double getSaturation(int r, int g, int b) {
+	public static double getSaturation(int r, int g, int b) {
 		double r1 = r / 255.0;
 		double g1 = g / 255.0;
 		double b1 = b / 255.0;
 		double cMax = Math.max(r1, Math.max(g1, b1));
 		double cMin = Math.min(r1, Math.min(g1, b1));
-		if (cMax == 0) return 0;
+		if (cMax == 0)
+			return 0;
 		return ((cMax - cMin) / cMax);
 	}
 
-	public double getHue(int r, int g, int b) {
+	public static double getHue(int r, int g, int b) {
 		double r1 = r / 255.0;
 		double g1 = g / 255.0;
 		double b1 = b / 255.0;
@@ -541,9 +525,21 @@ public class Render extends Canvas {
 		return hue;
 	}
 
-	public int getRGB(double hue, double saturation, double value) {
+	public static int getRGB(double hue, double saturation, double value) {
 		if (hue < 0) {
 			hue += 360;
+		} else if(hue > 360) {
+			hue -= 360;
+		}
+		if (saturation > 1) {
+			saturation = 1;
+		} else if (saturation < 0) {
+			saturation = 0;
+		}
+		if (value > 1) {
+			value = 1;
+		} else if (value < 0) {
+			value = 0;
 		}
 		double c = value * saturation;
 		double x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
@@ -613,8 +609,7 @@ public class Render extends Canvas {
 	/**
 	 * Takes an image and makes it darker and more desaturated
 	 * 
-	 * @param image
-	 *            Original image
+	 * @param image Original image
 	 * @return Darker and desaturated image
 	 */
 	public int[] darkenScreen(int[] image) {
@@ -640,26 +635,33 @@ public class Render extends Canvas {
 		Vector march = start.subVec(end).normalize().scalar(3);
 		Point step = new Point(start);
 		step = step.addVector(march.scalar(4));
-		for (int i = 0; i < start.getDistSquared(end)-12 && ((Map.getArray(step) < baseline + 0.5 && Map.getArray(step) >= baseline) || (baseline == 1 && Map.getArray(step) != -1)); i += 3) {
+		for (int i = 0; i < start.getDistSquared(end) - 12
+				&& ((Map.getArray(step) < baseline + 0.5 && Map.getArray(step) >= baseline)
+						|| (baseline == 1 && Map.getArray(step) != -1)); i += 3) {
 			step = step.addVector(march);
 			drawImage((int) step.getX(), (int) step.getY(), 7, largeShaft, 1, 0);
 		}
-		
+
 		// Setting up and drawing the smaller shaft
 		step = new Point(start);
 		march = start.subVec(end).normalize();
 		step = step.addVector(march.scalar(12));
-		for (int i = 0; i < start.getDistSquared(end)-12 && ((Map.getArray(step) < baseline + 0.5 && Map.getArray(step) >= baseline) || (baseline == 1 && Map.getArray(step) != -1)); i++) {
+		for (int i = 0; i < start.getDistSquared(end) - 12
+				&& ((Map.getArray(step) < baseline + 0.5 && Map.getArray(step) >= baseline)
+						|| (baseline == 1 && Map.getArray(step) != -1)); i++) {
 			step = step.addVector(march);
-			drawImage((int) step.getX(), (int) step.getY(), 3, Render.getScreenBlend(color, smallShaft), Math.min(16, i)/16.0f, 0);
+			drawImage((int) step.getX(), (int) step.getY(), 3, Render.getScreenBlend(color, smallShaft),
+					Math.min(16, i) / 16.0f, 0);
 		}
 
 		// Drawing the arrow head
 		if (end.getY() < start.getY()) {
-			drawImage((int) step.getX(), (int) step.getY(), 20, getScreenBlend(color, arrow), 1, end.subVec(start).getRadian());
+			drawImage((int) step.getX(), (int) step.getY(), 20, getScreenBlend(color, arrow), 1,
+					end.subVec(start).getRadian());
 		} else {
-			drawImage((int) step.getX(), (int) step.getY(), 20, getScreenBlend(color, arrow), 1, end.subVec(start).getRadian() + 3.14f);
+			drawImage((int) step.getX(), (int) step.getY(), 20, getScreenBlend(color, arrow), 1,
+					end.subVec(start).getRadian() + 3.14f);
 		}
 	}
 
-	}
+}

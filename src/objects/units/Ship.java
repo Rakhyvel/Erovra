@@ -124,7 +124,7 @@ public class Ship extends Unit {
 								if (nation.getUnit(i).isSelected() && nation.getUnit(i).getID() != UnitID.PLANE && nation.getUnit(i).getID() != UnitID.SHIP) {
 									nation.getUnit(i).setBoarded(true);
 									nation.getUnit(i).setSelected(false);
-									Main.world.selectedUnit = null;
+									Main.world.selectedUnits.clear();
 									if (passengers == 1 && getPassenger1() == null) {
 										setPassenger1(nation.getUnit(i));
 										setIcon(1, nation.getUnit(i).id, nation.getUnit(i).weight);

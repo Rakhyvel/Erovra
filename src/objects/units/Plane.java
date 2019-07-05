@@ -1,6 +1,7 @@
 package objects.units;
 
 import main.Main;
+import main.SelectionID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
@@ -73,10 +74,7 @@ public class Plane extends Unit {
 						setTarget(new Point(nation.capital.getPosition()));
 						nation.addProjectile(new Bomb(position.addPoint(new Point(0, 16)), nation));
 						bombsAway = true;
-						if (Main.world.selectedUnit != null) {
-							if (selected || Main.world.selectedUnit.equals(this))
-								Main.world.selectedUnit = null;
-						}
+						removeSelect();
 					}
 				}
 			}
@@ -127,11 +125,12 @@ public class Plane extends Unit {
 				}
 			}
 		} else {
-			// (#48) This part of the code makes sure that attacker aircraft take longer turns, so that they have longer to fire
-			if(weight == UnitID.MEDIUM) {
+			// (#48) This part of the code makes sure that attacker aircraft take longer
+			// turns, so that they have longer to fire
+			if (weight == UnitID.MEDIUM) {
 				a += 0.01f * getSpeed();
 			} else {
-				a+= 0.015f * getSpeed();
+				a += 0.015f * getSpeed();
 			}
 		}
 		setTarget(position.addPoint(new Point(Trig.sin(a), Trig.cos(a))));
@@ -324,7 +323,7 @@ public class Plane extends Unit {
 	}
 
 	void clickToPatrol() {
-		if (Main.world.selectedUnit == null) {
+		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI) && Main.world.selectionMethod != SelectionID.BOX) {
 			if (boundingBox(Main.mouse.getX(), Main.mouse.getY()) && Main.world.highlightedUnit == null) {
 				Main.world.highlightedUnit = this;
 				hit = 3;
@@ -343,14 +342,15 @@ public class Plane extends Unit {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
-					Main.world.selectedUnit = this;
+					Main.world.selectedUnits.add(this);
 				}
 				leftClicked = false;
 			} else {
-				selected = false;
+				if (Main.world.selectionMethod != SelectionID.MULTI)
+					selected = false;
 				leftClicked = false;
 			}
-		} else if (Main.world.selectedUnit.equals(this)) {
+		} else if (Main.world.selectedUnits.contains(this)) {
 			// If there is a unit being selected AND the selected unit is this
 			// unit AND the
 			// mouse is down

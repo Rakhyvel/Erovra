@@ -32,11 +32,11 @@ public class Map {
 		id = map;
 
 		if (id == MapID.CUSTOM) {
-			int[] customImage = mapImg.loadImage("/res/island.jpg", 1024, 512);
+			int[] customImage = mapImg.loadImage("/res/images.png", 1024, 512);
 			for (int i = 0; i < 1024 * 512 && i < customImage.length; i++) {
 				int x = (i % 1024);
 				int y = (i / 1024);
-				mountain[x][y] = (customImage[i] & 255) / 555.0f + .49f;
+				mountain[x][y] = (customImage[i] & 255) / 555.0f + .29f;
 			}
 		} else {
 			if (id == MapID.SEA) {
