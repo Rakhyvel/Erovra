@@ -1,4 +1,11 @@
 # Erovra- From Swedish "To conquer"
+### Erovra 1.0.19
+- Added patrolling!
+- Ships now have hitboxes
+- Selections now use center of mass
+- Units are now slightly more vulnerable from the side and behind
+- Cruisers can now attack land targets, again
+
 ### Erovra 1.0.18
 - Added selection modes!
 - Added some procedural color finding

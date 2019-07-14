@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.RIVER;
+	public static MapID mapID = MapID.RANDOM;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -136,8 +136,8 @@ public class Main {
 		Main.setState(StateID.ONGOING);
 		int hue = 208;
 		Nation sweden = new Nation(255 << 24 | Render.getRGB(hue, .8, .8), "Sweden");
-		Nation russia = new Nation(255 << 24 | Render.getRGB(1, .8, .8), "Sweden");
-//		sweden.setAIControlled(false);
+		Nation russia = new Nation(255 << 24 | Render.getRGB(1, .8, .8), "Russia");
+		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
