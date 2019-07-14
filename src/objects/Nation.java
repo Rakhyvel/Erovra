@@ -224,7 +224,7 @@ public class Nation {
 	 * 
 	 * @param position The position of the infantry unit buying
 	 */
-	public void buyFactory(Point position) {
+	public boolean buyFactory(Point position) {
 		if (coins >= factoryCost) {
 			Point factoryPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
@@ -233,6 +233,7 @@ public class Nation {
 					coins -= getFactoryCost();
 					setFactoryCost(getFactoryCost() * 2);
 					addUnit(new Factory(factoryPoint, this));
+					return true;
 				}
 			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build a factory here!");
@@ -240,6 +241,7 @@ public class Nation {
 		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
+		return false;
 	}
 
 	/**
@@ -271,7 +273,7 @@ public class Nation {
 		return false;
 	}
 
-	public void buyAirfield(Point position) {
+	public boolean buyAirfield(Point position) {
 		if (coins >= airfieldCost) {
 			Point airfieldPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 					((int) (position.getY() / 64)) * 64 + 32);
@@ -281,6 +283,7 @@ public class Nation {
 					coins -= getAirfieldCost();
 					setAirfieldCost(getAirfieldCost() * 2);
 					addUnit(new Airfield(airfieldPoint, this));
+					return true;
 				}
 			} else if (!isAIControlled()) {
 				Main.world.errorMessage.showErrorMessage("Cannot build an airfield here!");
@@ -288,6 +291,7 @@ public class Nation {
 		} else if (!isAIControlled()) {
 			Main.world.errorMessage.showErrorMessage("Insufficient funds!");
 		}
+		return false;
 	}
 
 	public void defeat() {
@@ -307,11 +311,10 @@ public class Nation {
 	}
 
 	public boolean checkProximity(Point position) {
-		int smallestDistance = 32;
+		int smallestDistance = 130;
 		for (int i = 0; i < unitSize(); i++) {
 			Unit tempUnit = getUnit(i);
-			if (tempUnit.getID() == UnitID.CITY || tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.FACTORY
-					|| tempUnit.getID() == UnitID.AIRFIELD) {
+			if (tempUnit.getID().isBuilding()) {
 				Point tempPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 						((int) (position.getY() / 64)) * 64 + 32);
 				int tempDist = (int) tempUnit.getPosition().getCabDist(tempPoint);
@@ -320,22 +323,26 @@ public class Nation {
 				}
 			}
 		}
+		int enemyDistance = 130;
 		for (int i = 0; i < enemyNation.unitSize(); i++) {
 			Unit tempUnit = enemyNation.getUnit(i);
-			if (tempUnit.getID() == UnitID.CITY || tempUnit.getID() == UnitID.PORT || tempUnit.getID() == UnitID.FACTORY
-					|| tempUnit.getID() == UnitID.AIRFIELD) {
+			if (tempUnit.getID().isBuilding()) {
 				Point tempPoint = new Point(((int) (position.getX() / 64)) * 64 + 32,
 						((int) (position.getY() / 64)) * 64 + 32);
 				int tempDist = (int) tempUnit.getPosition().getCabDist(tempPoint);
 				if (tempDist < smallestDistance) {
-					smallestDistance = tempDist;
+					enemyDistance = tempDist;
 				}
 			}
 		}
-		if (!isAIControlled() && smallestDistance < 32) {
-			Main.world.errorMessage.showErrorMessage("Cannot build a building here!");
+		if (!isAIControlled()) {
+			if(smallestDistance < 32 || enemyDistance < 32) {
+				Main.world.errorMessage.showErrorMessage("Cannot build a building on a building!");
+			} else if(smallestDistance != 64) {
+				Main.world.errorMessage.showErrorMessage("Buildings must be adjacent!");
+			}
 		}
-		return smallestDistance >= 32;
+		return smallestDistance >= 32 && enemyDistance >= 32 && smallestDistance == 64 && enemyDistance > 64;
 	}
 
 	public int getCityCost() {

@@ -2,6 +2,7 @@ package objects.units;
 
 import main.Main;
 import main.SelectionID;
+import main.StateID;
 import main.UnitID;
 import objects.Nation;
 import objects.gui.DropDown;
@@ -53,7 +54,7 @@ public class Plane extends Unit {
 				if (!nation.isAIControlled())
 					clickToPatrol();
 			} else {
-				aaAim();
+				aaAim(1);
 				if (getTarget().getX() == -1) {
 					nation.unitArray.remove(this);
 					nation.coins += 10;
@@ -91,6 +92,11 @@ public class Plane extends Unit {
 			}
 			if (position.getX() > 1024) {
 				position.setX(1024);
+			}
+			if (spotted > 0) {
+				spotted--;
+			} else {
+				disengage();
 			}
 		}
 	}
@@ -142,8 +148,12 @@ public class Plane extends Unit {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
 			int tempDist = (int) position.getDist(tempPoint);
-			if (tempDist < 4084) {
+			int threshhold = 16384;
+			if(tempUnit.id == UnitID.PLANE)
+				threshhold = 25600;
+			if (tempDist < threshhold) {
 				tempUnit.engage();
+				engage();
 			}
 		}
 	}
@@ -152,9 +162,9 @@ public class Plane extends Unit {
 	 * Decides what the plane should aim at
 	 */
 	void planeAim() {
-		int smallestDistance = 1310720;
+		int smallestDistance = 102400;
 		if (weight == UnitID.MEDIUM)
-			smallestDistance = 36864;
+			smallestDistance = 102400;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
 		// Walk through entire enemy unit array
@@ -184,11 +194,12 @@ public class Plane extends Unit {
 			}
 		}
 		if (smallestUnit != null) {
-			smallestUnit.engage();
 			patrolPoint = new Point(smallestPoint
 					.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4)));
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95
 					&& position.getDist(smallestPoint) < 73728) {
+				smallestUnit.engage();
+				engage();
 				if ((Main.ticks - born) % 15 == 0 && getWeight() == UnitID.LIGHT) {
 					nation.addProjectile(
 							new Bullet(position, nation, position.getTargetVector(patrolPoint), .5f, UnitID.AIRBULLET));
@@ -203,11 +214,7 @@ public class Plane extends Unit {
 			}
 		} else {
 			if (nation.isAIControlled()) {
-				if (nation.airSupremacy > nation.enemyNation.airSupremacy) {
-					secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
-				} else {
-					secondaryTarget = new Point(nation.capital.getPosition());
-				}
+				secondaryTarget = new Point(nation.enemyNation.capital.getPosition());
 			}
 			patrolPoint = new Point(secondaryTarget);
 
@@ -245,72 +252,82 @@ public class Plane extends Unit {
 
 	@Override
 	public void render(Render r) {
-		float direction = position.subVec(getTarget()).getRadian();
-		if (velocity.getY() > 0)
-			direction += 3.14f;
-		if (!nation.isAIControlled()) {
-			if (weight == UnitID.HEAVY && !bombsAway) {
-				if (isSelected()) {
-					r.drawImage((int) target.getX(), (int) target.getY(), 32,
-							Render.getScreenBlend(nation.color, r.target), 1, 0);
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
-					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
-							220 << 16 | 220 << 8 | 220, 1);
+		if (spotted > 0 || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) {
+			float direction = position.subVec(getTarget()).getRadian();
+			if (velocity.getY() > 0)
+				direction += 3.14f;
+			if (!nation.isAIControlled()) {
+				if (weight == UnitID.HEAVY && !bombsAway) {
+					if (isSelected()) {
+						r.drawImage((int) target.getX(), (int) target.getY() + 16, 32,
+								Render.getScreenBlend(nation.color, r.target), 1, 0);
+						r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
+					} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
+						r.drawImage((int) target.getX(), (int) target.getY() + 16, 32,
+								Render.getScreenBlend(nation.color, r.target), 1, 0);
+						r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
+								220 << 16 | 220 << 8 | 220, 1);
+					}
+				} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
+					if (isSelected()) {
+						r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,
+								Render.getScreenBlend(nation.color, r.target), 1, 0);
+						r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
+					} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
+						r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,
+								Render.getScreenBlend(nation.color, r.target), 1, 0);
+					}
 				}
-			} else if (weight == UnitID.MEDIUM || weight == UnitID.LIGHT) {
-				if (isSelected()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,
-							Render.getScreenBlend(nation.color, r.target), 1, 0);
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 1);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
-					r.drawImage((int) secondaryTarget.getX(), (int) secondaryTarget.getY(), 32,
-							Render.getScreenBlend(nation.color, r.target), 1, 0);
+			}
+			double distance = 32 * Math.min(-Map.getArray((int) position.getX(), (int) position.getY() + 16) + 1.5, 1);
+			double scale = Math
+					.max(1 / 2 * (Map.getArray((int) position.getX(), (int) position.getY() + 16) - 0.5) + 0.75, 0.75);
+			double size = Math.min(1f, 0.1 * (Main.ticks - born));
+			if (weight == UnitID.LIGHT) {
+				r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 36),
+						r.resize(r.fighterShadow, scale, 36, 35), 1, direction);
+				if (Main.ticks % 4 < 2) {
+					r.drawImage((int) position.getX(), (int) position.getY(), (int) (size * 36),
+							r.resize(Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighter1), size, 36,
+									35),
+							1, direction);
+				} else {
+					r.drawImage((int) position.getX(), (int) position.getY(), (int) (size * 36),
+							r.resize(Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighter2), size, 36,
+									35),
+							1, direction);
 				}
-			}
-		}
-		double distance = 32 * Math.min(-Map.getArray((int) position.getX(), (int) position.getY() + 16) + 1.5, 1);
-		double scale = Math.max(1 / 2 * (Map.getArray((int) position.getX(), (int) position.getY() + 16) - 0.5) + 0.75,
-				0.75);
-		if (weight == UnitID.LIGHT) {
-			r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 36),
-					r.resize(r.fighterShadow, scale, 36, 35), 1, direction);
-			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighter1), 1, direction);
+				if (hit > 1)
+					r.drawImage((int) position.getX(), (int) position.getY(), 40,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighterHit), 1, direction);
+			} else if (weight == UnitID.MEDIUM) {
+				r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 44),
+						r.resize(r.attackerShadow, scale, 44, 33), 1, direction);
+				if (Main.ticks % 4 < 2) {
+					r.drawImage((int) position.getX(), (int) position.getY(), 44,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.attacker1), 1, direction);
+				} else {
+					r.drawImage((int) position.getX(), (int) position.getY(), 44,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.attacker2), 1, direction);
+				}
+				if (hit > 1)
+					r.drawImage((int) position.getX(), (int) position.getY(), 48,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.attackerHit), 1, direction);
 			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighter2), 1, direction);
+				r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 68),
+						r.resize(r.bomberShadow, scale, 68, 40), 1, direction);
+				if (Main.ticks % 4 < 2) {
+					r.drawImage((int) position.getX(), (int) position.getY(), 68,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomber1), 1, direction);
+				} else {
+					r.drawImage((int) position.getX(), (int) position.getY(), 68,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomber2), 1, direction);
+				}
+				if (hit > 1)
+					r.drawImage((int) position.getX(), (int) position.getY(), 72,
+							Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomberHit), 1, direction);
 			}
-			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 40,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.fighterHit), 1, direction);
-		} else if (weight == UnitID.MEDIUM) {
-			r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 44),
-					r.resize(r.attackerShadow, scale, 44, 33), 1, direction);
-			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 44,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.attacker1), 1, direction);
-			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 44,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.attacker2), 1, direction);
-			}
-			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 48,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.attackerHit), 1, direction);
-		} else {
-			r.drawImage((int) position.getX(), (int) (position.getY() + distance), (int) (scale * 68),
-					r.resize(r.bomberShadow, scale, 68, 40), 1, direction);
-			if (Main.ticks % 4 < 2) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 68,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomber1), 1, direction);
-			} else {
-				r.drawImage((int) position.getX(), (int) position.getY(), 68,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomber2), 1, direction);
-			}
-			if (hit > 1)
-				r.drawImage((int) position.getX(), (int) position.getY(), 72,
-						Render.getScreenBlend(Render.getColor(weight, nation.color), r.bomberHit), 1, direction);
 		}
 	}
 
@@ -323,7 +340,8 @@ public class Plane extends Unit {
 	}
 
 	void clickToPatrol() {
-		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI) && Main.world.selectionMethod != SelectionID.BOX) {
+		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI)
+				&& Main.world.selectionMethod != SelectionID.BOX) {
 			if (boundingBox(Main.mouse.getX(), Main.mouse.getY()) && Main.world.highlightedUnit == null) {
 				Main.world.highlightedUnit = this;
 				hit = 3;
@@ -342,7 +360,7 @@ public class Plane extends Unit {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
-					Main.world.selectedUnits.add(this);
+					Main.world.addSelection(this);
 				}
 				leftClicked = false;
 			} else {

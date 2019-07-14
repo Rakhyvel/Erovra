@@ -37,11 +37,12 @@ public class City extends Industry {
 		if (health > 0) {
 			if (engaged || hit > 0) {
 				spotted = true;
-				if (!nation.engagedUnits.contains(this)) nation.engagedUnits.add(this);
+				if (!nation.engagedUnits.contains(this))
+					nation.engagedUnits.add(this);
 			}
 			engaged = false;
 			// (#47) Code that determines whether or not capital produced twice coins or not
-			if(capital && !recruiting) {
+			if (capital && !recruiting) {
 				if ((Main.ticks - born) % (160 / getDefense()) == 0 && !upgrading) {
 					nation.addCoin(position);
 				}
@@ -60,13 +61,15 @@ public class City extends Industry {
 			}
 			if (getStart() < 0) {
 				addProduct();
-				if (nation.isAIControlled()) if (!upgrading) {
-					if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
-						upgrade(nation.getCityCost() / 2);
-					} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
-						upgrade(nation.getCityCost() / 2);
+				if (nation.isAIControlled())
+					if (!upgrading) {
+						if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
+							upgrade(nation.getCityCost() / 2);
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
+							upgrade(nation.getCityCost() / 2);
+							nation.unupgradedCities--;
+						}
 					}
-				}
 			} else if (recruiting) {
 				setStart(getStart() - 1);
 			}
@@ -74,7 +77,6 @@ public class City extends Industry {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
-					nation.unupgradedCities -= 1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);
@@ -89,19 +91,24 @@ public class City extends Industry {
 
 	@Override
 	public void render(Render r) {
-		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT || Main.gameState == StateID.VICTORY) {
+		if (spotted || nation.name.contains("Sweden") || Main.gameState == StateID.DEFEAT
+				|| Main.gameState == StateID.VICTORY) {
 			if (capital) {
-				if(recruiting && nation.name.contains("Sweden")){
+				if (recruiting && nation.name.contains("Sweden")) {
 					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
-					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * (6000 - getStart()) / 6000), 2, nation.color);
+					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+							(int) (28.0 * (6000 - getStart()) / 6000), 2, nation.color);
 				}
-				r.drawImage((int) position.getX(), (int) position.getY(), 32, Render.getScreenBlend(nation.color, r.capital), 1, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 32,
+						Render.getScreenBlend(nation.color, r.capital), 1, 0);
 			} else {
 				if (getProduct() != UnitID.NONE && getStart() > 1) {
 					r.drawRect((int) position.getX() - 16, (int) position.getY() - 20, 32, 6, 255 << 24);
-					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18, (int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
+					r.drawRect((int) position.getX() - 14, (int) position.getY() - 18,
+							(int) (28.0 * ((maxStart - getStart()) / maxStart)), 2, nation.color);
 				}
-				r.drawImage((int) position.getX(), (int) position.getY(), 32, Render.getScreenBlend(Render.getColor(weight, nation.color), r.city), 1, 0);
+				r.drawImage((int) position.getX(), (int) position.getY(), 32,
+						Render.getScreenBlend(Render.getColor(weight, nation.color), r.city), 1, 0);
 			}
 			if (hit > 1) {
 				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.cityHit, 1, 0);
@@ -112,7 +119,7 @@ public class City extends Industry {
 	@Override
 	public void dropDownDecide(DropDown d) {
 		if (getProduct() == UnitID.NONE) {
-			if (d.buttonsHovered == 1 && !capital) {
+			if (d.buttonsHovered == 1 && !capital && weight != UnitID.HEAVY) {
 				upgrade(nation.getCityCost() / 2);
 			} else if (d.buttonsHovered == 2) {
 				if (!capital) {
@@ -140,10 +147,14 @@ public class City extends Industry {
 		d.setPosition(position);
 		if (!capital) {
 			if (!upgrading) {
-				if (nation.getCoinAmount() >= nation.getCityCost() / 2) {
-					d.drawOption("Upgrade (" + nation.getCityCost() / 2 + ")", 1, 32, 5, r);
+				if (weight != UnitID.HEAVY) {
+					if (nation.getCoinAmount() >= nation.getCityCost() / 2) {
+						d.drawOption("Upgrade (" + nation.getCityCost() / 2 + ")", 1, 32, 5, r);
+					} else {
+						d.drawOption("Upgrade (" + nation.getCityCost() / 2 + ")", 1, 0, 5, r);
+					}
 				} else {
-					d.drawOption("Upgrade (" + nation.getCityCost() / 2 + ")", 1, 0, 5, r);
+					d.drawOption("Fully upgraded", 1, 32, 5, r);
 				}
 				d.drawOption("Decommision", 2, 32, 13, r);
 			} else {
@@ -160,23 +171,28 @@ public class City extends Industry {
 				}
 				product += " " + seconds + "s";
 			}
-			r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30, 180, 30, 180 << 24 | 128 << 16 | 128 << 8 | 128, 5);
+			r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30, 180, 30,
+					180 << 24 | 128 << 16 | 128 << 8 | 128, 5);
 			if (recruiting) {
 				d.drawOption("Pause recruitment", 2, 32, 13, r);
 			} else {
 				d.drawOption("Resume recruitment", 2, 32, 13, r);
 			}
-			r.drawString(product, (int) d.getPosition().getX() + 7, (int) d.getPosition().getY() + 44, r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false);
+			r.drawString(product, (int) d.getPosition().getX() + 7, (int) d.getPosition().getY() + 44, r.font16,
+					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 			if (!recruiting) {
-				r.drawRect((int) d.getPosition().getX() + 7, (int) d.getPosition().getY() + 44, 166, 2, 255 << 24 | 230 << 16 | 25 << 8 | 25);
+				r.drawRect((int) d.getPosition().getX() + 7, (int) d.getPosition().getY() + 44, 166, 2,
+						255 << 24 | 230 << 16 | 25 << 8 | 25);
 			}
 		}
 	}
 
 	@Override
-	public void addProduct() {}
+	public void addProduct() {
+	}
 
 	@Override
-	public void decideNewProduct() {}
+	public void decideNewProduct() {
+	}
 
 }

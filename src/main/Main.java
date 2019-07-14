@@ -32,7 +32,7 @@ public class Main {
 	public static int fps;
 	public static int ticks = 0;
 	public static StateID gameState;
-	public static MapID mapID = MapID.ISLANDS;
+	public static MapID mapID = MapID.RIVER;
 	private static double dt = 50 / 3.0;
 	public static Random rand = new Random();
 
@@ -52,7 +52,7 @@ public class Main {
 	public static String os = getOperatingSystem();
 
 	// GitHub
-	public static String version = "Erovra 1.0.18";
+	public static String version = "Erovra 1.0.19";
 
 	/**
 	 * Sets up the window, initializes the world object, and runs the game loop
@@ -134,11 +134,11 @@ public class Main {
 		ticks = 0;
 		world.selectedUnits.clear();
 		Main.setState(StateID.ONGOING);
-		int hue = 210;
-		Nation sweden = new Nation(255 << 24 | Render.getRGB(hue, .89, .902), "Sweden");
-		Nation russia = new Nation(255 << 24 | Render.getRGB(0.1, .89, .902), "Sweden");
-		sweden.setAIControlled(false);
-		russia.setAIControlled(false);
+		int hue = 208;
+		Nation sweden = new Nation(255 << 24 | Render.getRGB(hue, .8, .8), "Sweden");
+		Nation russia = new Nation(255 << 24 | Render.getRGB(1, .8, .8), "Sweden");
+//		sweden.setAIControlled(false);
+//		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
 		sweden.setEnemyNation(russia);
@@ -177,7 +177,8 @@ public class Main {
 				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
 					clearAdjacentSides++;
 				}
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1 || id == MapID.CUSTOM) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1
+						|| id == MapID.CUSTOM) {
 					russia.addUnit(new City(new Point(x, y), russia, Main.ticks));
 					russia.setCaptial(0);
 					break;
@@ -202,7 +203,8 @@ public class Main {
 				if (Unit.clearPath(new Point(x, y), new Point(x - 64, y + 64), 0.5f)) {
 					clearAdjacentSides++;
 				}
-				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1 || id == MapID.CUSTOM) {
+				if (Map.getArray(x, y) > 0.5f && Map.getArray(x, y) < 1 && clearAdjacentSides > 1
+						|| id == MapID.CUSTOM) {
 					sweden.addUnit(new City(new Point(x, y), sweden, Main.ticks));
 					sweden.setCaptial(0);
 					break;
@@ -230,6 +232,8 @@ public class Main {
 		} while (sweden.unitSize() + russia.unitSize() < 2 || !clearPath);
 		sweden.addUnit(new Infantry(new Point(sweden.getUnit(0).getPosition()), sweden));
 		russia.addUnit(new Infantry(new Point(russia.getUnit(0).getPosition()), russia));
+		sweden.unupgradedCities = 0;
+		russia.unupgradedCities = 0;
 	}
 
 	/**

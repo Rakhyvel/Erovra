@@ -75,7 +75,7 @@ public abstract class Industry extends Unit {
 	}
 
 	public void upgrade(int cost) {
-		if (nation.coins >= cost) {
+		if (nation.coins >= cost && Main.ticks - born > 60) {
 			automatic = false;
 			upgrading = true;
 			this.setProduct(id);
@@ -88,13 +88,12 @@ public abstract class Industry extends Unit {
 		}
 	}
 	
-	void cancelOrder(DropDown d){
+	void cancelOrder(){
 		automatic = false;
 		setProductWeight(UnitID.NONE);
 		setProduct(UnitID.NONE);
 		nation.coins += refund;
 		upgrading = false;
-		d.setTab(0);
 	}
 	
 	void reviewAutomatic(){

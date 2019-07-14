@@ -16,22 +16,21 @@ import utility.Point;
  */
 public class Cavalry extends Unit {
 
-	private float cal;
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .3f;
-			setDefense(2);
-			cal = 0.5f;
+			setDefense(20);
+			attack = 0.5f;
 		} else if (weight == UnitID.MEDIUM) {
 			speed = .1f;
-			setDefense(2);
-			cal = 1f;
+			setDefense(20);
+			attack = 1f;
 		} else {
 			speed = .05f;
-			setDefense(2f);
-			cal = 2f;
+			setDefense(20f);
+			attack = 2f;
 		}
 		id = UnitID.CAVALRY;
 	}
@@ -40,7 +39,7 @@ public class Cavalry extends Unit {
 	public void tick(double t) {
 		detectHit();
 		if (!isBoarded() && health > 0) {
-			shootBullet(cal);
+			shootBullet(attack);
 			if (!nation.isAIControlled()) {
 				clickToMove();
 				clickToDropDown();

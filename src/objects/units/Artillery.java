@@ -21,13 +21,15 @@ public class Artillery extends Unit {
 		super(position, nation, weight);
 		if (weight == UnitID.LIGHT) {
 			speed = .1f;
-			setDefense(0.1f);
+			setDefense(1f);
 		} else if (weight == UnitID.MEDIUM) {
 			speed = 0.1f;
 			setDefense(2);
+			attack = 1.5f;
 		} else {
 			speed = 0.05f;
 			setDefense(2);
+			attack = 1.5f;
 		}
 		id = UnitID.ARTILLERY;
 	}
@@ -37,9 +39,9 @@ public class Artillery extends Unit {
 		detectHit();
 		if (!isBoarded() && health > 0) {
 			if (weight == UnitID.LIGHT){
-				aaAim();
-				if(position.getDist(target) < 1 && nation.isAIControlled())
-					retarget(0.5f);
+				aaAim(0.5f);
+				//if(position.getDist(target) < 1 && nation.isAIControlled())
+					//retarget(0.5f);
 			} else if (weight == UnitID.MEDIUM){
 				shootShell(4096, 8);
 			} else if (weight == UnitID.HEAVY){
@@ -66,8 +68,9 @@ public class Artillery extends Unit {
 
 			if(!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0.5f);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths() && position.getDist(target) > 16) {
+					r.drawLine(getPosition(), getPosition()
+							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))), nation.color, 0, 0.5f);
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths()) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color, 220 << 16 | 220 << 8 | 220, 0.5f);
 					if(weight == UnitID.MEDIUM) r.drawImage((int) position.getX(), (int) position.getY(), 128, r.medArtRange,0.5f,0);
 					if(weight == UnitID.HEAVY) r.drawImage((int) position.getX(), (int) position.getY(),256, r.heavyArtRange,0.5f,0);

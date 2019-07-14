@@ -52,10 +52,13 @@ public class Factory extends Industry {
 				addProduct();
 				if (nation.isAIControlled())
 					if (!upgrading) {
-						if (weight == UnitID.LIGHT && buyInCost < nation.coins) {
+						if (weight == UnitID.LIGHT && buyInCost < nation.coins
+								&& nation.airSupremacy >= nation.enemyNation.airEngagedSupremacy) {
 							upgrade(nation.getFactoryCost() / 2);
-						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins) {
+						} else if (weight == UnitID.MEDIUM && buyInCost * 2 < nation.coins
+								&& nation.airSupremacy >= nation.enemyNation.airEngagedSupremacy) {
 							upgrade(nation.getFactoryCost() / 2);
+							nation.unupgradedFactories -= 1;
 						} else {
 							decideNewProduct();
 						}
@@ -84,7 +87,6 @@ public class Factory extends Industry {
 				if (weight == UnitID.MEDIUM) {
 					weight = UnitID.HEAVY;
 					setDefense(4);
-					nation.unupgradedFactories -= 1;
 				} else if (weight == UnitID.LIGHT) {
 					weight = UnitID.MEDIUM;
 					setDefense(2);
@@ -103,33 +105,38 @@ public class Factory extends Industry {
 	@Override
 	public void decideNewProduct() {
 		if ((nation.getCityCost()) >= nation.unitSize()) {
-			if (nation.seaSupremacy >= nation.enemyNation.seaEngagedSupremacy) {
-				if (nation.airSupremacy > nation.enemyNation.airSupremacy) {
-					if (cavalry) {
-						if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5,
-								getTime(weight, UnitID.HEAVY))) {
-							// Heavy cavalry
-						} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5,
-								getTime(weight, UnitID.MEDIUM))) {
-							// Medium cavalry
-						} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT,
-								nation.getCavalryCost() / 2 * getDefense() * 0.5, getTime(weight, UnitID.LIGHT))) {
-							// Light Cavalry
-						}
+			if (nation.airSupremacy > nation.enemyNation.airEngagedSupremacy) {
+				if (cavalry) {
+					if (buyUnit(UnitID.CAVALRY, UnitID.HEAVY, nation.getCavalryCost() * 2 * getDefense() * 0.5,
+							getTime(weight, UnitID.HEAVY))) {
+						// Heavy cavalry
+					} else if (buyUnit(UnitID.CAVALRY, UnitID.MEDIUM, nation.getCavalryCost() * getDefense() * 0.5,
+							getTime(weight, UnitID.MEDIUM))) {
+						// Medium cavalry
+					} else if (buyUnit(UnitID.CAVALRY, UnitID.LIGHT, nation.getCavalryCost() / 2 * getDefense() * 0.5,
+							getTime(weight, UnitID.LIGHT))) {
+						// Light Cavalry
+					}
 
-					} else {
-						if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5,
-								getTime(weight, UnitID.HEAVY))) {
-							// Heavy artillery
-						} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM,
-								nation.getArtilleryCost() * getDefense() * 0.5, getTime(weight, UnitID.MEDIUM))) {
-							// Medium artillery
-						}
-//					else if (buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() / 2 * getDefense() * 0.5,getTime(weight,UnitID.LIGHT))) {
-						// Anti Air artillery
-//					}
+				} else {
+					if (buyUnit(UnitID.ARTILLERY, UnitID.HEAVY, nation.getArtilleryCost() * 2 * getDefense() * 0.5,
+							getTime(weight, UnitID.HEAVY))) {
+						// Heavy artillery
+					} else if (buyUnit(UnitID.ARTILLERY, UnitID.MEDIUM, nation.getArtilleryCost() * getDefense() * 0.5,
+							getTime(weight, UnitID.MEDIUM))) {
+						// Medium artillery
 					}
 				}
+			} else {
+				for(int i = 0; i < nation.enemyNation.unitArray.size(); i++) {
+					if(nation.enemyNation.getUnit(i).id == UnitID.PLANE) {
+						if(clearPath(position, nation.enemyNation.getUnit(i).position, 0.5f)) {
+							buyUnit(UnitID.ARTILLERY, UnitID.LIGHT, nation.getArtilleryCost() * getDefense() * 1,getTime(weight, UnitID.LIGHT));
+							break;
+						}
+					}
+				}
+				// Anti Air artillery
 			}
 		}
 	}
@@ -185,7 +192,7 @@ public class Factory extends Industry {
 							getTime(weight, UnitID.HEAVY));
 				}
 			} else if (d.getTab() == 2) {
-				if (d.buttonsHovered == 2) {
+				if (d.buttonsHovered == 2 && weight != UnitID.HEAVY) {
 					// Upgrading
 					upgrade(nation.getFactoryCost() / 2);
 				} else if (d.buttonsHovered == 3) {
@@ -201,7 +208,8 @@ public class Factory extends Industry {
 				// This part cancels both upgrades and production. The or operator
 				// differenciates between the two
 				if (Main.mouse.getX() > d.getPosition().getX() + 90 || getProduct() == UnitID.FACTORY) {
-					cancelOrder(d);
+					cancelOrder();
+					d.setTab(0);
 					if (d.getTab() == 0) {
 						cavalry = true;
 					} else if (d.getTab() == 1) {
@@ -222,10 +230,14 @@ public class Factory extends Industry {
 			if (getProduct() == UnitID.NONE)
 				d.drawTab(3, Render.cavalry, Render.artillery, r.settings, 32, 32, 25, r);
 			if (d.getTab() == 2) {
-				if (nation.getCoinAmount() >= nation.getFactoryCost() / 2) {
-					d.drawOption("Upgrade (" + nation.getFactoryCost() / 2 + ")", 2, 32, 5, r);
+				if (weight != UnitID.HEAVY) {
+					if (nation.getCoinAmount() >= nation.getFactoryCost() / 2) {
+						d.drawOption("Upgrade (" + nation.getFactoryCost() / 2 + ")", 2, 32, 5, r);
+					} else {
+						d.drawOption("Upgrade (" + nation.getFactoryCost() / 2 + ")", 2, 0, 5, r);
+					}
 				} else {
-					d.drawOption("Upgrade (" + nation.getFactoryCost() / 2 + ")", 2, 0, 5, r);
+					d.drawOption("Fully upgraded", 2, 32, 5, r);
 				}
 				d.drawOption("Decommision", 3, 32, 5, r);
 				r.drawRectBorders((int) d.getPosition().getX(), (int) d.getPosition().getY() + 30 * 4, 180, 30,

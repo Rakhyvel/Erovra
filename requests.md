@@ -3,6 +3,14 @@
 - Map choose screen
 	- Nation name to display on capital
 	- Color selector
+	- Fog of war
+	- Expand maps by 5x
+		- Mountain
+		- Plains & River
+		- Sea
+		- Island
+		- Random
+		- Custom
 - Map is generating screen
 - Zoom function
 - When people first click start game, they don't really know what to do
@@ -10,6 +18,7 @@
 	- "You have lost air supremacy!"
 - Settings screen
 	- Colorblind mode
+	- Languages
 - Fullscreen
 
 ### Update 1.2:

@@ -37,6 +37,7 @@ public class World {
 	boolean showPaths = false;
 	public SelectionID selectionMethod = SelectionID.SINGLE;
 	Point startMouseDown = null;
+	public Point midPoint = new Point(0,0);
 
 	public World() {
 		menuArray.add(errorMessage);
@@ -103,7 +104,7 @@ public class World {
 											mouseStartPoint.getY())) {
 										if (friendly.getUnit(i).getPosition().getY() < Math.max(Main.mouse.getY(),
 												mouseStartPoint.getY())) {
-											selectedUnits.add(friendly.getUnit(i));
+											addSelection(friendly.getUnit(i));
 											friendly.getUnit(i).selected = true;
 										}
 									}
@@ -112,6 +113,12 @@ public class World {
 						}
 					}
 					mouseStartPoint = null;
+				}
+			}
+			
+			if(Main.keyboard.p.isPressed()) {
+				for(int i = 0; i < selectedUnits.size();i++) {
+					selectedUnits.get(i).patrolling = true;
 				}
 			}
 
@@ -136,6 +143,13 @@ public class World {
 			}
 			for (int i2 = 0; i2 < hostile.coinSize(); i2++) {
 				hostile.getCoin(i2).tick(t);
+			}
+
+			midPoint.setX(0);
+			midPoint.setY(0);
+			for(int i = 0; i < selectedUnits.size(); i++) {
+				midPoint.setX(midPoint.getX()+(selectedUnits.get(i).getPosition().getX())/selectedUnits.size());
+				midPoint.setY(midPoint.getY()+(selectedUnits.get(i).getPosition().getY())/selectedUnits.size());
 			}
 		}
 		if (Main.keyboard.esc.isPressed()) {
@@ -326,6 +340,10 @@ public class World {
 
 	public boolean getShowPaths() {
 		return showPaths;
+	}
+	
+	public void addSelection(Unit unit) {
+		selectedUnits.add(unit);
 	}
 
 }

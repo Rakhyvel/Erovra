@@ -87,6 +87,7 @@ public class Render extends Canvas {
 	public int[] target = image.loadImage("/res/target.png", 32, 32);
 	public int[] settings = image.loadImage("/res/settings.png", 25, 25);
 
+	public static int[] patrol = image.loadImage("/res/patrol.png", 10, 10);
 	public int[] showPath = image.loadImage("/res/showPath.png", 26, 26);
 	public int[] selectSingle = image.loadImage("/res/single.png", 26, 26);
 	public int[] selectMulti = image.loadImage("/res/multi.png", 26, 26);
@@ -364,7 +365,7 @@ public class Render extends Canvas {
 		int[] img2 = new int[img.length];
 		for (int i = 0; i < img.length; i++) {
 			if ((img[i] >> 24 & 255) > 0)
-				img2[i] = 26 << 24;
+				img2[i] = 50 << 24;
 		}
 		return img2;
 	}
@@ -443,11 +444,11 @@ public class Render extends Canvas {
 	public static int lighten(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		double hue = getHue(r, g, b);
-		double saturation = getSaturation(r, g, b);
 		double value = getValue(r, g, b);
+		double saturation = getSaturation(r, g, b);
 		if(hue >= 0 && hue < 240) 
-			return 255 << 24 | getRGB((hue-60)*0.7+60, saturation-0.5, 1);
-		return 255 << 24 | getRGB((hue-420)*0.7+420, saturation-0.5, 1);
+			return 255 << 24 | getRGB((hue-60)*0.85+60, saturation-0.3, value+0.3);
+		return 255 << 24 | getRGB((hue-420)*0.85+420, saturation-0.3, value+0.3);
 	}
 
 	/**
@@ -459,11 +460,11 @@ public class Render extends Canvas {
 	public static int darken(int color) {
 		int r = ((color >> 16) & 255), g = ((color >> 8) & 255), b = (color & 255);
 		double hue = getHue(r, g, b);
-		double saturation = getSaturation(r, g, b);
 		double value = getValue(r, g, b);
+		double saturation = getSaturation(r, g, b);
 		if(hue >= 0 && hue < 240) 
-			return 255 << 24 | getRGB((hue-60)/0.7+60, 1, value-0.4);
-		return 255 << 24 | getRGB((hue-420)/0.7+420, 1, value-0.4);
+			return 255 << 24 | getRGB((hue-60)/0.85+60, saturation + 0.3, value-0.3);
+		return 255 << 24 | getRGB((hue-420)/0.85+420, saturation + 0.3, value-0.3);
 	}
 
 	/**
@@ -526,11 +527,8 @@ public class Render extends Canvas {
 	}
 
 	public static int getRGB(double hue, double saturation, double value) {
-		if (hue < 0) {
-			hue += 360;
-		} else if(hue > 360) {
-			hue -= 360;
-		}
+		hue += 360;
+		hue = hue % 360;
 		if (saturation > 1) {
 			saturation = 1;
 		} else if (saturation < 0) {

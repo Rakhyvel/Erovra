@@ -33,6 +33,9 @@ public abstract class Unit {
 	public Point target;
 	private Point facing;
 	public Nation nation;
+	public Point patrol1 = new Point(0, 0);
+	public Point patrol2 = new Point(-1, -1);
+	public boolean patrolling = false;
 	protected boolean engaged = false;
 	public Point pathfind;
 	public boolean straightfire = false;
@@ -41,6 +44,7 @@ public abstract class Unit {
 	protected int hit = 0;
 	protected int spotted = 0;
 	private float defense;
+	public float attack = 0;
 	protected float speed;
 	protected float health;
 
@@ -162,12 +166,17 @@ public abstract class Unit {
 			engaged = true;
 			nation.engagedUnits.add(this);
 			spotted = (int) (60 / speed);
+			if (id == UnitID.PLANE)
+				spotted = 400;
 			if (!accountedFor) {
 				if (id == UnitID.INFANTRY || id == UnitID.CAVALRY || id == UnitID.ARTILLERY) {
 					nation.landEngagedSupremacy++;
 				}
 				if (id == UnitID.SHIP && weight != UnitID.LIGHT) {
 					nation.seaEngagedSupremacy++;
+				}
+				if (id == UnitID.PLANE) {
+					nation.airEngagedSupremacy++;
 				}
 				accountedFor = true;
 			}
@@ -288,6 +297,10 @@ public abstract class Unit {
 			Main.world.selectedUnits.remove(this);
 		}
 	}
+	
+	float getPowerCube() {
+		return attack * health * defense;
+	}
 
 	/**
 	 * Returns the position the unit would be at if it were to advance at to the
@@ -298,6 +311,13 @@ public abstract class Unit {
 	 * @return The position will be at next tick
 	 */
 	Point getNextStep(Point goal) {
+		if (id == UnitID.SHIP) {
+			if (weight == UnitID.MEDIUM) {
+				return position.addVector(position.getTargetVector(goal).normalize().scalar(22));
+			} else if (weight == UnitID.HEAVY) {
+				return position.addVector(position.getTargetVector(goal).normalize().scalar(30));
+			}
+		}
 		return position.addVector(position.getTargetVector(goal).normalize().scalar(speed));
 	}
 
@@ -421,23 +441,20 @@ public abstract class Unit {
 		Unit smallestUnit = null;
 		int smallestEngagedDistance = smallestDistance;
 		Point smallestEngagedPoint = new Point(-1, -1);
-		if (!(id == UnitID.ARTILLERY && weight == UnitID.LIGHT)) {
-			for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
-				Unit tempUnit = nation.enemyNation.getUnit(i);
-				Point tempPoint = tempUnit.getPosition();
-				int tempDist = (int) position.getDist(tempPoint);
-				if (((tempUnit.id == UnitID.SHIP) == (id == UnitID.SHIP))
-						&& ((tempUnit.id == UnitID.PLANE) == (id == UnitID.ARTILLERY && weight == UnitID.LIGHT))) {
-					if (tempDist < smallestDistance) {
-						smallestDistance = tempDist;
-						smallestPoint = tempPoint;
-						smallestUnit = tempUnit;
-					}
-					if ((tempDist < smallestEngagedDistance
-							|| (tempUnit.id.isLandUnit() && smallestUnit.id.isBuilding())) && tempUnit.engaged) {
-						smallestEngagedDistance = tempDist;
-						smallestEngagedPoint = tempPoint;
-					}
+		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
+			Unit tempUnit = nation.enemyNation.getUnit(i);
+			Point tempPoint = tempUnit.getPosition();
+			int tempDist = (int)position.getDist(tempPoint);
+			if ((id.isLandUnit() && tempUnit.id != UnitID.SHIP && tempUnit.id != UnitID.PLANE)
+					|| (id == UnitID.SHIP && (tempUnit.id == UnitID.SHIP || (weight == UnitID.HEAVY && tempUnit.id.isLandUnit())))) {
+				if (smallestUnit == null || tempDist < smallestDistance	 || (smallestUnit.id.isBuilding() && tempDist < range)) {
+					smallestDistance = tempDist;
+					smallestPoint = tempPoint;
+					smallestUnit = tempUnit;
+				}
+				if ((tempDist < smallestEngagedDistance) && tempUnit.engaged) {
+					smallestEngagedDistance = tempDist;
+					smallestEngagedPoint = tempPoint;
 				}
 			}
 		}
@@ -449,7 +466,7 @@ public abstract class Unit {
 				} else {
 					pathfind = target;
 				}
-				if (pathfind != null) {
+				if (pathfind != null && nation.landSupremacy > nation.enemyNation.landEngagedSupremacy) {
 					setTarget(pathfind);
 					setFacing(pathfind);
 				} else {
@@ -464,18 +481,25 @@ public abstract class Unit {
 			pathfind = pathfind(smallestPoint, baseline);
 			if (pathfind != null) {
 				if (nation.isAIControlled()) {
-					setTarget(pathfind);
-					setFacing(pathfind);
+					if(!(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit())) {
+						setTarget(pathfind);
+						setFacing(pathfind);
+					}
 				} else {
-					setFacing(smallestPoint);
+					if (smallestPoint.equals(pathfind))
+						setFacing(smallestPoint);
 				}
 				smallestUnit.engage();
 				engage();
 			} else {
-				if (nation.isAIControlled())
+				if (nation.isAIControlled() && !(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit()))
 					retarget(baseline);
 			}
 			closestUnit = smallestUnit.id;
+			if(id == UnitID.SHIP && weight == UnitID.HEAVY) {
+				setFacing(smallestPoint);
+				return true;
+			}
 			return smallestPoint.equals(pathfind);
 		} else {
 			// (#55) This is to make sure units don't stay fixated on a target after its
@@ -500,33 +524,33 @@ public abstract class Unit {
 	}
 
 	public void shootShell(int range, double power) {
-		if (findTarget(0.5f, range)) {
+		if (findTarget(0.5f, range) && Map.getArray(facing) > 0.5f) {
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, power, nation, facing));
 			}
-			if (id == UnitID.SHIP)
-				setFacing(getTarget());
-			if (nation.isAIControlled())
+			if (nation.isAIControlled() && id != UnitID.SHIP)
 				setTarget(position);
 		}
+		if (!getTarget().equals(position))
+			setFacing(getTarget());
 	}
 
 	public void shootTorpedo() {
-		if (findTarget(0, 16384)) {
+		if (findTarget(0, 16384) && Map.getArray(facing) < 0.5f) {
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(facing)));
 			}
 			// (#50) This makes it so that if the ship is stopped, it does not set facing to
 			// the target, which would cause the ship to point north and look odd
-			if (!getTarget().equals(position))
-				setFacing(getTarget());
 			if (nation.isAIControlled())
 				setTarget(position);
 		}
+		if (!getTarget().equals(position))
+			setFacing(getTarget());
 	}
 
-	boolean aaAim() {
-		int smallestDistance = 7372;
+	boolean aaAim(float baseline) {
+		int smallestDistance = 1310720;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
@@ -540,9 +564,15 @@ public abstract class Unit {
 			}
 		}
 		if (smallestUnit != null) {
-			smallestUnit.engage();
-			engage();
-			if ((Main.ticks - born) % 20 == 0) {
+			if (nation.isAIControlled() && clearPath(position, smallestPoint, baseline) && baseline != 1) {
+				setTarget(smallestPoint);
+				if (weight == UnitID.LIGHT) {
+					setFacing(smallestPoint);
+				}
+			}
+			if ((Main.ticks - born) % 20 == 0 && smallestDistance < 7372) {
+				smallestUnit.engage();
+				engage();
 				nation.addProjectile(new Bullet(position, nation,
 						position.getTargetVector(
 								smallestPoint.addVector(smallestUnit.velocity.scalar(Math.sqrt(smallestDistance) / 4))),
@@ -558,7 +588,15 @@ public abstract class Unit {
 			velocity = position.getTargetVector(target).normalize().scalar(speed);
 			position = position.addVector(velocity);
 			if (!nation.isAIControlled() && position.getDist(target) < 1) {
-				setTarget(position);
+				if (patrolling && patrol1 != null && patrol2 != null && patrol2.getX() != -1) {
+					if (getPosition().getDist(patrol1) > getPosition().getDist(patrol2)) {
+						setTarget(patrol1);
+					} else {
+						setTarget(patrol2);
+					}
+				} else {
+					setTarget(position);
+				}
 			}
 		} else {
 			if (nation.isAIControlled()) {
@@ -602,18 +640,29 @@ public abstract class Unit {
 			double distance = position.getDist(nation.enemyNation.getProjectile(i).getPosition());
 			Projectile tempProjectile = nation.enemyNation.getProjectile(i);
 			projectileID = tempProjectile.getID();
+			int diameter = 256;
+			if (id.isBuilding())
+				diameter = 5;
 			if (tempProjectile.id == UnitID.BOMB)
 				distance /= 4;
-			if (distance < 256 && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0
-					&& !((id != UnitID.PLANE) && (tempProjectile.getID() == UnitID.AIRBULLET))
-					&& !((id != UnitID.SHIP) && tempProjectile.id == UnitID.TORPEDO)
-					&& !(id == UnitID.PLANE && tempProjectile.id == UnitID.SHELL)
-					&& !((id == UnitID.AIRFIELD || id == UnitID.FACTORY || id == UnitID.CITY || id == UnitID.PORT)
-							&& tempProjectile.getID() == UnitID.ANTIPERSONEL)
+			if (distance < diameter && !tempProjectile.equals(null) && tempProjectile.getAttack() > 0
+					&& (((id == UnitID.PLANE) && tempProjectile.getID() == UnitID.AIRBULLET)
+							|| ((id == UnitID.SHIP) && (tempProjectile.getID() == UnitID.TORPEDO
+									|| tempProjectile.getID() == UnitID.BOMB || tempProjectile.getID() == UnitID.SHELL
+									|| tempProjectile.getID() == UnitID.ANTIPERSONEL))
+							|| id.isLandUnit() && (tempProjectile.getID() == UnitID.BULLET
+									|| tempProjectile.getID() == UnitID.BOMB || tempProjectile.getID() == UnitID.SHELL
+									|| tempProjectile.getID() == UnitID.ANTIPERSONEL)
+							|| (id.isBuilding()
+									&& (tempProjectile.getID() == UnitID.BULLET || tempProjectile.getID() == UnitID.BOMB
+											|| tempProjectile.getID() == UnitID.SHELL)))
 					&& !(tempProjectile.getID() == UnitID.BOMB && capital)) {
 				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL)
 					tempProjectile.hit();
 				hit = 9;
+				if(tempProjectile.id == UnitID.BULLET) {
+					health += (tempProjectile.velocity.normalize().dot(facing.subVec(position).normalize())-1)/2;
+				}
 				health -= tempProjectile.getAttack() / getDefense();
 				if (health <= 0)
 					break;
@@ -636,28 +685,28 @@ public abstract class Unit {
 			if (id == UnitID.CITY) {
 				if (nation.getCityCost() >= 1)
 					nation.setCityCost(nation.getCityCost() / 2);
-				if (projectileID != UnitID.BOMB) {
+				if (projectileID != UnitID.BOMB && projectileID != UnitID.SHELL) {
 					nation.enemyNation.addUnit(new City(position, nation.enemyNation, Main.ticks));
 					nation.enemyNation.setCityCost(nation.enemyNation.getCityCost() * 2);
 				}
 			} else if (id == UnitID.FACTORY) {
 				if (nation.getFactoryCost() >= 30)
 					nation.setFactoryCost(nation.getFactoryCost() / 2);
-				if (projectileID != UnitID.BOMB) {
+				if (projectileID != UnitID.BOMB && projectileID != UnitID.SHELL) {
 					nation.enemyNation.addUnit(new Factory(position, nation.enemyNation));
 					nation.enemyNation.setFactoryCost(nation.enemyNation.getFactoryCost() * 2);
 				}
 			} else if (id == UnitID.PORT) {
 				if (nation.getPortCost() > 20)
 					nation.setPortCost(nation.getPortCost() / 2);
-				if (projectileID != UnitID.BOMB) {
+				if (projectileID != UnitID.BOMB && projectileID != UnitID.SHELL) {
 					nation.enemyNation.addUnit(new Port(position, nation.enemyNation));
 					nation.enemyNation.setPortCost(nation.enemyNation.getPortCost() * 2);
 				}
 			} else if (id == UnitID.AIRFIELD) {
 				if (nation.getAirfieldCost() > 20)
 					nation.setAirfieldCost(nation.getAirfieldCost() / 2);
-				if (projectileID != UnitID.BOMB) {
+				if (projectileID != UnitID.BOMB && projectileID != UnitID.SHELL) {
 					nation.enemyNation.addUnit(new Airfield(position, nation.enemyNation));
 					nation.enemyNation.setAirfieldCost(nation.enemyNation.getAirfieldCost() * 2);
 				}
@@ -667,7 +716,6 @@ public abstract class Unit {
 			}
 			removeSelect();
 			nation.removeUnit(this);
-			nation.engagedUnits.remove(this);
 			if (!nation.isAIControlled())
 				if (Main.world.getDropDown().isUnit(this))
 					Main.world.getDropDown().shouldClose();
@@ -679,7 +727,8 @@ public abstract class Unit {
 	 * click.
 	 */
 	void clickToMove() {
-		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI) && Main.world.selectionMethod != SelectionID.BOX) {
+		if ((Main.world.selectedUnits.isEmpty() || Main.world.selectionMethod == SelectionID.MULTI)
+				&& Main.world.selectionMethod != SelectionID.BOX) {
 			if (boundingBox(Main.mouse.getX(), Main.mouse.getY()) && Main.world.highlightedUnit == null) {
 				Main.world.highlightedUnit = this;
 				hit = 3;
@@ -698,11 +747,13 @@ public abstract class Unit {
 				// if the mouse isn't down, but leftClicked is true
 				setSelected(!isSelected());
 				if (selected) {
-					Main.world.selectedUnits.add(this);
+					patrolling = false;
+					patrol2 = new Point(-1, -1);
+					Main.world.addSelection(this);
 				}
 				leftClicked = false;
 			} else {
-				if(Main.world.selectionMethod != SelectionID.MULTI)
+				if (Main.world.selectionMethod != SelectionID.MULTI)
 					selected = false;
 				leftClicked = false;
 			}
@@ -713,16 +764,30 @@ public abstract class Unit {
 			if (Main.mouse.getMouseLeftDown()) {
 				leftClicked = true;
 			} else if (leftClicked) {
-				getTarget().setX(Main.mouse.getX());
-				getTarget().setY(Main.mouse.getY());
-				setFacing(getTarget());
-				Main.world.nullifySelected();
+				if (!patrolling) {
+					setTarget(getPosition()
+							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					if (id == UnitID.PLANE) {
+						target.setY(target.getY() - 16);
+					}
+					setFacing(getTarget());
+					Main.world.nullifySelected();
+				} else {
+					patrol1 = getPosition();
+					setTarget(getPosition()
+							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					patrol2.setX(Main.mouse.getX());
+					patrol2.setY(Main.mouse.getY());
+					setFacing(patrol2);
+					Main.world.nullifySelected();
+				}
 			}
 			if (Main.mouse.getMouseRightDown()) {
 				if (position.getDist(target) < 1)
 					setFacing(new Point(Main.mouse.getX(), Main.mouse.getY()));
 				selected = false;
 				Main.world.nullifySelected();
+				patrolling = false;
 			}
 		} else {
 			leftClicked = false;

@@ -2,9 +2,9 @@ package terrain;
 
 import java.util.Random;
 
-import objects.gui.Image;
 import main.Main;
 import main.MapID;
+import objects.gui.Image;
 import utility.Point;
 
 public class Map {
@@ -125,7 +125,7 @@ public class Map {
 							smallestDistance = tempDist;
 						}
 					}
-					islandMask[i] = (smallestDistance - 96) / 250.0f + 0.75f;
+					islandMask[i] = (smallestDistance - 96) / 200.0f + 0.75f;
 				}
 				for (int i = 0; i < 1024 * 512; i++) {
 					int x = i % 1025;
@@ -133,7 +133,7 @@ public class Map {
 					mountain[x][y] = islandMask[i];
 				}
 			} else {
-				mountain = perlinNoise(1, 0.5f);
+				mountain = perlinNoise(1, 0.6f);
 			}
 			for (int i2 = 2; i2 < 9; i2++) {
 				int denominator = 1 << (i2 + 1);
@@ -154,6 +154,7 @@ public class Map {
 			if (id == MapID.PLAINS) {
 				mountain[x][y] = generatePlains(mountain[x][y]);
 			}
+			mountain[x][y] = Math.max(0,mountain[x][y]);
 		}
 		// colors the MapArray
 		for (int i = 0; i < 1025 * 513; i++) {
@@ -337,7 +338,7 @@ public class Map {
 
 		if (value < .495f) {
 			blue = (int) (460 * value + 16);
-			red = (int) (820 * value * value - 6);
+			red = (int) (760 * value * value - 6);
 			green = (int) (1040 * value * value - 6);
 		} else if (value < .5) {
 			blue = (int) (255);

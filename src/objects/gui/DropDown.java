@@ -58,13 +58,13 @@ public class DropDown extends Menu {
 	public void render(Render r) {
 		if (shown && Main.gameState == StateID.ONGOING) {
 			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY(), 180, 30,
-					180 << 24 | 86 << 16 | 86 << 8 | 86,15); // 350
+					180 << 24 | 86 << 16 | 86 << 8 | 86, 15); // 350
 			r.drawString(String.valueOf(unit.getID()), (int) getPosition().getX() + 7, (int) getPosition().getY() + 12,
 					r.font16, 255 << 24 | 250 << 16 | 250 << 8 | 250, false); // 380
 			unit.dropDownRender(r, this); // 510
-			
-			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 22, (int) (18 * unit.getHealth()),
-					8, unit.nation.color,15); // 300
+
+			r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 22,
+					(int) (18 * unit.getHealth()), 8, unit.nation.color, 15); // 300
 		}
 	}
 
@@ -87,29 +87,31 @@ public class DropDown extends Menu {
 		if (buttonsHovered == buttonID && rectColor > 0) {
 			rectColor *= 2.7;
 		}
-		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);
+		r.drawRectBorders(x, y + buttonID * 30, 180, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,
+				borders);
 		r.drawString(label, x + 7, y + 14 + buttonID * 30, r.font16, textColor, false);
 	}
-	
+
 	public void drawOption(String label, int x, int buttonID, int rectColor, int borders, Render r) {
 		int y = (int) getPosition().getY();
 		int textColor = 255 << 24 | 250 << 16 | 250 << 8 | 250;
-		if (buttonsHovered == buttonID && rectColor > 0 && Main.mouse.getX() > x && Main.mouse.getX() < x+90) {
+		if (buttonsHovered == buttonID && rectColor > 0 && Main.mouse.getX() > x && Main.mouse.getX() < x + 90) {
 			rectColor *= 2.7;
 		}
-		if(x == getPosition().getX()+90){
+		if (x == getPosition().getX() + 90) {
 			borders = 12;
-			r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);	
+			r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,
+					borders);
 		} else {
-			if(rectColor == 0){
-				r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | 25 << 16 | 128 << 8 | 230,borders);	
+			if (rectColor == 0) {
+				r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | 25 << 16 | 128 << 8 | 230, borders);
 			} else {
-				r.drawRectBorders(x, y + buttonID * 30, 90, 30, 180 << 24 | rectColor << 16 | rectColor << 8 | rectColor,borders);	
+				r.drawRectBorders(x, y + buttonID * 30, 90, 30,
+						180 << 24 | rectColor << 16 | rectColor << 8 | rectColor, borders);
 			}
 		}
 		r.drawString(label, x + 45, y + 14 + buttonID * 30, r.font16, textColor);
 	}
-	
 
 	public void drawTab(int tabs, int[] tab1, int[] tab2, int[] tab3, int w1, int w2, int w3, Render r) {
 		for (int i = 0; i < tabs; i++) {
@@ -123,12 +125,12 @@ public class DropDown extends Menu {
 			if (i == 0)
 				border |= 1;
 			r.drawRectBorders(x, y, 180 / tabs, 30, color, border);
-			if(i == 0)
-				r.drawImage(x + 90 / tabs, y + 15,w1, tab1,1,0);
-			if(i == 1)
-				r.drawImage(x + 90 / tabs, y + 15,w2, tab2,1,0);
-			if(i == 2){
-				r.drawImage(x + 90 / tabs, y + 15,w3, tab3,1,0);
+			if (i == 0)
+				r.drawImage(x + 90 / tabs, y + 15, w1, tab1, 1, 0);
+			if (i == 1)
+				r.drawImage(x + 90 / tabs, y + 15, w2, tab2, 1, 0);
+			if (i == 2) {
+				r.drawImage(x + 90 / tabs, y + 15, w3, tab3, 1, 0);
 			}
 		}
 	}
@@ -201,6 +203,10 @@ public class DropDown extends Menu {
 		return shown && (unit.getID() != UnitID.SHIP);
 	}
 
+	public boolean getRealShown() {
+		return shown;
+	}
+
 	/**
 	 * @return Whether or not the mouse is within the drop down's bounds
 	 */
@@ -263,27 +269,27 @@ public class DropDown extends Menu {
 					180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
 			r.drawString(product, (int) getPosition().getX(), (int) getPosition().getY() + 44, r.font16,
 					255 << 24 | 250 << 16 | 250 << 8 | 250, false);
-			if(industry.getAutomatic()){
-				drawOption("Auto", (int)getPosition().getX(),  2, 0, 13, r);
+			if (industry.getAutomatic()) {
+				drawOption("Auto", (int) getPosition().getX(), 2, 0, 13, r);
 			} else {
-				drawOption("Auto", (int)getPosition().getX(),  2, 32, 13, r);
+				drawOption("Auto", (int) getPosition().getX(), 2, 32, 13, r);
 			}
-			drawOption("Cancel", (int)getPosition().getX()+90, 2, 32, 13, r);
+			drawOption("Cancel", (int) getPosition().getX() + 90, 2, 32, 13, r);
 		} else {
 			if (unit.nation.getCoinAmount() >= lightCost) {
-				drawOption(light + " (" + (int)lightCost + ")", 2, 32, 5, r);
+				drawOption(light + " (" + (int) lightCost + ")", 2, 32, 5, r);
 			} else {
-				drawOption(light + " (" + (int)lightCost + ")", 2, 0, 5, r);
+				drawOption(light + " (" + (int) lightCost + ")", 2, 0, 5, r);
 			}
 			if (unit.nation.getCoinAmount() >= medCost) {
-				drawOption(medium + " (" + (int)medCost + ")", 3, 32, 5, r);
+				drawOption(medium + " (" + (int) medCost + ")", 3, 32, 5, r);
 			} else {
-				drawOption(medium + " (" + (int)medCost + ")", 3, 0, 5, r);
+				drawOption(medium + " (" + (int) medCost + ")", 3, 0, 5, r);
 			}
 			if (unit.nation.getCoinAmount() >= heavyCost) {
-				drawOption(heavy + " (" + (int)heavyCost + ")", 4, 32, 13, r);
+				drawOption(heavy + " (" + (int) heavyCost + ")", 4, 32, 13, r);
 			} else {
-				drawOption(heavy + " (" + (int)heavyCost + ")", 4, 0, 13, r);
+				drawOption(heavy + " (" + (int) heavyCost + ")", 4, 0, 13, r);
 			}
 		}
 	}
@@ -305,7 +311,7 @@ public class DropDown extends Menu {
 	public void setTab(int t) {
 		tab = t;
 	}
-	
+
 	public void drawUpgrading(Industry industry, Render r) {
 		int minutes = 0, seconds = 0;
 		String product = "Upgrading";
@@ -318,13 +324,14 @@ public class DropDown extends Menu {
 			product += " " + seconds + "s";
 		}
 		r.drawRectBorders((int) getPosition().getX(), (int) getPosition().getY() + 30, 180, 30,
-				180 << 24| 128 << 16 | 128 << 8 | 128, 13);
-		r.drawString(product, (int) getPosition().getX()+7, (int) getPosition().getY() + 44, r.font16,
+				180 << 24 | 128 << 16 | 128 << 8 | 128, 13);
+		r.drawString(product, (int) getPosition().getX() + 7, (int) getPosition().getY() + 44, r.font16,
 				255 << 24 | 250 << 16 | 250 << 8 | 250, false);
 		drawOption("Cancel upgrade", 2, 32, 13, r);
 	}
-	public boolean isUnit(Unit unit){
-		if(this.unit == null)
+
+	public boolean isUnit(Unit unit) {
+		if (this.unit == null)
 			return false;
 		return this.unit.equals(unit);
 	}

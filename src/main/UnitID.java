@@ -2,7 +2,7 @@ package main;
 
 public enum UnitID {
 	//Structures
-	CITY, FACTORY, AIRFIELD, PORT,
+	CITY, FACTORY, AIRFIELD, PORT, FORT,
 	//Forces
 	INFANTRY, CAVALRY, ARTILLERY, SHIP, PLANE, 
 	//Projectiles
@@ -14,6 +14,6 @@ public enum UnitID {
 		return this == INFANTRY || this == CAVALRY || this == ARTILLERY;
 	}
 	public boolean isBuilding(){
-		return this == AIRFIELD || this == CITY || this == FACTORY || this == PORT;
+		return this == AIRFIELD || this == CITY || this == FACTORY || this == PORT || this == FORT;
 	}
 }
