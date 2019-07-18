@@ -1,5 +1,6 @@
 package objects.gui;
 
+import main.Main;
 import output.Render;
 
 public class ErrorMessage extends Menu {

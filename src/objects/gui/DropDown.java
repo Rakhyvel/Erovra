@@ -26,6 +26,7 @@ public class DropDown extends Menu {
 	private int closeTick;
 	private boolean leftClicked;
 	private static int tab = 0;
+	private boolean shipExempt = false;
 
 	@Override
 	public void tick() {
@@ -185,6 +186,7 @@ public class DropDown extends Menu {
 	private void hide() {
 		unit = null;
 		shown = false;
+		shipExempt = false;
 	}
 
 	/**
@@ -200,7 +202,7 @@ public class DropDown extends Menu {
 	 *         always returns false.
 	 */
 	public boolean getShown() {
-		return shown && (unit.getID() != UnitID.SHIP);
+		return shown && !(shipExempt);
 	}
 
 	public boolean getRealShown() {
@@ -334,5 +336,10 @@ public class DropDown extends Menu {
 		if (this.unit == null)
 			return false;
 		return this.unit.equals(unit);
+	}
+	
+	// This exemption allows units to be selected even when the landing craft drop down is open
+	public void exemptShip() {
+		shipExempt = true;
 	}
 }

@@ -1,6 +1,7 @@
 package objects.units;
 
 import main.Main;
+import main.SelectionID;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
@@ -57,12 +58,26 @@ public class Infantry extends Unit {
 
 			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawLine(getPosition(), getPosition()
-							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))), nation.color, 0, 0.5f);
+					if (Main.world.gotoMethod == SelectionID.CENTER_OF_MASS) {
+						r.drawLine(getPosition(),
+								getPosition().addVector(
+										Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))),
+								nation.color, 0, 0.5f);
+					} else {
+						r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0,
+								0.5f);
+
+					}
 				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())
 						|| Main.world.getShowPaths() && position.getDist(target) > 16) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
 							220 << 16 | 220 << 8 | 220, 0.5f);
+					if (patrolling) {
+						r.drawLine(getPosition(), new Point(this.patrol1), nation.color, 220 << 16 | 220 << 8 | 220,
+								0.5f);
+						r.drawLine(getPosition(), new Point(this.patrol2), nation.color, 220 << 16 | 220 << 8 | 220,
+								0.5f);
+					}
 				}
 			}
 
@@ -71,9 +86,9 @@ public class Infantry extends Unit {
 			if (hit > 1) {
 				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.hitSprite, 1, direction);
 			}
-			if(patrolling) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 10,
-						Render.getScreenBlend(255<<24|255<<16|255<<8|255, Render.patrol), 1, 0);
+			if (patrolling) {
+				r.drawImage((int) position.getX(), (int) position.getY() - 10, 16,
+						Render.getScreenBlend(255 << 24 | 255 << 16 | 255 << 8 | 255, Render.patrol), 1, 0);
 			}
 		}
 	}
@@ -127,27 +142,27 @@ public class Infantry extends Unit {
 		if (nation.getCityCost() > 15) {
 			if (nation.airSupremacy <= nation.enemyNation.airSupremacy) {
 				if (nation.getAirfieldCost() < nation.coins / 2 && nation.unupgradedAirfields == 0) {
-					if(nation.buyAirfield(position)) {
-						
+					if (nation.buyAirfield(position)) {
+
 					} else {
 						if (nation.getFactoryCost() <= nation.coins && nation.unupgradedFactories == 0)
-							if(nation.buyFactory(position)) {
+							if (nation.buyFactory(position)) {
 							}
 					}
 				} else {
 					if (nation.getFactoryCost() <= nation.coins && nation.unupgradedFactories == 0)
-						if(nation.buyFactory(position)) {
+						if (nation.buyFactory(position)) {
 						}
 				}
 			} else {
 				if (nation.seaSupremacy <= nation.enemyNation.seaEngagedSupremacy) {
 					if (nation.unupgradedPorts == 0) {
-						if(nation.buyPort(position)) {
+						if (nation.buyPort(position)) {
 						}
 					}
 				}
 				if (nation.getFactoryCost() <= nation.coins && nation.unupgradedFactories == 0)
-					if(nation.buyFactory(position)) {
+					if (nation.buyFactory(position)) {
 					}
 			}
 		}

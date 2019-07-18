@@ -137,7 +137,7 @@ public class Main {
 		int hue = 208;
 		Nation sweden = new Nation(255 << 24 | Render.getRGB(hue, .8, .8), "Sweden");
 		Nation russia = new Nation(255 << 24 | Render.getRGB(1, .8, .8), "Russia");
-		sweden.setAIControlled(false);
+//		sweden.setAIControlled(false);
 //		russia.setAIControlled(false);
 		world.setHostile(russia);
 		world.setFriendly(sweden);
@@ -234,6 +234,7 @@ public class Main {
 		russia.addUnit(new Infantry(new Point(russia.getUnit(0).getPosition()), russia));
 		sweden.unupgradedCities = 0;
 		russia.unupgradedCities = 0;
+		Main.world.indicator.showMessage("Find the enemy capital and destroy it!");
 	}
 
 	/**

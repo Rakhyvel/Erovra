@@ -65,6 +65,10 @@ public class Plane extends Unit {
 						nation.coins += health;
 						nation.unitArray.remove(this);
 					}
+					if(selected) {
+						selected = false;
+						Main.world.selectedUnits.remove(this);
+					}
 				} else {
 					if (nation.isAIControlled()) {
 						acquireTarget();
@@ -164,7 +168,7 @@ public class Plane extends Unit {
 	void planeAim() {
 		int smallestDistance = 102400;
 		if (weight == UnitID.MEDIUM)
-			smallestDistance = 102400;
+			smallestDistance = 25600;
 		Point smallestPoint = new Point(-1, -1);
 		Unit smallestUnit = null;
 		// Walk through entire enemy unit array
@@ -196,10 +200,10 @@ public class Plane extends Unit {
 		if (smallestUnit != null) {
 			patrolPoint = new Point(smallestPoint
 					.addVector(smallestUnit.velocity.subVec(velocity).scalar(Math.sqrt(smallestDistance) / 4)));
+			smallestUnit.engage();
+			engage();
 			if (velocity.normalize().dot(position.subVec(patrolPoint).normalize()) > 0.95
 					&& position.getDist(smallestPoint) < 73728) {
-				smallestUnit.engage();
-				engage();
 				if ((Main.ticks - born) % 15 == 0 && getWeight() == UnitID.LIGHT) {
 					nation.addProjectile(
 							new Bullet(position, nation, position.getTargetVector(patrolPoint), .5f, UnitID.AIRBULLET));

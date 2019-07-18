@@ -1,7 +1,9 @@
 package main;
 
 public enum SelectionID {
-	SINGLE(), MULTI(), BOX(), TASK();
+	SINGLE(), MULTI(), BOX(), TASK(),
+	
+	CENTER_OF_MASS, POINT;
 	
 	public static SelectionID getID(int ordinal) {
 		if (ordinal == 0)

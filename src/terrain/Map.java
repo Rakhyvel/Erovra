@@ -337,7 +337,7 @@ public class Map {
 		int red = 0;
 
 		if (value < .495f) {
-			blue = (int) (460 * value + 16);
+			blue = (int) (510 * value);
 			red = (int) (760 * value * value - 6);
 			green = (int) (1040 * value * value - 6);
 		} else if (value < .5) {
@@ -355,9 +355,9 @@ public class Map {
 		}
 
 		//
-		// blue = (int) (value * 255);
-		// green = (int) (value * 255);
-		// red = (int) (value * 255);
+//		 blue = (int) (value * 255);
+//		 green = (int) (value * 255);
+//		 red = (int) (value * 255);
 
 		if (blue < 0) blue = 0;
 		if (green < 0) green = 0;

@@ -194,7 +194,7 @@ public class Port extends Industry {
 		d.setPosition(position);
 		if (!upgrading) {
 			if (getProduct() == UnitID.NONE)
-				d.drawTab(2, r.destroyer, r.settings, null, 32, 25, 16, r);
+				d.drawTab(2, r.destroyer2, r.settings, null, 45, 25, 16, r);
 			if (d.getTab() == 0) {
 				d.drawIndustry(r, "Landing craft", "Destroyer", "Cruiser",
 						(int) (nation.getShipCost() / 4 * (getDefense() / 2)),

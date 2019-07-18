@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import objects.Nation;
 import objects.gui.DropDown;
 import objects.gui.ErrorMessage;
+import objects.gui.Indicator;
 import objects.gui.Menu;
 import objects.units.Unit;
 import output.Render;
@@ -27,20 +28,24 @@ public class World {
 	boolean speedClicked = false;
 	boolean slowClicked = false;
 	boolean pathClicked = false;
+	boolean gotoClicked = false;
 	public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
 	public Unit highlightedUnit = null;
 	private DropDown dropDown = new DropDown();
 	public ErrorMessage errorMessage = new ErrorMessage();
+	public Indicator indicator = new Indicator();
 	private boolean nullifySelected = false;
 	Point mouseStartPoint = new Point(-1, -1);
 	public String defeatedName = "";
 	boolean showPaths = false;
 	public SelectionID selectionMethod = SelectionID.SINGLE;
+	public SelectionID gotoMethod = SelectionID.CENTER_OF_MASS;
 	Point startMouseDown = null;
-	public Point midPoint = new Point(0,0);
+	public Point midPoint = new Point(0, 0);
 
 	public World() {
 		menuArray.add(errorMessage);
+		menuArray.add(indicator);
 	}
 
 	/**
@@ -59,12 +64,17 @@ public class World {
 					pathClicked = false;
 				}
 			}
-			if (Main.mouse.getX() > 902 && Main.mouse.getX() < 928 && Main.mouse.getY() < 30) {
+
+			if (Main.mouse.getX() > 874 && Main.mouse.getX() < 900 && Main.mouse.getY() < 30) {
 				if (Main.mouse.getMouseLeftDown()) {
-					pathClicked = true;
-				} else if (pathClicked) {
-					selectionMethod = SelectionID.getID((selectionMethod.ordinal() + 1) % 4);
-					pathClicked = false;
+					gotoClicked = true;
+				} else if (gotoClicked) {
+					gotoClicked = false;
+					if (gotoMethod == SelectionID.CENTER_OF_MASS) {
+						gotoMethod = SelectionID.POINT;
+					} else {
+						gotoMethod = SelectionID.CENTER_OF_MASS;
+					}
 				}
 			}
 
@@ -72,21 +82,26 @@ public class World {
 				if (selectionMethod != SelectionID.TASK) {
 					selectionMethod = SelectionID.TASK;
 					selectedUnits.clear();
+					indicator.showMessage("Selection Mode: Task Force");
 				}
 			} else if (Main.keyboard.ctrl.isPressed()) {
 				if (selectionMethod != SelectionID.MULTI) {
 					selectionMethod = SelectionID.MULTI;
 					selectedUnits.clear();
+					indicator.showMessage("Selection Mode: Multi");
+					
 				}
 			} else if (Main.keyboard.shift.isPressed()) {
-				if(selectionMethod != SelectionID.BOX) {
+				if (selectionMethod != SelectionID.BOX) {
 					selectionMethod = SelectionID.BOX;
 					selectedUnits.clear();
+					indicator.showMessage("Selection Mode: Box");
+					mouseStartPoint = null;
 				}
 			} else {
 				selectionMethod = SelectionID.SINGLE;
 			}
-			
+
 			if (selectionMethod == SelectionID.BOX) {
 				if (Main.mouse.getMouseLeftDown()) {
 					if (mouseStartPoint == null) {
@@ -95,7 +110,7 @@ public class World {
 					}
 				} else if (mouseStartPoint != null) {
 					for (int i = 0; i < friendly.unitSize(); i++) {
-						if(!friendly.getUnit(i).getID().isBuilding()) {
+						if (!friendly.getUnit(i).getID().isBuilding()) {
 							if (friendly.getUnit(i).getPosition().getX() > Math.min(Main.mouse.getX(),
 									mouseStartPoint.getX())) {
 								if (friendly.getUnit(i).getPosition().getX() < Math.max(Main.mouse.getX(),
@@ -115,9 +130,9 @@ public class World {
 					mouseStartPoint = null;
 				}
 			}
-			
-			if(Main.keyboard.p.isPressed()) {
-				for(int i = 0; i < selectedUnits.size();i++) {
+
+			if (Main.keyboard.p.isPressed()) {
+				for (int i = 0; i < selectedUnits.size(); i++) {
 					selectedUnits.get(i).patrolling = true;
 				}
 			}
@@ -147,9 +162,9 @@ public class World {
 
 			midPoint.setX(0);
 			midPoint.setY(0);
-			for(int i = 0; i < selectedUnits.size(); i++) {
-				midPoint.setX(midPoint.getX()+(selectedUnits.get(i).getPosition().getX())/selectedUnits.size());
-				midPoint.setY(midPoint.getY()+(selectedUnits.get(i).getPosition().getY())/selectedUnits.size());
+			for (int i = 0; i < selectedUnits.size(); i++) {
+				midPoint.setX(midPoint.getX() + (selectedUnits.get(i).getPosition().getX()) / selectedUnits.size());
+				midPoint.setY(midPoint.getY() + (selectedUnits.get(i).getPosition().getY()) / selectedUnits.size());
 			}
 		}
 		if (Main.keyboard.esc.isPressed()) {
@@ -219,12 +234,12 @@ public class World {
 					hostile.getProjectile(i2).render(r);
 				}
 			}
-			
+
 			for (int i2 = hostile.unitSize() - 1; i2 >= 0; i2--) {
 				if (hostile.getUnit(i2).getID().isBuilding())
 					hostile.getUnit(i2).render(r);
 			}
-			if(selectionMethod == SelectionID.BOX && Main.mouse.getMouseLeftDown() && mouseStartPoint != null) {
+			if (selectionMethod == SelectionID.BOX && Main.mouse.getMouseLeftDown() && mouseStartPoint != null) {
 				r.drawRect((int) Math.min(Main.mouse.getX(), mouseStartPoint.getX()),
 						(int) Math.min(Main.mouse.getY(), mouseStartPoint.getY()),
 						(int) Math.abs(mouseStartPoint.getX() - Main.mouse.getX()),
@@ -280,6 +295,12 @@ public class World {
 				r.drawImage(1024 - 79 - 28, 15, 26, r.selectBox, 1, 0);
 			} else if (selectionMethod == SelectionID.TASK) {
 				r.drawImage(1024 - 79 - 28, 15, 26, r.selectTask, 1, 0);
+			}
+			r.drawRectBorders(901 - 29, 0, 30, 30, 128 << 24, 15);
+			if (gotoMethod == SelectionID.CENTER_OF_MASS) {
+				r.drawImage(1024 - 79 - 28 - 30, 15, 26, r.center, 1, 0);
+			} else {
+				r.drawImage(1024 - 79 - 28 - 30, 15, 26, r.point, 1, 0);
 			}
 
 			for (int i2 = 0; i2 < friendly.coinSize(); i2++) {
@@ -341,7 +362,7 @@ public class World {
 	public boolean getShowPaths() {
 		return showPaths;
 	}
-	
+
 	public void addSelection(Unit unit) {
 		selectedUnits.add(unit);
 	}

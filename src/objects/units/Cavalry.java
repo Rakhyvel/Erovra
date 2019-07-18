@@ -1,6 +1,7 @@
 package objects.units;
 
 import main.Main;
+import main.SelectionID;
 import main.StateID;
 import main.UnitID;
 import objects.Nation;
@@ -15,7 +16,6 @@ import utility.Point;
  * @see Unit
  */
 public class Cavalry extends Unit {
-
 
 	public Cavalry(Point position, Nation nation, UnitID weight) {
 		super(position, nation, weight);
@@ -44,7 +44,7 @@ public class Cavalry extends Unit {
 				clickToMove();
 				clickToDropDown();
 			}
-			if (spotted > 0){
+			if (spotted > 0) {
 				spotted--;
 			} else {
 				disengage();
@@ -60,19 +60,40 @@ public class Cavalry extends Unit {
 			float direction = position.subVec(getFacing()).getRadian();
 			if (velocity.getY() > 0)
 				direction += 3.14f;
-			if(!nation.isAIControlled()) {
+			if (!nation.isAIControlled()) {
 				if (isSelected()) {
-					r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0, 0.5f);
-				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY()) || Main.world.getShowPaths() && position.getDist(target) > 16) {
+					if (Main.world.gotoMethod == SelectionID.CENTER_OF_MASS) {
+						r.drawLine(getPosition(),
+								getPosition().addVector(
+										Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))),
+								nation.color, 0, 0.5f);
+					} else {
+						r.drawLine(getPosition(), new Point(Main.mouse.getX(), Main.mouse.getY()), nation.color, 0,
+								0.5f);
+
+					}
+				} else if (this.boundingBox(Main.mouse.getX(), Main.mouse.getY())
+						|| Main.world.getShowPaths() && position.getDist(target) > 16) {
 					r.drawLine(getPosition(), new Point(getTarget().getX(), getTarget().getY()), nation.color,
 							220 << 16 | 220 << 8 | 220, 0.5f);
+					if (patrolling) {
+						r.drawLine(getPosition(), new Point(this.patrol1), nation.color, 220 << 16 | 220 << 8 | 220,
+								0.5f);
+						r.drawLine(getPosition(), new Point(this.patrol2), nation.color, 220 << 16 | 220 << 8 | 220,
+								0.5f);
+					}
 				}
 			}
-				
 
-			r.drawImage((int) position.getX(), (int) position.getY(), 32,Render.getScreenBlend(Render.getColor(weight,nation.color),Render.cavalry),1, direction);
+			r.drawImage((int) position.getX(), (int) position.getY(), 32,
+					Render.getScreenBlend(Render.getColor(weight, nation.color), Render.cavalry), 1, direction);
 			if (hit > 1) {
-				r.drawImage((int) position.getX(), (int) position.getY(), 36,r.hitSprite,1, direction);
+				r.drawImage((int) position.getX(), (int) position.getY(), 36, r.hitSprite, 1, direction);
+			}
+
+			if (patrolling) {
+				r.drawImage((int) position.getX(), (int) position.getY() - 10, 16,
+						Render.getScreenBlend(255 << 24 | 255 << 16 | 255 << 8 | 255, Render.patrol), 1, 0);
 			}
 		}
 	}

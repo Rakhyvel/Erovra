@@ -297,7 +297,7 @@ public abstract class Unit {
 			Main.world.selectedUnits.remove(this);
 		}
 	}
-	
+
 	float getPowerCube() {
 		return attack * health * defense;
 	}
@@ -444,10 +444,11 @@ public abstract class Unit {
 		for (int i = 0; i < nation.enemyNation.unitSize(); i++) {
 			Unit tempUnit = nation.enemyNation.getUnit(i);
 			Point tempPoint = tempUnit.getPosition();
-			int tempDist = (int)position.getDist(tempPoint);
-			if ((id.isLandUnit() && tempUnit.id != UnitID.SHIP && tempUnit.id != UnitID.PLANE)
-					|| (id == UnitID.SHIP && (tempUnit.id == UnitID.SHIP || (weight == UnitID.HEAVY && tempUnit.id.isLandUnit())))) {
-				if (smallestUnit == null || tempDist < smallestDistance	 || (smallestUnit.id.isBuilding() && tempDist < range)) {
+			int tempDist = (int) position.getDist(tempPoint);
+			if ((id.isLandUnit() && tempUnit.id != UnitID.SHIP && tempUnit.id != UnitID.PLANE) || (id == UnitID.SHIP
+					&& (tempUnit.id == UnitID.SHIP || (weight == UnitID.HEAVY && tempUnit.id.isLandUnit())))) {
+				if (smallestUnit == null || tempDist < smallestDistance
+						|| (smallestUnit.id.isBuilding() && tempDist < range)) {
 					smallestDistance = tempDist;
 					smallestPoint = tempPoint;
 					smallestUnit = tempUnit;
@@ -481,7 +482,7 @@ public abstract class Unit {
 			pathfind = pathfind(smallestPoint, baseline);
 			if (pathfind != null) {
 				if (nation.isAIControlled()) {
-					if(!(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit())) {
+					if (!(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit())) {
 						setTarget(pathfind);
 						setFacing(pathfind);
 					}
@@ -492,11 +493,12 @@ public abstract class Unit {
 				smallestUnit.engage();
 				engage();
 			} else {
-				if (nation.isAIControlled() && !(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit()))
+				if (nation.isAIControlled()
+						&& !(id == UnitID.SHIP && weight == UnitID.HEAVY && smallestUnit.id.isLandUnit()))
 					retarget(baseline);
 			}
 			closestUnit = smallestUnit.id;
-			if(id == UnitID.SHIP && weight == UnitID.HEAVY) {
+			if (id == UnitID.SHIP && weight == UnitID.HEAVY) {
 				setFacing(smallestPoint);
 				return true;
 			}
@@ -524,6 +526,7 @@ public abstract class Unit {
 	}
 
 	public void shootShell(int range, double power) {
+		Point tempFace = new Point(facing);
 		if (findTarget(0.5f, range) && Map.getArray(facing) > 0.5f) {
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Shell(position, power, nation, facing));
@@ -531,11 +534,18 @@ public abstract class Unit {
 			if (nation.isAIControlled() && id != UnitID.SHIP)
 				setTarget(position);
 		}
-		if (!getTarget().equals(position))
-			setFacing(getTarget());
+
+		if (nation.isAIControlled()) {
+			if (!target.equals(position)) {
+				setFacing(getTarget());
+			}
+		} else {
+			setFacing(tempFace);
+		}
 	}
 
 	public void shootTorpedo() {
+		Point tempFace = new Point(facing);
 		if (findTarget(0, 16384) && Map.getArray(facing) < 0.5f) {
 			if ((Main.ticks - born) % 90 == 0) {
 				nation.addProjectile(new Torpedo(position, nation, position.getTargetVector(facing)));
@@ -545,8 +555,13 @@ public abstract class Unit {
 			if (nation.isAIControlled())
 				setTarget(position);
 		}
-		if (!getTarget().equals(position))
-			setFacing(getTarget());
+		if (nation.isAIControlled()) {
+			if (!target.equals(position)) {
+				setFacing(getTarget());
+			}
+		} else {
+			setFacing(tempFace);
+		}
 	}
 
 	boolean aaAim(float baseline) {
@@ -660,8 +675,8 @@ public abstract class Unit {
 				if (tempProjectile.id != UnitID.BOMB && tempProjectile.id != UnitID.SHELL)
 					tempProjectile.hit();
 				hit = 9;
-				if(tempProjectile.id == UnitID.BULLET) {
-					health += (tempProjectile.velocity.normalize().dot(facing.subVec(position).normalize())-1)/2;
+				if (tempProjectile.id == UnitID.BULLET) {
+					health += (tempProjectile.velocity.normalize().dot(facing.subVec(position).normalize()) - 1) / 2;
 				}
 				health -= tempProjectile.getAttack() / getDefense();
 				if (health <= 0)
@@ -765,8 +780,12 @@ public abstract class Unit {
 				leftClicked = true;
 			} else if (leftClicked) {
 				if (!patrolling) {
-					setTarget(getPosition()
-							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					if (Main.world.gotoMethod == SelectionID.CENTER_OF_MASS) {
+						setTarget(getPosition().addVector(
+								Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					} else {
+						setTarget(new Point(Main.mouse.getX(), Main.mouse.getY()));
+					}
 					if (id == UnitID.PLANE) {
 						target.setY(target.getY() - 16);
 					}
@@ -774,8 +793,12 @@ public abstract class Unit {
 					Main.world.nullifySelected();
 				} else {
 					patrol1 = getPosition();
-					setTarget(getPosition()
-							.addVector(Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					if (Main.world.gotoMethod == SelectionID.CENTER_OF_MASS) {
+						setTarget(getPosition().addVector(
+								Main.world.midPoint.subVec(new Point(Main.mouse.getX(), Main.mouse.getY()))));
+					} else {
+						setTarget(new Point(Main.mouse.getX(), Main.mouse.getY()));
+					}
 					patrol2.setX(Main.mouse.getX());
 					patrol2.setY(Main.mouse.getY());
 					setFacing(patrol2);

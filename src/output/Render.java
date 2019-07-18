@@ -44,6 +44,7 @@ public class Render extends Canvas {
 	// Water Units
 	public int[] landing = image.loadImage("/res/water/landing.png", 13, 32);
 	public int[] destroyer = image.loadImage("/res/water/destroyer.png", 13, 45);
+	public int[] destroyer2 = image.loadImage("/res/water/destroyer2.png", 45, 13);
 	public int[] cruiser = image.loadImage("/res/water/cruiser.png", 14, 61);
 	public int[] landingHit = image.loadImage("/res/water/landingHit.png", 17, 36);
 	public int[] destroyerHit = image.loadImage("/res/water/destroyerHit.png", 17, 49);
@@ -87,12 +88,14 @@ public class Render extends Canvas {
 	public int[] target = image.loadImage("/res/target.png", 32, 32);
 	public int[] settings = image.loadImage("/res/settings.png", 25, 25);
 
-	public static int[] patrol = image.loadImage("/res/patrol.png", 10, 10);
+	public static int[] patrol = image.loadImage("/res/bino.png", 16, 16);
 	public int[] showPath = image.loadImage("/res/showPath.png", 26, 26);
 	public int[] selectSingle = image.loadImage("/res/single.png", 26, 26);
 	public int[] selectMulti = image.loadImage("/res/multi.png", 26, 26);
 	public int[] selectBox = image.loadImage("/res/box.png", 26, 26);
 	public int[] selectTask = image.loadImage("/res/task.png", 26, 26);
+	public int[] center = image.loadImage("/res/center.png", 26, 26);
+	public int[] point = image.loadImage("/res/point.png", 26, 26);
 
 	// Fonts
 	public Font font32 = new Font(new SpriteSheet("/res/fonts/font32.png", 512), 32);
@@ -300,7 +303,7 @@ public class Render extends Canvas {
 		for (int i = 0; i < label.length(); i++) {
 			letter = label.charAt(i);
 			if (letter == 7) {
-				letterImage = getScreenBlend(250 << 16 | 250 << 8, font.getLetter(letter));
+				letterImage = getScreenBlend(255 << 24 | 250 << 16 | 250 << 8, font.getLetter(letter));
 			} else {
 				letterImage = getScreenBlend(color, font.getLetter(letter));
 			}
@@ -331,7 +334,7 @@ public class Render extends Canvas {
 	}
 
 	public static int[] getScreenBlend(int color, int[] img) {
-		int r, g, b;
+		int r, g, b, a;
 		float screen, alpha;
 		int[] img2 = new int[img.length];
 		for (int i = 0; i < img.length; i++) {
@@ -339,6 +342,7 @@ public class Render extends Canvas {
 			if (alpha > 0.9f) {
 				// Finding and splitting starting colors
 				screen = (img[i] & 255) / 255.0f;
+				a = ((color >> 24) & 255);
 				r = ((color >> 16) & 255);
 				g = ((color >> 8) & 255);
 				b = (color & 255);
@@ -355,7 +359,7 @@ public class Render extends Canvas {
 					b = (int) (255 - 2 * (255 - b) * (1 - screen));
 				}
 				// Recombining colors
-				img2[i] = (255 << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
+				img2[i] = (a << 24) | (int) (r * alpha) << 16 | (int) (g * alpha) << 8 | (int) (b * alpha);
 			}
 		}
 		return img2;
