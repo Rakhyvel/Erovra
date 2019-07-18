@@ -135,6 +135,7 @@ public class World {
 				for (int i = 0; i < selectedUnits.size(); i++) {
 					selectedUnits.get(i).patrolling = true;
 				}
+				indicator.showMessage("Patrol Mode: Enabled");
 			}
 
 			for (int i2 = 0; i2 < friendly.projectileSize(); i2++) {

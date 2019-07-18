@@ -5,6 +5,8 @@
 - Selections now use center of mass
 - Units are now slightly more vulnerable from the side and behind
 - Cruisers can now attack land targets, again
+- Toggle for center of mass and point goto
+- Indicators for selections and patrolling
 
 ### Erovra 1.0.18
 - Added selection modes!
